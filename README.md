@@ -211,14 +211,47 @@ phone in a plant office. Do not strip it.
 - **The strain field** (brief §7A.5) — not built. It was the explicitly
   cuttable one, and `/products` already has a strong filterable catalogue.
 
+### The pinning rule that is not optional
+
+ScrollTrigger's `pin` wraps its target in a `.pin-spacer` div and moves the
+target inside it. Two consequences, and getting either wrong crashes every
+route change with **"Application error: a client-side exception has occurred"**
+and `Failed to execute 'removeChild' on 'Node'`:
+
+1. **Pin an inner wrapper, never a node React renders as a subtree root.** If
+   you pin the `<section>` React put into `<main>`, GSAP moves it out of
+   `<main>`, and React's `main.removeChild(section)` on navigation throws.
+   Pinning a child keeps the reparenting inside the section, where React only
+   ever removes the top host node.
+2. **Set GSAP up and tear it down in a layout effect**, via
+   `components/motion/useIsomorphicLayoutEffect.ts` — never plain `useEffect`.
+   React runs layout-effect cleanups before it removes host nodes, and defers
+   passive cleanups until after. A passive cleanup un-wraps the spacer too
+   late to help.
+
+`scripts/verify-navigation.mjs` guards both.
+
 ### Verifying a change
 
 ```bash
-npm run build
-node scripts/verify-webgl.mjs           # tier 3: canvas sizes, CLS, captures
-TIER=1 node scripts/verify-webgl.mjs    # the honesty check
-BASE=http://localhost:3301 TIER1=1 node scripts/shoot.mjs tier1 / /products
+npm run build                              # let it finish; do not pipe it
+npm start -- -p 3310                       # NOT while `next dev` is running
+
+node scripts/verify-navigation.mjs         # every route + every legacy 301
+node scripts/verify-webgl.mjs              # tier 3: canvas sizes, CLS, captures
+TIER=1 node scripts/verify-webgl.mjs       # the honesty check
+BASE=http://localhost:3310 TIER1=1 node scripts/shoot.mjs tier1 / /products
 ```
+
+Two traps worth knowing, because both produce the same "client-side exception"
+symptom as a real bug and send you hunting for one that is not there:
+
+- `next dev` and `next start` share `.next`. Running one while the other is
+  live, or rebuilding under a running server, leaves the browser asking for
+  chunk hashes that no longer exist. Stop the server, `rm -rf .next`, rebuild.
+- A `next start` that failed to bind (EADDRINUSE) leaves the *previous* server
+  answering on that port from a `.next` that has since been overwritten. Check
+  with `lsof -nP -iTCP:<port> -sTCP:LISTEN` rather than trusting `pkill`.
 
 Measured on this build: initial JS 123KB gzipped (budget 130), lazy 3D layer
 170KB gzipped (budget 240), CLS 0.0037 (budget 0.05), no three.js in the

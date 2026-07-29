@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/cn";
 import { useRenderTier } from "./useRenderTier";
+import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 
 /**
  * Scroll parallax for photography (Section 7A.7).
@@ -35,7 +36,11 @@ export function Parallax({
   const innerRef = useRef<HTMLDivElement>(null);
   const tier = useRenderTier();
 
-  useEffect(() => {
+  // Layout effect so the ScrollTriggers are killed before React detaches
+  // the elements they are measuring. This one does not pin, so it cannot hit
+  // the removeChild crash, but leaving triggers alive across a route change
+  // leaks them and makes the next page's refresh() measure dead nodes.
+  useIsomorphicLayoutEffect(() => {
     if (tier === null || tier === 1) return;
 
     const container = containerRef.current;

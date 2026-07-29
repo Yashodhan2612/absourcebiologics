@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Photo } from "@/components/ui/Photo";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { useDeferredMount, useRenderTier } from "@/components/motion/useRenderTier";
+import { useIsomorphicLayoutEffect } from "@/components/motion/useIsomorphicLayoutEffect";
 
 /**
  * The homepage's milk-to-curd moment (Section 7A.4), and the ONLY pinned
@@ -33,6 +34,7 @@ const MilkToCurd = dynamic(() => import("@/components/webgl/MilkToCurd"), {
 
 export function MilkToCurdSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
   const tier = useRenderTier();
   const [lost, setLost] = useState(false);
@@ -41,10 +43,13 @@ export function MilkToCurdSection() {
   const idle = useDeferredMount(eligible);
   const active = eligible && idle;
 
-  useEffect(() => {
+  // Layout effect, not useEffect — see useIsomorphicLayoutEffect for why the
+  // choice of hook is what stops client-side navigation from crashing.
+  useIsomorphicLayoutEffect(() => {
     if (!active) return;
     const section = sectionRef.current;
-    if (!section) return;
+    const pinTarget = pinRef.current;
+    if (!section || !pinTarget) return;
 
     let cancelled = false;
     let kill: (() => void) | undefined;
@@ -66,7 +71,15 @@ export function MilkToCurdSection() {
           start: "top top",
           // Exactly one viewport of extra scroll. Not "+=150%", not "+=200%".
           end: "+=100%",
-          pin: true,
+          // Pin the INNER wrapper, never the <section> itself. Pinning wraps
+          // the target in a .pin-spacer and moves it inside — so pinning the
+          // section would move the section out of <main>, and React's
+          // `main.removeChild(section)` on navigation would throw. Pinning a
+          // child keeps that reparenting entirely inside the section, where
+          // React never removes individual nodes: unmounting a subtree only
+          // removes its top host node, which is still exactly where React
+          // left it.
+          pin: pinTarget,
           scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -89,38 +102,49 @@ export function MilkToCurdSection() {
   return (
     <section
       ref={sectionRef}
-      className="ab-reversed relative isolate flex min-h-[70vh] items-center overflow-hidden border-y border-ab-tank bg-ab-tank md:min-h-screen"
+      className="ab-reversed relative isolate overflow-hidden border-y border-ab-tank bg-ab-tank"
     >
-      <div className="absolute inset-0 -z-10" aria-hidden="true">
-        {active ? (
-          <MilkToCurd
-            tier={tier}
-            progressRef={progressRef}
-            onContextLost={() => setLost(true)}
-          />
-        ) : (
-          <Photo
-            src="/assets/facility/fermentation.webp"
-            alt=""
-            sizes="100vw"
-            className="opacity-[0.35]"
-          />
-        )}
-        {/* Scrim on the copy side only, so the surface stays fully visible
-            where there is nothing to read over it. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-ab-tank from-15% via-ab-tank/80 via-50% to-ab-tank/10" />
-      </div>
+      {/*
+        The pin target. Always rendered, whatever the tier — GSAP must never
+        be handed a node whose existence depends on state, and React must never
+        be asked to remove a node GSAP has wrapped. Everything visible lives
+        inside it, so pinning it holds the whole composition.
+      */}
+      <div
+        ref={pinRef}
+        className="relative flex min-h-[70vh] items-center overflow-hidden md:min-h-screen"
+      >
+        <div className="absolute inset-0 -z-10" aria-hidden="true">
+          {active ? (
+            <MilkToCurd
+              tier={tier}
+              progressRef={progressRef}
+              onContextLost={() => setLost(true)}
+            />
+          ) : (
+            <Photo
+              src="/assets/facility/fermentation.webp"
+              alt=""
+              sizes="100vw"
+              className="opacity-[0.35]"
+            />
+          )}
+          {/* Scrim on the copy side only, so the surface stays fully visible
+              where there is nothing to read over it. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-ab-tank from-15% via-ab-tank/80 via-50% to-ab-tank/10" />
+        </div>
 
-      <div className="container-ab">
-        <div className="max-w-2xl">
-          <Eyebrow className="mb-7 text-ab-tank-300">The set</Eyebrow>
-          <p className="text-[2rem] leading-[1.05] tracking-[-0.03em] text-ab-milk md:text-[3.75rem]">
-            Set curd that holds a clean cut.
-          </p>
-          <p className="measure-ab mt-7 text-[1.0625rem] leading-[1.65] text-ab-tank-300">
-            Milk thickens, sets, and takes a clean break face — the attribute a
-            curd plant is judged on, and the one a starter culture decides.
-          </p>
+        <div className="container-ab">
+          <div className="max-w-2xl">
+            <Eyebrow className="mb-7 text-ab-tank-300">The set</Eyebrow>
+            <p className="text-[2rem] leading-[1.05] tracking-[-0.03em] text-ab-milk md:text-[3.75rem]">
+              Set curd that holds a clean cut.
+            </p>
+            <p className="measure-ab mt-7 text-[1.0625rem] leading-[1.65] text-ab-tank-300">
+              Milk thickens, sets, and takes a clean break face — the attribute a
+              curd plant is judged on, and the one a starter culture decides.
+            </p>
+          </div>
         </div>
       </div>
     </section>

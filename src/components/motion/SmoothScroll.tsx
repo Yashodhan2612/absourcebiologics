@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRenderTier } from "./useRenderTier";
+import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 
 /**
  * Lenis smooth scroll, configured gently (Section 7A.7).
@@ -20,7 +20,7 @@ import { useRenderTier } from "./useRenderTier";
 export function SmoothScroll() {
   const tier = useRenderTier();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (tier === null || tier === 1) return;
 
     // Native momentum beats emulated momentum. Coarse pointer means touch.
