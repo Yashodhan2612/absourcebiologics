@@ -1,0 +1,284 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   ABsource Biologics — design tokens
+   Direction: cold chain meets Indian dairy. A cool, clinical base (stainless
+   steel, chilled storage, lab glass) with exactly one warm accent drawn from
+   ghee and diacetyl. That tension is the positioning: Danish-grade rigour,
+   Indian dairy warmth.
+   ========================================================================= */
+
+@theme {
+  /* --- Colour ------------------------------------------------------------
+     Rules enforced in review, not by the compiler:
+     - ab-ghee appears at most TWICE per viewport.
+     - ab-culture is reserved for live/active states only, never decorative.
+     - ab-ghee FAILS contrast on ab-milk. Any ghee-coloured *text* must use
+       ab-ghee-dark. Verified in scripts/check-contrast.mjs.
+     - ab-ghee never appears anywhere in the WebGL layer.
+  */
+  --color-ab-ink: #0c1413;
+  --color-ab-tank: #0b3b3c;
+  --color-ab-tank-600: #135052;
+  --color-ab-tank-300: #7fa9a9;
+  --color-ab-chill: #dce7e7;
+  --color-ab-milk: #fbfaf7;
+  --color-ab-white: #ffffff;
+  --color-ab-ghee: #e4a33b;
+  /* PALETTE CHANGE from the brief's #B87D22 — that value measures only 3.36:1
+     on ab-milk, which clears large text and focus rings but FAILS the 4.5:1
+     body-text requirement in Section 12. #986615 is the same hue (36.9deg) and
+     saturation, darkened to L=34%: 4.74:1 on ab-milk, 4.95:1 on ab-white.
+     ab-ghee itself is unchanged, so the accent still reads as gold wherever it
+     is used as a fill rather than as text. Verified by scripts/check-contrast.mjs. */
+  --color-ab-ghee-dark: #986615;
+  --color-ab-culture: #6fbf6b;
+  --color-ab-alert: #c0442e;
+
+  /* Muted ink for secondary copy — derived from ab-ink, still AA on ab-milk */
+  --color-ab-ink-60: #4a5654;
+
+  /* --- Type families -----------------------------------------------------
+     Display/body faces are wired in src/fonts/index.ts. The specified
+     Clash Display + Switzer are Fontshare-licensed and are not present in
+     this repo; the brief's own fallback stack (Inter Tight / Inter) is
+     self-hosted in their place. See CREDITS.md and CONTENT-TODO.md.
+  */
+  --font-display: var(--font-ab-display), "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-ab-body), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ab-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* --- Type scale (rem, 16px root) -------------------------------------- */
+  --text-3xs: 0.75rem;
+  --text-2xs: 0.875rem;
+  --text-xs: 1rem;
+  --text-base: 1.0625rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 2rem;
+  --text-2xl: 2.75rem;
+  --text-3xl: 3.75rem;
+  --text-4xl: 5.25rem;
+  --text-5xl: 7.5rem;
+
+  /* --- Radius: 4px maximum, form controls and buttons only --------------- */
+  --radius-ab: 4px;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-ab: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* =========================================================================
+   Base
+   ========================================================================= */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  /* Lenis is live (tier 2+, fine pointer only). Two smoothing systems fight
+     each other, so the native one stands down. See motion/SmoothScroll.tsx. */
+  html.lenis {
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--color-ab-milk);
+    color: var(--color-ab-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis-weight: none;
+  }
+
+  /* Display face: Novonesis-scale headline treatment. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-wrap: balance;
+    font-weight: 500;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible focus ring on every interactive element. Never remove without
+     a replacement — WCAG 2.2 AA, Section 12. */
+  :focus-visible {
+    outline: 2px solid var(--color-ab-ghee-dark);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* Reversed sections carry a light ring so it stays visible on ab-tank. */
+  .ab-reversed :focus-visible {
+    outline-color: var(--color-ab-ghee);
+  }
+
+  ::selection {
+    background-color: var(--color-ab-tank);
+    color: var(--color-ab-milk);
+  }
+}
+
+/* =========================================================================
+   Utilities
+   ========================================================================= */
+
+@utility container-ab {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  @media (width >= 768px) {
+    padding-inline: 32px;
+  }
+}
+
+/* Section vertical rhythm: 96px mobile, 160px desktop. Be disciplined —
+   sections must not collapse into each other. */
+@utility section-ab {
+  padding-block: 96px;
+  @media (width >= 768px) {
+    padding-block: 160px;
+  }
+}
+
+@utility section-ab-tight {
+  padding-block: 64px;
+  @media (width >= 768px) {
+    padding-block: 96px;
+  }
+}
+
+/* Monospace utility type: strain codes, spec tables, dosage figures,
+   eyebrows — and nothing else. */
+@utility mono-ab {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+@utility measure-ab {
+  max-width: 68ch;
+}
+
+/* Link underline that wipes in from the left (Section 6, Motion). */
+@utility link-wipe {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 150ms var(--ease-ab);
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+/* =========================================================================
+   Scroll reveal (see components/ui/Reveal.tsx)
+
+   Scoped to html.js so that with JavaScript unavailable the content is simply
+   visible — the reveal is an enhancement, never a gate on reading the page.
+   The whole rule is skipped under reduced motion.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .ab-reveal[data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  html.js .ab-reveal {
+    transition:
+      opacity 500ms var(--ease-ab),
+      transform 500ms var(--ease-ab);
+  }
+}
+
+/* =========================================================================
+   StrainIndex ticker (see components/layout/StrainIndex.tsx)
+
+   Scoped to prefers-reduced-motion: no-preference, so under reduced motion
+   the rail is simply a static row of links — no animation to disable at
+   runtime, and nothing for JS to get wrong (Section 7A.7).
+   ========================================================================= */
+
+.ab-ticker {
+  --ab-header-h: 72px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ab-ticker {
+    display: flex;
+  }
+
+  .ab-ticker-track {
+    animation: ab-ticker-scroll 90s linear infinite;
+  }
+
+  /* Pausing on hover and on keyboard focus — a reader inspecting a code
+     should not have it slide away from under the pointer. */
+  .ab-ticker:hover .ab-ticker-track,
+  .ab-ticker:focus-within .ab-ticker-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes ab-ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+/* =========================================================================
+   Sticky header
+
+   The single shadow permitted anywhere in the system, and only once scrolled
+   (Section 6, Layout).
+   ========================================================================= */
+
+:root {
+  --ab-header-h: 72px;
+}
+
+.ab-header[data-scrolled="true"] {
+  box-shadow: 0 1px 0 0 var(--color-ab-chill);
+}
+
+/* =========================================================================
+   Reduced motion — Section 7A.9.
+   prefers-reduced-motion: reduce forces render tier 1 globally: no canvases,
+   no parallax, no pinning, no Lenis, no ticker. render-tier.ts reads the same
+   media query so JS and CSS cannot disagree.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

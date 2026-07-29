@@ -1,0 +1,26 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+.env
+.env*.local
+.vercel
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Original unoptimised asset downloads — regenerate with `pnpm fetch-assets`
+public/assets/_source/
+
+# Gated documents are never committed; see README "Adding a TDS"
+private/docs/*.pdf
+
+# Phase screenshots used for self-critique during the build
+.screens/
+
+# This project uses pnpm (see the `packageManager` field). A stray npm or yarn
+# lockfile alongside pnpm-lock.yaml makes Next mis-detect the workspace root
+# and lets the two lockfiles drift apart.
+package-lock.json
+yarn.lock
