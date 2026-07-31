@@ -37,12 +37,22 @@ export default function LeadershipPage() {
       <section className="section-ab-tight">
         <div className="container-ab">
           <ul className="flex flex-col gap-20">
-            {leadership.map((leader, i) => (
+            {leadership.map((leader) => (
               <li
                 key={leader.slug}
                 className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-20"
               >
                 {/*
+                  Portrait always in the first column, bio always in the
+                  second. This used to alternate — every second entry got
+                  `lg:order-2` — and that quietly broke once the columns became
+                  asymmetric. Grid places items into tracks in source order, so
+                  ordering the portrait second put it in the 1fr track where its
+                  max-w-[20rem] left a column of dead space beside it, and
+                  squeezed the bio into the 20rem track. Alternating only works
+                  with equal columns; with a fixed portrait column, the same
+                  side every time is both correct and more symmetrical.
+
                   Fixed 20rem (320px) at every breakpoint, and 3:4 — matching
                   the aspect the portraits are cropped to in
                   scripts/prepare-portraits.mjs.
@@ -57,11 +67,7 @@ export default function LeadershipPage() {
                   width IS the CSS width, `sizes` is honest, and the sources
                   carry about 3x — enough for any display without upscaling.
                 */}
-                <div
-                  className={`relative aspect-[3/4] w-full max-w-[20rem] overflow-hidden border border-ab-chill ${
-                    i % 2 === 1 ? "lg:order-2" : ""
-                  }`}
-                >
+                <div className="relative aspect-[3/4] w-full max-w-[20rem] overflow-hidden border border-ab-chill">
                   <Photo
                     src={`/assets/team/${leader.slug}.webp`}
                     alt={`${leader.name}, ${leader.role}`}
