@@ -40,17 +40,33 @@ export default function LeadershipPage() {
             {leadership.map((leader, i) => (
               <li
                 key={leader.slug}
-                className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20"
+                className="grid gap-10 lg:grid-cols-[20rem_1fr] lg:gap-20"
               >
+                {/*
+                  Fixed 20rem (320px) at every breakpoint, and 3:4 — matching
+                  the aspect the portraits are cropped to in
+                  scripts/prepare-portraits.mjs.
+
+                  Both numbers are load-bearing. The box used to be 22rem and
+                  4:5 against 3:2 landscape sources, so `object-cover` scaled
+                  each photo until its height filled the box and discarded most
+                  of the width — rendering it roughly 600px wide inside a 352px
+                  box. `sizes` only knows the CSS width, so Next served a file
+                  for 352px and the browser stretched it to 600px. That was the
+                  softness. Matching the box to the crop means the rendered
+                  width IS the CSS width, `sizes` is honest, and the sources
+                  carry about 3x — enough for any display without upscaling.
+                */}
                 <div
-                  className={`relative aspect-[4/5] overflow-hidden border border-ab-chill ${
+                  className={`relative aspect-[3/4] w-full max-w-[20rem] overflow-hidden border border-ab-chill ${
                     i % 2 === 1 ? "lg:order-2" : ""
                   }`}
                 >
                   <Photo
                     src={`/assets/team/${leader.slug}.webp`}
                     alt={`${leader.name}, ${leader.role}`}
-                    sizes="(min-width: 1024px) 22rem, 100vw"
+                    sizes="320px"
+                    quality={88}
                   />
                 </div>
 

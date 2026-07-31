@@ -57,6 +57,16 @@ fetch script if you need them back.
   it is off-key against the clean-room photography. Left unused; consider it
   for `/careers` if the client wants it there.
 
+- **Dr Vinze's portrait is a phone photograph.** At the client's request the
+  seated studio portrait (DSC00586) was replaced with the standing shot from
+  AgriTech / DairyTech India 2022, which is the only solo standing photograph
+  of him in the site's media library. It is noticeably softer than the studio
+  shot it replaced, and the two founders' portraits no longer match in style —
+  one is a studio desk portrait, the other a trade-show snapshot. **Worth
+  asking whether a standing studio portrait exists**, or commissioning one;
+  matching portraits would lift the page. Crops are defined in
+  `scripts/prepare-portraits.mjs`.
+
 - **Palette reconciliation.** Section 5 asks for the logo's hex values to be
   sampled and the tokens adjusted. `brand/logo.webp` is now available — sample
   it, adjust `src/app/globals.css`, and re-run `node scripts/check-contrast.mjs`.

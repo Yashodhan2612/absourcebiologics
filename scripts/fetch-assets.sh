@@ -67,11 +67,14 @@ $BASE/2021/08/DSC00556-Copy-1024x683.jpg                      facility/plant-01.
 $BASE/2022/06/IMG-20220621-WA0085-e1731388862439-1024x691.jpg facility/plant-02.jpg
 EOF
 
-echo "Leadership"
-fetch_list <<EOF
-$BASE/2024/11/DSC00586-scaled.jpg    team/mukesh-vinze.jpg
-$BASE/2024/11/DSC00591-1536x1025.jpg team/jagannath-sonavane.jpg
-EOF
+# Leadership portraits are NOT fetched here. They need cropping — the sources
+# are 3:2 landscape and the page shows 3:4 portraits — and running that crop is
+# what keeps the page from upscaling them. See scripts/prepare-portraits.mjs,
+# which downloads and crops in one step:
+#
+#   node scripts/prepare-portraits.mjs
+#
+# Fetching them here as well would overwrite the crops with full frames.
 
 # The thirteen DVS sachets. Filenames on the live site are the strain codes.
 echo "DVS culture sachets"

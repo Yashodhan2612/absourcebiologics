@@ -289,6 +289,30 @@ initial bundle.
 
 ---
 
+## Leadership portraits
+
+The two founder portraits are built by `npm run prepare-portraits`, not by
+`fetch-assets.sh`. They need cropping, and the crop is the point: both sources
+are 3:2 landscape and the page shows 3:4 portraits.
+
+Rendering a landscape source into a portrait box with `object-cover` makes the
+browser scale the image until its HEIGHT fills the box and discard most of the
+width — so a 320px-wide box renders the file about 600px wide internally.
+`sizes` only knows the CSS width, so Next served a file for 320px and the
+browser stretched it. That is what made them look soft, and re-encoding does
+not fix it.
+
+So: the crop is done once at source resolution to the exact 3:4 the page
+displays, and the display box is a fixed 320px at every breakpoint. The
+rendered width then equals the CSS width, `sizes` is truthful, and the sources
+carry about 3x — measured at pixel-parity on a 2x display and a 1.02x upscale
+at worst on a 3x phone.
+
+**If you change the box size, re-run the script** — it prints the headroom each
+portrait has and warns if one can no longer serve a 2x display.
+
+---
+
 ## Known gaps
 
 - **Application photography for the eight solution pages.** See

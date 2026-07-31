@@ -21,6 +21,7 @@ export function Photo({
   priority = false,
   parallax = false,
   depth = 0.6,
+  quality,
 }: {
   src: string;
   alt: string;
@@ -29,6 +30,8 @@ export function Photo({
   priority?: boolean;
   parallax?: boolean;
   depth?: number;
+  /** Overrides next/image's default of 75. Worth raising for faces. */
+  quality?: number;
 }) {
   const image = (
     <Image
@@ -37,6 +40,7 @@ export function Photo({
       fill
       sizes={sizes}
       priority={priority}
+      quality={quality}
       className="object-cover"
     />
   );

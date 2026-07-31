@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "fetch-assets": "bash scripts/fetch-assets.sh",
     "optimise-assets": "node scripts/optimise-assets.mjs",
-    "gen-posters": "node scripts/generate-posters.mjs"
+    "gen-posters": "node scripts/generate-posters.mjs",
+    "prepare-portraits": "node scripts/prepare-portraits.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
