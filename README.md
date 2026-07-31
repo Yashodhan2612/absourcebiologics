@@ -289,6 +289,28 @@ initial bundle.
 
 ---
 
+## Brand assets
+
+The logo is built by `npm run prepare-brand`, not by `fetch-assets.sh` +
+`optimise-assets`, for two reasons specific to logos:
+
+- **Lossless.** `optimise-assets` encodes at WebP q78 / AVIF q55, which is
+  right for photographs and wrong for flat-colour vector art — lossy
+  compression rings every letter edge, and it shows most at navbar sizes. The
+  lockup is encoded lossless; it is 4.2KB either way.
+- **Trimming.** The source PNG carries transparent padding, which eats the
+  height budget and makes the artwork render smaller than its box.
+
+`Logo.tsx` passes `unoptimized` deliberately — letting next/image re-encode an
+already-lossless 4.2KB file would run it back through a lossy pass at q75. This
+is the rare case where the optimiser makes things worse.
+
+The footer uses a separate reversed asset, not a CSS filter: the wordmark is
+dark blue and "BIOLOGICS" is black, so on ab-tank the original disappears.
+`prepare-brand.mjs` knocks it out to ab-milk from the alpha channel.
+
+---
+
 ## Leadership portraits
 
 The two founder portraits are built by `npm run prepare-portraits`, not by

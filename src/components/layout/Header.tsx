@@ -150,7 +150,10 @@ export function Header() {
             className="shrink-0"
             aria-label="ABsource Biologics — home"
           >
-            <Logo className="h-8 w-auto" />
+            {/* 36px on mobile, 44px from md. Below about 32px the letterspaced
+                "BIOLOGICS" line stops resolving; above 44px the lockup starts
+                crowding the quote button on a 390px screen. */}
+            <Logo className="h-9 md:h-11" priority />
           </Link>
 
           <nav aria-label="Primary" className="hidden lg:block">
@@ -175,7 +178,13 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <ButtonLink href="/request-a-quote" className="hidden sm:inline-flex">
+            {/* `max-sm:hidden`, not `hidden sm:inline-flex`. ButtonLink's own
+                base class sets `inline-flex`, and an unprefixed `hidden` from
+                a caller sits in the same Tailwind display group — so it lost
+                the cascade and the button rendered on phones anyway, wrapping
+                onto two lines beside the logo. The mobile nav already pins
+                this CTA to the bottom of its overlay. */}
+            <ButtonLink href="/request-a-quote" className="max-sm:hidden">
               Request a quote
             </ButtonLink>
             <MobileNav />

@@ -71,9 +71,13 @@ fetch script if you need them back.
   sampled and the tokens adjusted. `brand/logo.webp` is now available — sample
   it, adjust `src/app/globals.css`, and re-run `node scripts/check-contrast.mjs`.
 
-- **Logo.** `src/components/layout/Logo.tsx` still renders a typographic
-  wordmark rather than the real mark, which is now at
-  `public/assets/brand/logo.webp`. Header and Footer both read from it.
+- **Logo resolution is capped by the source.** The real lockup now ships in the
+  header and footer, built by `npm run prepare-brand`. The largest artwork the
+  live site holds is 601x206 (`full` size, with no unscaled original behind
+  it), trimmed to 550x179 — enough for about 4x at the sizes the navbar uses,
+  so this is not urgent. But **a vector original would be better**: ask the
+  client for the AI/EPS/SVG. It would also let the footer knockout keep the
+  mark's red arcs, which the raster alpha-channel knockout cannot.
 
 ---
 

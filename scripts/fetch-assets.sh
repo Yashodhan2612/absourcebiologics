@@ -53,9 +53,14 @@ fetch_list() {
   done
 }
 
+# The logo is NOT fetched here. It needs trimming and lossless encoding, and
+# optimise-assets would re-encode it lossily — see scripts/prepare-brand.mjs:
+#
+#   node scripts/prepare-brand.mjs
+#
+# Only the square mark comes through the normal path.
 echo "Brand"
 fetch_list <<EOF
-$BASE/2020/12/Artboard-1.png            brand/logo.png
 $BASE/2020/12/Artboard-1-1-300x300.png  brand/mark.png
 EOF
 

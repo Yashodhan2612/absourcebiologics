@@ -11,7 +11,7 @@ export function Footer() {
       <div className="container-ab py-20">
         <div className="grid gap-14 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-20">
           <div className="flex flex-col gap-6">
-            <Logo tone="reversed" className="h-8" />
+            <Logo tone="reversed" className="h-11" />
             <p className="max-w-xs text-[0.9375rem] leading-[1.6] text-ab-tank-300">
               {positioning.claim}
             </p>

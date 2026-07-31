@@ -28,6 +28,13 @@ const SIZES: Record<Size, string> = {
   lg: "px-7 py-3.5 text-base",
 };
 
+/**
+ * NOTE: BASE sets `inline-flex`. A caller passing a bare `hidden` will NOT
+ * hide the button — both are display utilities in the same Tailwind group, so
+ * the one emitted later wins and that is `inline-flex`. Use a breakpoint
+ * variant such as `max-sm:hidden`, which carries a media query and therefore
+ * takes precedence.
+ */
 const BASE =
   "inline-flex items-center justify-center gap-2 rounded-ab font-medium " +
   "transition-colors duration-150 ease-ab no-underline text-center " +

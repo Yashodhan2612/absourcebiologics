@@ -46,9 +46,24 @@ const PORTRAITS = [
      * photograph of him in the site's media library, and the trade-show
      * backdrop is at least on-message for an export-facing company.
      */
-    url: "https://absourcebiologics.com/wp-content/uploads/2026/06/20220828_175137-scaled.jpg",
-    file: "20220828_175137-scaled.jpg",
-    crop: { left: 833, top: 640, width: 937, height: 1250 },
+    url: "https://absourcebiologics.com/wp-content/uploads/2026/06/20220828_175137.jpg",
+    file: "20220828_175137.jpg",
+    /**
+     * Cropped to head-and-torso, not full body.
+     *
+     * He is standing at a distance in this photograph, so a full-body crop put
+     * him visibly further from the camera than Mr Sonavane's waist-up desk
+     * portrait beside him — the two read as different distances and the pair
+     * looked lopsided. This crop puts his head at ~17% of the frame against
+     * Sonavane's ~20%, which is close enough that they read as matched.
+     *
+     * Cropping this tight is only possible because this pulls the UNSCALED
+     * 4032x3024 original rather than WordPress's 2560px `-scaled` derivative.
+     * At 2560 the same framing would have meant upscaling; at 4032 it is a 1:1
+     * native crop with no resampling at all. If you ever point this back at a
+     * `-scaled` URL, the framing and the sharpness both go.
+     */
+    crop: { left: 1707, top: 1143, width: 672, height: 896 },
   },
   {
     slug: "jagannath-sonavane",
