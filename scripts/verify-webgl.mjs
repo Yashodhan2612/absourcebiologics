@@ -12,15 +12,15 @@
  *
  * Env: BASE, TIER, WIDTH.
  *
- * Headless Chromium needs SwiftShader to expose WebGL2 and EXT_color_buffer_
- * float. That is a software rasteriser, so the framerate reported here is a
- * floor, not a prediction for real hardware — treat it as "does it run", and
- * measure real devices with ?debug=perf.
+ * Headless Chromium needs SwiftShader to expose WebGL2. That is a software
+ * rasteriser, so the framerate reported here is a floor, not a prediction for
+ * real hardware — treat it as "does it run", and measure real devices with
+ * ?debug=perf.
  */
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 
-const BASE = process.env.BASE ?? "http://localhost:3300";
+const BASE = process.env.BASE ?? "http://localhost:3330";
 const TIER = process.env.TIER ?? "3";
 const WIDTH = Number(process.env.WIDTH ?? 1440);
 const outDir = ".screens/webgl";
@@ -55,12 +55,12 @@ const capabilities = await page.evaluate(() => {
   const gl = document.createElement("canvas").getContext("webgl2");
   return {
     webgl2: !!gl,
-    colorBufferFloat: gl ? !!gl.getExtension("EXT_color_buffer_float") : false,
+    instancing: gl ? typeof gl.drawArraysInstanced === "function" : false,
   };
 });
 console.log("  capabilities:", capabilities);
 
-// Give the deferred mount its idle callback plus the simulation warm-up.
+// Give the canvas time to mount and the formation sweep time to finish.
 await page.waitForTimeout(4000);
 
 const heroState = await page.evaluate(() => ({

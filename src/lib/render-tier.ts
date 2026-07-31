@@ -7,9 +7,10 @@
  * office on a throttled connection. A hero that takes six seconds to appear
  * loses the sale before the copy is read.
  *
- *   Tier 3 — Full      every moment, 512² simulation, DPR <= 1.75
- *   Tier 2 — Reduced   hero culture field only, 256², DPR 1, no pinning
- *   Tier 1 — Static    zero WebGL, posters only, no parallax, no Lenis
+ *   Tier 3 — Full      every moment, 13 chains, DPR <= 1.75
+ *   Tier 2 — Reduced   hero field only, 7 chains, DPR 1, no pinning,
+ *                      flat pack shots instead of the sachet model
+ *   Tier 1 — Static    zero WebGL, poster only, no parallax, no Lenis
  *
  * Tier 1 is not a failure state. The whole site is designed to be finished and
  * good with every canvas gone — see the honesty check in Section 7A.9, and
@@ -163,17 +164,13 @@ export function detectRenderTier(): Promise<RenderTier> {
   return cached;
 }
 
-/** Simulation grid resolution for the Gray-Scott field, by tier. */
-export function simulationSize(tier: RenderTier): number {
-  return tier >= 3 ? 512 : 256;
-}
-
-/** Fixed simulation rate, decoupled from render framerate, by tier. */
-export function simulationStepsPerSecond(tier: RenderTier): number {
-  return tier >= 3 ? 30 : 20;
-}
-
-/** Device pixel ratio ceiling, by tier. */
+/**
+ * Device pixel ratio ceiling, by tier.
+ *
+ * The grid-resolution and step-rate helpers that used to live here went with
+ * the Gray-Scott field. The Streptococcus field has no simulation grid — its
+ * per-tier cost is chain and bokeh counts, which strepLayout.ts owns.
+ */
 export function maxDpr(tier: RenderTier): number {
   return tier >= 3 ? 1.75 : 1;
 }

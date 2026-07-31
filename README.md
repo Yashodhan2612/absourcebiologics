@@ -193,14 +193,30 @@ phone in a plant office. Do not strip it.
 
 ### The moments
 
-- **Hero culture field** (`webgl/CultureField.tsx`) — a Gray-Scott
-  reaction-diffusion simulation seeded with thirteen colonies, one per DVS
-  culture line. Two things about it are load-bearing and easy to break:
-  the render targets must be `FloatType`, not `HalfFloatType` (half float
-  cannot resolve a ~1e-4 increment against a value near 1.0, and the reaction
-  silently freezes into thirteen inert rings); and feed/kill are sensitive to
-  the third decimal place. Run `node scripts/generate-posters.mjs --explore`
-  and look at the contact sheet before changing either.
+- **Hero Streptococcus field** (`webgl/CultureField.tsx`, laid out by
+  `webgl/strepLayout.ts`) — thirteen chains of ovoid cocci, one per DVS culture
+  line, that lay themselves down cell by cell in a left-to-right sweep on load
+  and then drift. No pointer interaction, by request.
+
+  This replaced a Gray-Scott reaction-diffusion field. Gray-Scott is genuinely
+  what colonies spreading on an agar plate look like, but its signature is
+  *mycelial branching* and ABsource's own people read it as a fungus — which a
+  dairy starter culture company cannot have on its homepage. Streptococcus
+  thermophilus is in almost every dahi and yoghurt starter they make, so the
+  morphology is now both correct and unambiguous.
+
+  Cells are instanced ellipsoid impostors: one camera-facing quad each, with
+  the sphere normal reconstructed analytically in the fragment stage. One draw
+  call for the whole field, and depth of field falls out for free rather than
+  needing a postprocessing pass.
+
+  `strepLayout.ts` is imported by BOTH the component and the poster script, so
+  they cannot drift apart — do not duplicate it. Things that are load-bearing
+  and easy to break: cell radius (too small and the chains read as beaded
+  jewellery), chain angle and curve amplitude (too much of either and the
+  in-focus chains climb out of frame, leaving only blurred ones visible), and
+  the frame-delta clamp in `CultureField.tsx` (set it near a plausible frame
+  time and the animation runs in slow motion on slow devices).
 - **Milk to curd** (`sections/MilkToCurdSection.tsx`) — the site's only pinned
   section, and the pinning budget is two. It pins for exactly 100vh, never
   below 768px, never at tier 1.
@@ -235,13 +251,27 @@ and `Failed to execute 'removeChild' on 'Node'`:
 
 ```bash
 npm run build                              # let it finish; do not pipe it
-npm start -- -p 3310                       # NOT while `next dev` is running
+npm start -- -p 3330                       # NOT while `next dev` is running
 
 node scripts/verify-navigation.mjs         # every route + every legacy 301
-node scripts/verify-webgl.mjs              # tier 3: canvas sizes, CLS, captures
-TIER=1 node scripts/verify-webgl.mjs       # the honesty check
-BASE=http://localhost:3310 TIER1=1 node scripts/shoot.mjs tier1 / /products
+node scripts/verify-hero.mjs               # hero formation + copy contrast
+TIER=1 node scripts/verify-hero.mjs        # the same against the static poster
+node scripts/verify-webgl.mjs              # canvas sizes, CLS, captures
+node scripts/generate-posters.mjs          # re-render the tier-1 poster
+BASE=http://localhost:3330 TIER1=1 node scripts/shoot.mjs tier1 / /products
 ```
+
+`verify-hero.mjs` measures the hero copy's contrast against the field by
+screenshotting the page twice — once with the copy hidden — and sampling the
+real composited pixels. Do not be tempted to read the canvas back with
+`gl.readPixels` instead: without `preserveDrawingBuffer` the buffer is empty by
+the time you ask, and you silently measure flat ab-milk and get a reassuring
+number that means nothing. That mistake is why the first version of this check
+reported an identical figure on every viewport.
+
+Note that these scripts run against SwiftShader, which renders the hero at a
+few frames a second. "Settled" therefore needs real wall-clock patience in the
+harness; on hardware the formation completes in about three seconds.
 
 Two traps worth knowing, because both produce the same "client-side exception"
 symptom as a real bug and send you hunting for one that is not there:

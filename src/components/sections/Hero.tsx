@@ -6,19 +6,19 @@ import { positioning } from "@/content/company";
 /**
  * Homepage hero.
  *
- * The headline is the LCP element by design — it is server-rendered text with
- * no image or canvas behind it in the critical path. The background starts as
- * an inline SVG colony field (no network request at all); the WebGL Gray-Scott
- * culture field cross-dissolves over it once the browser is idle, and only at
- * tier 2 and above. A canvas must never become the LCP element (Section 7A.1).
+ * The headline is the LCP element by design — server-rendered text with no
+ * image or canvas behind it in the critical path. At tier 2 and above the
+ * background is empty ab-milk until the canvas mounts, and the Streptococcus
+ * chains then form onto it; tier 1 gets a static poster instead. A canvas must
+ * never become the LCP element (Section 7A.1).
  *
- * The background is seeded with the thirteen strain codes — one per DVS
- * culture line — which is the same seeding the Gray-Scott simulation uses.
- * That is not decorative trivia; keep it if you edit this.
+ * Thirteen chains, one per DVS culture line — the same motif the StrainIndex
+ * rail carries. That is not decorative trivia; keep it if you edit this.
  *
- * Contrast: the plate draws in ab-tank at low opacity over ab-chill, and the
- * headline sits on an ab-milk scrim, so ab-ink text clears 4.5:1 at every
- * point regardless of which colonies land behind it.
+ * Contrast: the scrim below is the only thing keeping saturated magenta from
+ * sitting under body copy, so it is load-bearing rather than decorative.
+ * `node scripts/verify-hero.mjs` measures it against the real composited
+ * frame at both desktop and phone widths. Run it if you touch the gradient.
  */
 export function Hero() {
   return (
@@ -27,10 +27,16 @@ export function Hero() {
           so nothing reflows when the canvas mounts later (CLS < 0.05). */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <CultureFieldMount />
-        {/* Scrim: guarantees headline contrast over any part of the field, at
-            every point in the simulation. The right edge stays open at 55% so
-            the colonies are actually visible where there is no copy. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-ab-milk from-25% via-ab-milk/90 via-55% to-ab-milk/25" />
+        {/* Scrim. Solid ab-milk under the headline, opening up on the right so
+            the chains are actually visible where there is no copy to protect.
+
+            Held much stronger on mobile: the headline runs nearly the full
+            width there, so a gradient tuned for a desktop two-column
+            composition would put body copy straight over saturated magenta. */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-ab-milk from-30% via-ab-milk/92 via-66% to-ab-milk/30
+                     md:from-20% md:via-ab-milk/90 md:via-56% md:to-ab-milk/5"
+        />
       </div>
 
       <div className="container-ab">

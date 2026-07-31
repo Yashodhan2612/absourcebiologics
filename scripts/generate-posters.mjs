@@ -1,169 +1,153 @@
 /**
- * Pre-render the hero culture field for tier 1 (Section 7A.3).
+ * Pre-render the hero's Streptococcus field for tier 1.
  *
- * Tier 1 devices — reduced motion, save-data, 2G/3G, no WebGL2 — never load the
- * simulation, so they need a still of the same field the GPU would have drawn.
- * This runs the identical Gray-Scott system on the CPU, seeded with the same
- * thirteen colonies, and writes it out as AVIF.
+ * Tier 1 devices — reduced motion, save-data, 2G/3G, no WebGL2 — never load
+ * the canvas, so they need a still of the same field. This imports the exact
+ * layout module the shader uses (Node 24 strips the types on import) and
+ * rasterises it with the same lighting maths, so the two cannot drift apart.
  *
- *   node scripts/generate-posters.mjs              # write the poster
- *   node scripts/generate-posters.mjs --explore    # parameter contact sheet
+ *   node scripts/generate-posters.mjs
  *
- * `--explore` is why this exists in the form it does. Gray-Scott's behaviour is
- * extremely sensitive to feed/kill, and the difference between "thirteen inert
- * rings" and "colonies branching across a plate" is a third decimal place. Look
- * at the contact sheet rather than guessing; the values in CultureField.tsx
- * were chosen from it.
- *
- * The seed positions here MUST stay in step with seedFragmentShader in
- * src/components/webgl/shaders/grayScott.ts. If the two drift, the poster stops
- * matching what tier 2+ actually shows and the cross-dissolve visibly jumps.
+ * Requires Node 22.6+ for native TypeScript import. On older Node this fails
+ * with ERR_UNKNOWN_FILE_EXTENSION; upgrade rather than duplicating the layout.
  */
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
+import {
+  buildStrepField,
+  CELL_DEEP,
+  CELL_RIM,
+} from "../src/components/webgl/strepLayout.ts";
 
-/** Thirteen seeds, one per DVS culture line. Mirrors the GLSL seed pass. */
-const SEEDS = [
-  [0.18, 0.72], [0.31, 0.41], [0.47, 0.79], [0.62, 0.33], [0.74, 0.62],
-  [0.86, 0.28], [0.12, 0.24], [0.55, 0.57], [0.92, 0.71], [0.39, 0.17],
-  [0.68, 0.88], [0.26, 0.92], [0.81, 0.48],
-];
-
-const DA = 1.0;
-const DB = 0.5;
-const DT = 1.0;
-
-/** Brand palette, sRGB. ab-ghee never appears here (Section 16). */
+const WIDTH = 1600;
+const HEIGHT = 900;
+/** Page background, ab-milk, sRGB 0-255. */
 const MILK = [0xfb, 0xfa, 0xf7];
-const CHILL = [0xdc, 0xe7, 0xe7];
-const TANK = [0x0b, 0x3b, 0x3c];
 
-function smoothstep(edge0, edge1, x) {
-  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+const aspect = WIDTH / HEIGHT;
+/** World half-height is 1 by convention, so this is the world-to-pixel scale. */
+const SCALE = HEIGHT / 2;
+
+const { instances } = buildStrepField({ aspect, tier: 3 });
+
+// Float accumulation buffer, so hundreds of overlapping translucent cells
+// composite without the rounding drift an 8-bit buffer would accumulate.
+const buffer = new Float32Array(WIDTH * HEIGHT * 3);
+for (let i = 0; i < WIDTH * HEIGHT; i++) {
+  buffer[i * 3] = MILK[0] / 255;
+  buffer[i * 3 + 1] = MILK[1] / 255;
+  buffer[i * 3 + 2] = MILK[2] / 255;
+}
+
+const L = (() => {
+  const v = [-0.42, 0.58, 0.7];
+  const len = Math.hypot(...v);
+  return v.map((n) => n / len);
+})();
+const H = (() => {
+  const v = [L[0], L[1], L[2] + 1];
+  const len = Math.hypot(...v);
+  return v.map((n) => n / len);
+})();
+
+const mix = (a, b, t) => a + (b - a) * t;
+const smoothstep = (e0, e1, x) => {
+  const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
   return t * t * (3 - 2 * t);
+};
+
+/** Mirrors strepFragmentShader. Keep the two in step. */
+function shade(qx, qy, color, blur) {
+  const r = Math.hypot(qx, qy);
+  if (r > 1) return null;
+
+  const z = Math.sqrt(Math.max(0, 1 - r * r));
+  const inv = 1 / Math.hypot(qx, qy, z);
+  const n = [qx * inv, qy * inv, z * inv];
+
+  const diff = Math.max(0, n[0] * L[0] + n[1] * L[1] + n[2] * L[2]);
+  const edgeDepth = Math.pow(1 - z, 1.9);
+  const spec = Math.pow(Math.max(0, n[0] * H[0] + n[1] * H[1] + n[2] * H[2]), 11);
+
+  const out = [0, 0, 0];
+  for (let c = 0; c < 3; c++) {
+    let v = mix(CELL_DEEP[c], color[c], Math.pow(diff, 0.8));
+    v = mix(v, CELL_DEEP[c], edgeDepth * 0.5);
+    v += CELL_RIM[c] * spec * 0.42;
+    v = mix(v, color[c], blur * 0.88);
+    out[c] = v;
+  }
+
+  const edge = mix(0.07, 0.92, blur);
+  const alpha = 1 - smoothstep(1 - edge, 1, r);
+  return { color: out, alpha };
 }
 
-function simulate({ size, steps, feed, kill }) {
-  const n = size * size;
-  let a = new Float32Array(n).fill(1);
-  let b = new Float32Array(n);
-  let a2 = new Float32Array(n);
-  let b2 = new Float32Array(n);
+/**
+ * Positions are taken at t = 0 with growth complete. The poster is the settled
+ * state of the field, which is what a tier-1 reader should see — they get no
+ * formation animation, so showing a half-built chain would just look broken.
+ */
+for (const it of instances) {
+  const nrm = [-it.dy, it.dx];
 
-  const seedRadius = 0.045 * size;
-  for (const [sx, sy] of SEEDS) {
-    const cx = sx * size;
-    const cy = (1 - sy) * size;
-    const r = Math.ceil(seedRadius);
-    for (let y = -r; y <= r; y++) {
-      for (let x = -r; x <= r; x++) {
-        const px = Math.round(cx + x);
-        const py = Math.round(cy + y);
-        if (px < 0 || px >= size || py < 0 || py >= size) continue;
-        const d = Math.hypot(x, y) / size;
-        const v = smoothstep(0.045, 0.008, d);
-        const i = py * size + px;
-        b[i] = Math.min(1, b[i] + v);
+  // Mirrors strepVertexShader: the chain's static bend plus the sway at t = 0.
+  const bend = Math.sin(it.along * it.curveFreq + it.curvePhase) * it.curveAmp;
+  const sway = Math.sin(it.along * it.waveFreq + it.wavePhase) * it.waveAmp;
+  const off = bend + sway;
+
+  const wx = it.ox + it.dx * it.along + nrm[0] * off;
+  const wy = it.oy + it.dy * it.along + nrm[1] * off;
+
+  const cx = (wx / aspect) * (WIDTH / 2) + WIDTH / 2;
+  const cy = HEIGHT / 2 - wy * SCALE;
+  const rx = it.rx * SCALE;
+  const ry = it.ry * SCALE;
+
+  // Orient to the tangent of the curved path, as the shader does.
+  const slope = Math.cos(it.along * it.curveFreq + it.curvePhase) * it.curveAmp * it.curveFreq;
+  const tlen = Math.hypot(it.dx + nrm[0] * slope, it.dy + nrm[1] * slope) || 1;
+  const ca = (it.dx + nrm[0] * slope) / tlen;
+  const sa = (it.dy + nrm[1] * slope) / tlen;
+  const reach = Math.ceil(Math.max(rx, ry)) + 2;
+
+  const x0 = Math.max(0, Math.floor(cx - reach));
+  const x1 = Math.min(WIDTH - 1, Math.ceil(cx + reach));
+  const y0 = Math.max(0, Math.floor(cy - reach));
+  const y1 = Math.min(HEIGHT - 1, Math.ceil(cy + reach));
+
+  for (let py = y0; py <= y1; py++) {
+    for (let px = x0; px <= x1; px++) {
+      const dx = px + 0.5 - cx;
+      // Screen y grows downward; world y grows upward.
+      const dy = -(py + 0.5 - cy);
+      const qx = (dx * ca + dy * sa) / rx;
+      const qy = (-dx * sa + dy * ca) / ry;
+
+      const sample = shade(qx, qy, it.color, it.blur);
+      if (!sample) continue;
+
+      const a = sample.alpha * it.alpha;
+      if (a <= 0.002) continue;
+
+      const i = (py * WIDTH + px) * 3;
+      for (let c = 0; c < 3; c++) {
+        buffer[i + c] = mix(buffer[i + c], sample.color[c], a);
       }
     }
   }
-
-  // Wrapped neighbour offsets, matching the GPU pass's repeat sampling.
-  const wrap = (v) => (v + size) % size;
-
-  for (let step = 0; step < steps; step++) {
-    for (let y = 0; y < size; y++) {
-      const yUp = wrap(y - 1) * size;
-      const yDn = wrap(y + 1) * size;
-      const yMid = y * size;
-      for (let x = 0; x < size; x++) {
-        const xL = wrap(x - 1);
-        const xR = wrap(x + 1);
-        const i = yMid + x;
-
-        const lapA =
-          0.2 * (a[yMid + xL] + a[yMid + xR] + a[yUp + x] + a[yDn + x]) +
-          0.05 * (a[yUp + xL] + a[yUp + xR] + a[yDn + xL] + a[yDn + xR]) -
-          a[i];
-        const lapB =
-          0.2 * (b[yMid + xL] + b[yMid + xR] + b[yUp + x] + b[yDn + x]) +
-          0.05 * (b[yUp + xL] + b[yUp + xR] + b[yDn + xL] + b[yDn + xR]) -
-          b[i];
-
-        const reaction = a[i] * b[i] * b[i];
-        a2[i] = Math.min(1, Math.max(0, a[i] + (DA * lapA - reaction + feed * (1 - a[i])) * DT));
-        b2[i] = Math.min(1, Math.max(0, b[i] + (DB * lapB + reaction - (kill + feed) * b[i]) * DT));
-      }
-    }
-    [a, a2] = [a2, a];
-    [b, b2] = [b2, b];
-  }
-
-  return b;
 }
 
-/** Display pass, mirroring displayFragmentShader. */
-function colourise(field, size, ink) {
-  const rgb = Buffer.alloc(size * size * 3);
-  for (let i = 0; i < field.length; i++) {
-    const v = field[i];
-    const t1 = smoothstep(0.04, 0.18, v);
-    const t2 = smoothstep(0.16, 0.42, v) * ink;
-    const edge = smoothstep(0.2, 0.26, v) * (1 - smoothstep(0.3, 0.38, v)) * 0.14;
-    for (let c = 0; c < 3; c++) {
-      let value = MILK[c] + (CHILL[c] - MILK[c]) * t1;
-      value = value + (TANK[c] - value) * t2;
-      value = value + (MILK[c] - value) * edge;
-      rgb[i * 3 + c] = Math.round(value);
-    }
-  }
-  return rgb;
+const rgb = Buffer.alloc(WIDTH * HEIGHT * 3);
+for (let i = 0; i < buffer.length; i++) {
+  rgb[i] = Math.round(Math.min(1, Math.max(0, buffer[i])) * 255);
 }
-
-async function write(field, size, out, ink = 0.85) {
-  const rgb = colourise(field, size, ink);
-  await sharp(rgb, { raw: { width: size, height: size, channels: 3 } })
-    .resize(1600, 900, { fit: "fill" })
-    .toFile(out);
-  console.log(`  wrote ${out}`);
-}
-
-const explore = process.argv.includes("--explore");
 
 await mkdir("public/assets/webgl", { recursive: true });
+await sharp(rgb, { raw: { width: WIDTH, height: HEIGHT, channels: 3 } })
+  .avif({ quality: 62 })
+  .toFile("public/assets/webgl/culture-field-poster.avif");
 
-if (explore) {
-  await mkdir("/tmp/ab-gs", { recursive: true });
-  const grid = [
-    { feed: 0.037, kill: 0.06 },
-    { feed: 0.042, kill: 0.059 },
-    { feed: 0.046, kill: 0.062 },
-    { feed: 0.055, kill: 0.062 },
-    { feed: 0.058, kill: 0.065 },
-    { feed: 0.03, kill: 0.057 },
-  ];
-  for (const { feed, kill } of grid) {
-    for (const steps of [2000, 6000]) {
-      const field = simulate({ size: 220, steps, feed, kill });
-      await write(field, 220, `/tmp/ab-gs/f${feed}-k${kill}-s${steps}.png`);
-    }
-  }
-  console.log("Contact sheet in /tmp/ab-gs — look at it before changing the shader.");
-} else {
-  // Keep in step with FEED_REST / KILL / INK_CEILING in CultureField.tsx.
-  const FEED = Number(process.env.AB_FEED ?? 0.046);
-  const KILL = Number(process.env.AB_KILL ?? 0.062);
-  /**
-   * 7000 steps is the state a visitor actually sees a few seconds after the
-   * canvas mounts: colonies have merged into a network with a visible growth
-   * front, and the plate is not yet fully colonised. Matching that matters —
-   * the poster cross-dissolves into the live field, and a poster rendered at
-   * the mature state (~16000 steps, a dense uniform labyrinth) makes the
-   * dissolve read as a jump cut.
-   */
-  const STEPS = Number(process.env.AB_STEPS ?? 7000);
-
-  console.log(`Simulating 512² for ${STEPS} steps (feed ${FEED}, kill ${KILL})…`);
-  const field = simulate({ size: 512, steps: STEPS, feed: FEED, kill: KILL });
-  await write(field, 512, "public/assets/webgl/culture-field-poster.avif");
-}
+console.log(
+  `Rasterised ${instances.length} cells -> public/assets/webgl/culture-field-poster.avif`
+);

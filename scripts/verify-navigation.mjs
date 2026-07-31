@@ -11,14 +11,14 @@
  * are easy to undo by accident, so this guards them.
  *
  *   node scripts/verify-navigation.mjs
- *   BASE=http://localhost:3310 node scripts/verify-navigation.mjs
+ *   BASE=http://localhost:3330 node scripts/verify-navigation.mjs
  *
  * It walks home -> route -> back for every page, exercises browser history,
  * and checks that every legacy 301 in next.config.ts still lands.
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.BASE ?? "http://localhost:3310";
+const BASE = process.env.BASE ?? "http://localhost:3330";
 
 const ROUTES = [
   "/solutions",

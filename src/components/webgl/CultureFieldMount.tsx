@@ -3,21 +3,32 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useDeferredMount, useRenderTier } from "@/components/motion/useRenderTier";
+import { useRenderTier } from "@/components/motion/useRenderTier";
 import { isPerfDebug } from "@/lib/render-tier";
 
 /**
- * The boundary between the static hero and the WebGL culture field
- * (Sections 7A.1 and 7A.3).
+ * The boundary between the static hero and the Streptococcus field.
  *
  * Everything three-related sits behind this dynamic import, so the initial
- * bundle never carries it. The poster ships in the server-rendered HTML and
- * carries the page on its own; the canvas cross-dissolves over it in 400ms
- * once the browser is idle, so there is no visible pop and nothing reflows.
+ * bundle never carries it. The canvas is absolutely positioned inside a
+ * container the hero already sizes, so mounting it cannot shift a pixel of
+ * layout (CLS < 0.05).
  *
- * The canvas is absolutely positioned inside a container the hero already
- * sizes, so mounting it cannot shift a single pixel of layout (CLS < 0.05).
- * The headline is the LCP element and this never competes for that.
+ * NO CROSS-DISSOLVE FROM A POSTER, and that is a deliberate reversal of what
+ * this component used to do. The hero's whole point is now that the chains lay
+ * themselves down as the page loads. Showing a poster of fully-formed chains
+ * first and then playing the formation would mean the reader watches the
+ * chains appear, vanish, and appear again — the animation would read as a
+ * glitch. So:
+ *
+ *   tier 1        -> the poster, formed and static. Nothing else is available
+ *                    to it, and it has to look finished on its own.
+ *   tier 2 and 3  -> no poster at all. Flat ab-milk until the canvas mounts,
+ *                    then the chains form onto it.
+ *
+ * That also drops a 38KB image request for everyone who gets the canvas, and
+ * makes the server-rendered headline the LCP element by construction — which
+ * is what Section 7A.1 wanted in the first place.
  */
 const CultureField = dynamic(() => import("./CultureField"), {
   ssr: false,
@@ -26,64 +37,39 @@ const CultureField = dynamic(() => import("./CultureField"), {
 
 export function CultureFieldMount() {
   const tier = useRenderTier();
-  // Tier 1 never loads the chunk at all — no point paying for the request.
-  const idle = useDeferredMount(tier !== null && tier > 1);
   const [lost, setLost] = useState(false);
-  const [painted, setPainted] = useState(false);
   // isPerfDebug() reads window.location, so it cannot be evaluated during the
-  // server render or during the first client render without a hydration
-  // mismatch. Resolving it in an effect keeps both trees identical.
+  // server render or the first client render without a hydration mismatch.
   const [perfDebug, setPerfDebug] = useState(false);
-
-  const active = tier !== null && tier > 1 && idle && !lost;
 
   useEffect(() => setPerfDebug(isPerfDebug()), []);
 
-  // The canvas needs a frame or two to seed and warm up. Fading it in on the
-  // next tick rather than on mount avoids a flash of empty ab-milk between the
-  // poster going quiet and the field arriving.
-  useEffect(() => {
-    if (!active) {
-      setPainted(false);
-      return;
-    }
-    const timer = window.setTimeout(() => setPainted(true), 120);
-    return () => window.clearTimeout(timer);
-  }, [active]);
+  const canvas = tier !== null && tier > 1 && !lost;
+  const poster = tier === 1 || lost;
 
   return (
     <div className="absolute inset-0">
-      {/* Poster. A pre-rendered still of this exact simulation, produced by
-          scripts/generate-posters.mjs from the same thirteen colony seeds and
-          the same feed/kill rates. This is what tier 1 sees, and it is what
-          the page must look finished with — run `?tier=1` and check.
-
-          It carries LCP (Section 7A.8), hence `priority`. The canvas never
-          does. 38KB of AVIF stretched exactly as the display shader stretches
-          the simulation texture, so the cross-dissolve has nothing to give
-          away. */}
-      <div
-        className="absolute inset-0 transition-opacity duration-[400ms] ease-ab motion-reduce:transition-none"
-        style={{ opacity: painted ? 0 : 1 }}
-      >
+      {poster ? (
+        /*
+         * Held back on narrow viewports. The canvas rebuilds its layout from
+         * the viewport aspect, so a phone gets shorter chains and smaller
+         * cells; the poster is a fixed 16:9 crop and cannot, so object-cover
+         * scales it up and drops large saturated cells behind the eyebrow.
+         * Measured at 4.32:1 there against a 4.5:1 requirement. Fading towards
+         * the ab-milk section background underneath is the cheapest correct
+         * fix — no second asset, no second request.
+         */
         <Image
           src="/assets/webgl/culture-field-poster.avif"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover opacity-55 md:opacity-100"
         />
-      </div>
-
-      {active ? (
-        <div
-          className="absolute inset-0 transition-opacity duration-[400ms] ease-ab"
-          style={{ opacity: painted ? 1 : 0 }}
-        >
-          <CultureField tier={tier} onContextLost={() => setLost(true)} />
-        </div>
       ) : null}
+
+      {canvas ? <CultureField tier={tier} onContextLost={() => setLost(true)} /> : null}
 
       {perfDebug ? (
         <p className="mono-ab absolute bottom-3 right-3 z-10 bg-ab-ink/80 px-2 py-1 text-ab-milk">
