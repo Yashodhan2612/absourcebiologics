@@ -14,11 +14,19 @@ export function SolutionGrid() {
     <ul className="grid gap-px border border-ab-chill bg-ab-chill sm:grid-cols-2 lg:grid-cols-3">
       {solutions.map((solution, i) => (
         <Reveal as="li" key={solution.slug} delay={Math.min(i, 5) * 60}>
-          <CardLink href={`/solutions/${solution.slug}`} className="h-full border-0">
+          {/* flex-col on the link, flex-1 on the body. CardBody's h-full
+              resolved against the WHOLE card height rather than the space left
+              under CardMedia, so mt-auto could not bottom-align the "See
+              cultures" row and the body overflowed the card by the media
+              height. */}
+          <CardLink
+            href={`/solutions/${solution.slug}`}
+            className="flex h-full flex-col border-0"
+          >
             <CardMedia aspect="16/10">
               <SolutionMedia slug={solution.slug} />
             </CardMedia>
-            <CardBody className="flex h-full flex-col gap-3">
+            <CardBody className="flex flex-1 flex-col gap-3">
               <SolutionIcon slug={solution.slug} className="h-6 w-6 text-ab-tank" />
               <h3 className="text-[1.5rem] text-ab-ink">{solution.name}</h3>
               <p className="text-[0.9375rem] leading-[1.55] text-ab-ink-60">
@@ -33,7 +41,9 @@ export function SolutionGrid() {
       {/* Eight cards in a three-column grid leaves one cell empty. Filling it
           with the catalogue link is better than leaving a hole, and gives the
           grid a natural terminus. */}
-      <li className="bg-ab-white">
+      {/* Nine cells in a two-column grid leaves an orphan and a bare ab-chill
+          rectangle, so the terminus spans both columns there. */}
+      <li className="bg-ab-white sm:max-lg:col-span-2">
         <Link
           href="/products?category=cultures"
           className="group flex h-full flex-col justify-end gap-3 p-6 no-underline"
@@ -42,7 +52,7 @@ export function SolutionGrid() {
             Or start from the culture
           </span>
           <span className="text-[0.9375rem] leading-[1.55] text-ab-ink-60">
-            Thirteen DVS lines, filterable by application, culture type and format.
+            Every DVS line, filterable by application, culture type and format.
           </span>
           <span className="mono-ab pt-4 text-ab-tank">See the catalogue &rarr;</span>
         </Link>

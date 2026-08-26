@@ -5,9 +5,9 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { cultures } from "@/content/products";
 
 export const metadata = pageMetadata({
-  title: "Culture Selector — find your DVS starter | ABsource",
+  title: "Culture Selector — find your DVS starter",
   description:
-    "Answer eight questions and we narrow thirteen DVS culture lines to three, with the reasoning shown. No login, no gate on the result.",
+    "Answer a few questions and we narrow the DVS culture range to three, with the reasoning shown. No login, no gate on the result.",
   path: "/culture-selector",
 });
 
@@ -15,7 +15,7 @@ export const metadata = pageMetadata({
  * The Culture Selector page.
  *
  * The wizard itself is a client component because its state lives in URL
- * params, but the thirteen culture lines are rendered server-side below it so
+ * params, but the culture lines are rendered server-side below it so
  * that every SKU name and strain code is in the crawlable HTML regardless of
  * how far into the wizard a visitor gets.
  */
@@ -37,7 +37,7 @@ export default function CultureSelectorPage() {
               Find your culture.
             </h1>
             <p className="measure-ab mt-6 text-[1.25rem] leading-[1.5] text-ab-ink-60">
-              Eight questions, under a minute. We show the reasoning behind every match,
+              A few questions, under a minute. We show the reasoning behind every match,
               and we tell you when we are not confident enough to recommend anything.
             </p>
           </div>
@@ -54,12 +54,16 @@ export default function CultureSelectorPage() {
       <section className="border-t border-ab-chill py-16">
         <div className="container-ab">
           <h2 className="mono-ab mb-6 text-ab-ink-60">
-            The thirteen DVS culture lines
+            The DVS culture lines
           </h2>
           <ul className="flex flex-wrap gap-x-8 gap-y-2">
             {cultures.map((culture) => (
               <li key={culture.slug} className="text-[0.9375rem] text-ab-ink-60">
-                <span className="mono-ab text-ab-tank">{culture.strainCode}</span>{" "}
+                {culture.strainCode ? (
+                  <>
+                    <span className="mono-ab text-ab-tank">{culture.strainCode}</span>{" "}
+                  </>
+                ) : null}
                 {culture.name} &middot; {culture.summary}
               </li>
             ))}

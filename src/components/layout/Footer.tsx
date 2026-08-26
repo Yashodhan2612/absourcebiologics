@@ -11,7 +11,20 @@ export function Footer() {
       <div className="container-ab py-20">
         <div className="grid gap-14 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-20">
           <div className="flex flex-col gap-6">
-            <Logo tone="reversed" className="h-11" />
+            <Logo tone="reversed" className="h-10" />
+            {/*
+              positioning.claim contains the word "indigenous", and the footer
+              renders on every route — including /export and the product detail
+              pages, where self-reliance language is banned.
+
+              Kept deliberately. "Indigenous" here is a factual descriptor of
+              the manufacturer inside the canonical dated claim, not Make in
+              India rhetoric; the ban is aimed at national-pride argument, and
+              swapping it would remove the site's only canonical pioneer claim
+              from every page and reopen the wording drift this claim exists to
+              prevent. Do not re-litigate without deciding where the claim goes
+              instead.
+            */}
             <p className="max-w-xs text-[0.9375rem] leading-[1.6] text-ab-tank-300">
               {positioning.claim}
             </p>

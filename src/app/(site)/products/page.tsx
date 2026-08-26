@@ -8,15 +8,16 @@ import { PackShot } from "@/components/ui/PackShot";
 import { CTABand } from "@/components/sections/CTABand";
 import {
   products,
+  packArtworkNote,
   CATEGORY_LABELS,
   CULTURE_TYPE_LABELS,
 } from "@/content/products";
 import { solutions } from "@/content/solutions";
 
 export const metadata = pageMetadata({
-  title: "DVS cultures, dairy ingredients & taste makers | ABsource",
+  title: "DVS cultures, dairy ingredients & taste makers",
   description:
-    "Twenty-one SKUs: 13 DVS starter culture lines, 7 dairy ingredients and a taste maker. Filter by application, culture type and category.",
+    "Twenty-two SKUs across DVS starter cultures, dairy ingredients and taste makers. Filter by application, culture type and category.",
   path: "/products",
 });
 
@@ -74,7 +75,7 @@ export default async function ProductsPage({
             as="h1"
             eyebrow={`${products.length} SKUs`}
             title="The catalogue."
-            lede="Thirteen DVS culture lines, seven dairy ingredients and a taste maker. Every culture carries a strain code."
+            lede="Fourteen culture lines, seven dairy ingredients and a taste maker."
           />
         </div>
       </section>
@@ -146,6 +147,15 @@ export default async function ProductsPage({
               </div>
             </div>
           ) : (
+            <>
+            {/* Shown only while a culture is on screen. Filtering to
+                ingredients or taste makers shows real stand-up delivery packs,
+                where this note would be wrong. */}
+            {filtered.some((p) => p.category === "cultures" && p.image) ? (
+              <p className="measure-ab mt-6 border-t border-ab-chill pt-4 text-[0.875rem] leading-[1.55] text-ab-ink-60">
+                {packArtworkNote.catalogue}
+              </p>
+            ) : null}
             <ul className="mt-8 grid gap-px border border-ab-chill bg-ab-chill sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((product) => (
                 <li key={product.slug} className="bg-ab-white">
@@ -183,17 +193,18 @@ export default async function ProductsPage({
                 </li>
               ))}
             </ul>
+            </>
           )}
         </div>
       </section>
 
       <CTABand
         title="Not sure which SKU to trial?"
-        body="Answer eight questions and we will narrow the range to three, with the reasoning shown."
+        body="Answer a few questions and we will narrow the range to three, with the reasoning shown."
         href="/culture-selector"
         cta="Find your culture"
         secondaryHref="/request-a-quote"
-        secondaryCta="Request a sample"
+        secondaryCta="Send us your spec"
       />
     </>
   );

@@ -48,7 +48,7 @@ export function Logo({
       // `self-start` is not cosmetic. As a direct child of a flex column —
       // which is how the footer lays out — the default `align-items: stretch`
       // resolves `w-auto` to the container's full width and stretches the
-      // lockup to its container (320px wide against a 44px height, in the
+      // lockup to its container (320px wide against a 40px height, in the
       // footer's case). Pinning align-self stops any flex parent doing that.
       className={cn("w-auto self-start", className)}
     />

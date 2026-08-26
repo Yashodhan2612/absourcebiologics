@@ -18,19 +18,31 @@ export type SubmitState =
  *
  * `startedAt` is captured when the hook mounts and travels with the payload so
  * the server can reject sub-two-second submissions.
+ *
+ * The honeypot is read here rather than being left to each form. SpamTraps has
+ * always rendered the `companyWebsite` input, and /api/lead has always checked
+ * it, but nothing in between ever put its value in the payload — so the trap
+ * the schema documents at length silently caught nothing on any of these four
+ * forms. Pass the submitted form element and it fires.
  */
 export function useLeadSubmit<T extends Record<string, unknown>>(leadType: string) {
   const [state, setState] = useState<SubmitState>({ status: "idle" });
   const startedAt = useRef(Date.now());
 
   const submit = useCallback(
-    async (values: T) => {
+    async (values: T, form?: HTMLFormElement) => {
       setState({ status: "sending" });
+      const trap = form ? new FormData(form).get("companyWebsite") : null;
       try {
         const response = await fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...values, leadType, startedAt: startedAt.current }),
+          body: JSON.stringify({
+            ...values,
+            leadType,
+            startedAt: startedAt.current,
+            companyWebsite: typeof trap === "string" && trap ? trap : undefined,
+          }),
         });
         const data = (await response.json()) as {
           ok: boolean;

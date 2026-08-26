@@ -5,7 +5,7 @@ import { CTABand } from "@/components/sections/CTABand";
 import { services } from "@/content/services";
 
 export const metadata = pageMetadata({
-  title: "Services | Custom cultures, plant setup, testing",
+  title: "Custom cultures, plant setup and testing",
   description:
     "Custom culture development, turnkey dairy plant setup and microbiology testing — the work around the culture.",
   path: "/services",

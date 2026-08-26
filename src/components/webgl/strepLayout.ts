@@ -95,40 +95,62 @@ export type StrepField = {
 /**
  * Stain palette, sRGB 0-1.
  *
- * Taken from the client's reference image: a Gram-stained / false-colour SEM
- * magenta. This is deliberately outside the site palette — ab-tank, ab-chill,
- * ab-milk — and it is the one place on the site that is. It reads as a stain,
- * which is what it is, and the hero scrim keeps it away from the headline so
- * body contrast is unaffected.
+ * A Gram / crystal-violet purple. Deliberately outside the site palette —
+ * ab-tank, ab-chill, ab-milk — and the one place on the site that is. It reads
+ * as a stain, which is what it is, and the hero scrim keeps it off the
+ * headline so body contrast is unaffected.
+ *
+ * THESE NUMBERS ARE NOT ARBITRARY. Three properties are held at once, and a
+ * casual hue rotation breaks the third:
+ *
+ *  - Hue sits in 280-288 degrees. Below ~276 the cells go blue-violet and
+ *    start competing with the indigo bokeh; above ~292 they slide back to the
+ *    magenta this replaced.
+ *  - HSL saturation stays inside the previous range (67-75% against 67-81%),
+ *    so the field still reads as a stain rather than as a flat brand tint.
+ *  - WCAG relative luminance is matched swatch for swatch against the magenta
+ *    set it replaced. That is what protects the hero copy: the shader mixes in
+ *    LINEAR space, luminance is a linear functional, so matching every input's
+ *    luminance preserves the composited luminance at every blur band and under
+ *    every scrim stop.
+ *
+ * Purple is darker than magenta at equal RGB magnitudes — blue carries 0.0722
+ * of the luminance weight against red's 0.2126 — so these are deliberately
+ * brighter in aggregate to compensate. Rotate the hue without compensating and
+ * you darken the field and lose headline contrast. Re-run
+ * `node scripts/verify-hero.mjs` after any change here; it samples the real
+ * composited frame rather than trusting the tokens.
  */
 const CELL_COLORS: ReadonlyArray<readonly [number, number, number]> = [
-  [0.76, 0.10, 0.47], // core magenta
-  [0.84, 0.20, 0.53],
-  [0.66, 0.07, 0.40],
-  [0.88, 0.31, 0.60],
-  [0.71, 0.13, 0.51],
+  [0.64, 0.15, 0.81], // #A326CF  core purple
+  [0.73, 0.22, 0.86], // #BA38DB
+  [0.56, 0.10, 0.71], // #8F1AB5  deepest
+  [0.77, 0.33, 0.90], // #C454E6  lightest
+  [0.59, 0.16, 0.80], // #9629CC  bluest
 ];
 
 /**
  * Out-of-focus background blobs.
  *
  * Kept cool — violet, indigo, and the brand's own ab-tank — rather than
- * following the reference image's greens. Magenta plus green plus blue on a
+ * following the reference image's greens. Purple plus green plus blue on a
  * warm-white page turns into a rainbow and stops looking like microscopy.
  */
 const BOKEH_COLORS: ReadonlyArray<readonly [number, number, number]> = [
   [0.48, 0.29, 0.62], // violet
   [0.23, 0.25, 0.56], // indigo
   [0.04, 0.23, 0.24], // ab-tank
-  [0.60, 0.24, 0.52], // dusty magenta
+  [0.54, 0.26, 0.63], // #8A42A1 dusty plum
 ];
 
 const SWEEP_DURATION = 1.9;
 const GROW_DURATION = 0.55;
 
 /**
- * Thirteen chains at full tier — one per DVS culture line, the same motif the
- * StrainIndex rail carries. Not decorative trivia; keep it at thirteen.
+ * Thirteen chains at full tier — one per published strain code, the same motif
+ * the StrainIndex rail carries. Not decorative trivia. It tracks the rail
+ * rather than the catalogue: the range has fourteen culture lines, but
+ * ABFERMENTA has no published code yet.
  */
 const CHAINS_FULL = 13;
 const CHAINS_REDUCED = 7;
@@ -179,7 +201,7 @@ export function buildStrepField({
     // Depth band. Only a couple of chains are in focus; the rest fall away
     // fast. This is a BACKGROUND, and the balance matters more than it would
     // in a poster — a full-strength slide of chains behind a headline is a
-    // wall of magenta that competes with the copy instead of supporting it.
+    // wall of purple that competes with the copy instead of supporting it.
     // One or two sharp chains carry the read; everything else is atmosphere.
     // Deterministic band assignment rather than a random draw. With thirteen
     // chains and a random depth, a run can easily put every on-screen chain in
@@ -208,9 +230,9 @@ export function buildStrepField({
     // Centre the chain on the frame, then offset vertically into its band.
     // Thirteen chains spread well beyond the frame, so roughly five or six
     // are visible at any viewport. At the cell sizes below, putting all
-    // thirteen on screen would be a solid mat of magenta.
+    // thirteen on screen would be a solid mat of purple.
     // Spread past the frame so roughly six of the thirteen are on screen at
-    // once. All thirteen visible is a solid mat of magenta.
+    // once. All thirteen visible is a solid mat of purple.
     const chainY = (c / Math.max(1, chainCount - 1)) * 3.4 - 1.7 + (next() - 0.5) * 0.26;
     const ox = -(dx * chainLen) / 2;
     const oy = chainY - (dy * chainLen) / 2;
@@ -310,6 +332,6 @@ export function buildStrepField({
  * towards white instead, which put a halo around every cell and was most of
  * why they read as plastic beads.
  */
-export const CELL_DEEP: readonly [number, number, number] = [0.22, 0.02, 0.14];
+export const CELL_DEEP: readonly [number, number, number] = [0.18, 0.03, 0.24];
 /** Colour of the sheen. Broad and soft, not a tight plastic highlight. */
-export const CELL_RIM: readonly [number, number, number] = [1.0, 0.88, 0.95];
+export const CELL_RIM: readonly [number, number, number] = [0.97, 0.88, 1.0];

@@ -5,7 +5,7 @@
  * whole point of this background, and a single screenshot cannot show whether
  * it works, so this samples the sweep. It also measures the contrast of the
  * hero copy against the field, which matters because the field is a saturated
- * magenta sitting behind body text.
+ * purple sitting behind body text.
  *
  *   node scripts/verify-hero.mjs
  *   TIER=1 node scripts/verify-hero.mjs     # the static poster

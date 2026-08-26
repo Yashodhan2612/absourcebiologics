@@ -4,7 +4,7 @@ import { QuoteForm } from "@/components/forms/QuoteForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export const metadata = pageMetadata({
-  title: "Request a quote or a sample | ABsource Biologics",
+  title: "Request a quote or a sample",
   description:
     "Tell us what you are making, the texture and acidity you are targeting and your volumes. A technologist replies with a recommendation and a sample.",
   path: "/request-a-quote",

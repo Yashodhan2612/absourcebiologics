@@ -27,7 +27,7 @@ export function ContactForm() {
       successBody="Someone will reply directly. If it's urgent, the phone numbers above reach the office during working hours."
       onSubmit={(e) => {
         e.preventDefault();
-        void submit(values);
+        void submit(values, e.currentTarget);
       }}
     >
       <TextField

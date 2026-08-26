@@ -6,7 +6,7 @@ import { LazyMap } from "@/components/ui/LazyMap";
 import { company } from "@/content/company";
 
 export const metadata = pageMetadata({
-  title: "Contact ABsource Biologics, Pune",
+  title: "Contact us — Chinchwad, Pune",
   description:
     "Kinetic Innovation Park, MIDC Chinchwad, Pune 411019. info@absourcebiologics.com. +91 91686 96640.",
   path: "/contact",

@@ -5,7 +5,7 @@ import { CTABand } from "@/components/sections/CTABand";
 import { news } from "@/content/news";
 
 export const metadata = pageMetadata({
-  title: "News & events | ABsource Biologics",
+  title: "News & events",
   description:
     "Exhibitions, events and technical notes from ABsource Biologics, Pune.",
   path: "/news",
@@ -85,7 +85,7 @@ export default function NewsPage() {
       <CTABand
         title="Meeting us at a show?"
         body="Tell us what you are making and we will bring something relevant rather than a generic sample kit."
-        cta="Request a sample"
+        cta="Send us your spec"
       />
     </>
   );

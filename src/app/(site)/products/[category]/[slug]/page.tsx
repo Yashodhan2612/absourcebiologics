@@ -11,6 +11,7 @@ import { CTABand } from "@/components/sections/CTABand";
 import {
   products,
   productBySlug,
+  packArtworkNote,
   CATEGORY_LABELS,
   CULTURE_TYPE_LABELS,
 } from "@/content/products";
@@ -90,14 +91,29 @@ export default async function ProductPage({
       <section className="border-b border-ab-chill">
         <div className="container-ab">
           <div className="grid gap-12 py-16 md:py-24 lg:grid-cols-2 lg:gap-20">
-            <div className="relative aspect-[4/5] overflow-hidden border border-ab-chill">
-              <SachetMount
-                image={product.image}
-                name={product.name}
-                slug={product.slug}
-                strainCode={product.strainCode ?? undefined}
-                category={product.category}
-              />
+            <div>
+              <div className="relative aspect-[4/5] overflow-hidden border border-ab-chill">
+                <SachetMount
+                  image={product.image}
+                  name={product.name}
+                  slug={product.slug}
+                  strainCode={product.strainCode ?? undefined}
+                  category={product.category}
+                />
+              </div>
+
+              {/* The most important placement of this note on the site: it sits
+                  directly under the image that misleads, and at tier 3 that
+                  well holds a turnable 3D model, which reads even more
+                  strongly as "this is what arrives". Cultures only — the
+                  ingredient packs ARE the delivery pack — and only where pack
+                  artwork actually exists, or it captions the abstract colony
+                  plate that stands in for a missing image. */}
+              {product.category === "cultures" && product.image ? (
+                <p className="measure-ab mt-3 border-t border-ab-chill pt-3 text-[0.875rem] leading-[1.55] text-ab-ink-60">
+                  {packArtworkNote.detail}
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-col justify-center">
@@ -137,7 +153,7 @@ export default async function ProductPage({
                     variant="secondary"
                     size="lg"
                   >
-                    Download the data sheet
+                    Request the data sheet
                   </ButtonLink>
                 ) : null}
               </div>

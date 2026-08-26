@@ -8,7 +8,7 @@ import { certifications } from "@/content/certifications";
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: "Export & distribution | ABsource Biologics",
+    title: "Export & distribution",
     description:
       "Manufacturer-direct DVS starter cultures from India. HALAL certified, ISO 9001 and ISO 22000, with responsive custom development.",
     path: "/export",

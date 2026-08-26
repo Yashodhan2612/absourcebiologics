@@ -1,4 +1,5 @@
 import type { Lead } from "./schema";
+import { downloadBySlug, requesterRoleLabel } from "@/content/downloads";
 
 /**
  * Transactional email.
@@ -40,8 +41,13 @@ function subjectFor(lead: Lead): string {
       return `Quote request${lead.sku ? ` — ${lead.sku}` : ""} — ${lead.company}`;
     case "export":
       return `Export enquiry — ${lead.country} — ${lead.company}`;
-    case "download":
-      return `Data sheet requested — ${lead.doc} — ${lead.email}`;
+    case "download": {
+      // Named document and named company, so the inbox can triage on the
+      // subject alone. It used to read "abdahi-tds — someone@gmail.com",
+      // which identifies neither.
+      const doc = downloadBySlug(lead.doc);
+      return `Data sheet requested — ${doc?.title ?? lead.doc} — ${lead.company}`;
+    }
     case "selector":
       return `Culture Selector result — ${lead.matches[0] ?? "no match"} — ${lead.email}`;
     case "contact":
@@ -64,7 +70,8 @@ function summaryRows(lead: Lead): Array<[string, string]> {
   return rows;
 }
 
-function renderHtml(lead: Lead): string {
+function renderHtml(lead: Lead, context?: DownloadContext): string {
+  const verification = context ? renderVerificationBlock(lead, context) : "";
   const rows = summaryRows(lead)
     .map(
       ([k, v]) =>
@@ -77,21 +84,94 @@ function renderHtml(lead: Lead): string {
     .join("");
   return `<div style="font-family:system-ui,sans-serif;line-height:1.6"><h1 style="font-size:18px;color:#0B3B3C">${escapeHtml(
     subjectFor(lead)
-  )}</h1><table style="border-collapse:collapse;font-size:14px">${rows}</table></div>`;
+  )}</h1>${verification}<table style="border-collapse:collapse;font-size:14px">${rows}</table></div>`;
 }
 
 /** Autoresponder. Deliberately plain and specific about what happens next. */
 function renderAutoresponse(lead: Lead): string {
-  const isExport = lead.leadType === "export";
-  const body = isExport
-    ? "Thank you for your enquiry. Export quotations involve confirming certification, packaging and shipping terms for your market, so these take a little longer than a domestic quote. A member of our export team will be in touch."
-    : "Thank you for getting in touch. A technologist will read what you have sent and reply — this is not an automated recommendation.";
+  const body =
+    lead.leadType === "export"
+      ? "Thank you for your enquiry. Export quotations involve confirming certification, packaging and shipping terms for your market, so these take a little longer than a domestic quote. A member of our export team will be in touch."
+      : lead.leadType === "download"
+        ? // Says WHY there is a wait. The generic line implied the file was on
+          // its way with no verification step and no reason for the delay.
+          "Thank you for requesting the data sheet. Data sheets carry composition, dosage and incubation parameters, so we confirm who is asking before we send one. A technologist will check your details and email it across, and will call you if anything needs clarifying."
+        : "Thank you for getting in touch. A technologist will read what you have sent and reply — this is not an automated recommendation.";
   return `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#0C1413"><p>${body}</p><p style="color:#4A5654">ABsource Biologics Pvt. Ltd.<br>Kinetic Innovation Park, MIDC Chinchwad, Pune 411019</p></div>`;
+}
+
+/**
+ * Extra context the download route computes and the notification needs.
+ *
+ * Kept out of `Lead` on purpose: none of it is typed by the user, so it must
+ * not be part of the validated payload.
+ */
+export type DownloadContext = {
+  readonly releaseUrl: string;
+  readonly emailDomain: string;
+  readonly freeMailbox: boolean;
+};
+
+/**
+ * The block that makes verification possible.
+ *
+ * The client asked to authenticate the dairy before releasing a data sheet, so
+ * everything a person needs to make that call goes at the TOP of the
+ * notification, above the generic field dump: who, at which company, in what
+ * role, on what number, in which city, and whether the mailbox is a company
+ * domain or a free one. Then a link that releases the file.
+ *
+ * Deliberately NOT included: the requester's IP address. legal.ts states the
+ * site collects "only what you type into a form"; putting the IP in the
+ * notification would make the privacy page false. If the client wants it, the
+ * privacy page changes first.
+ */
+function renderVerificationBlock(lead: Lead, context: DownloadContext): string {
+  if (lead.leadType !== "download") return "";
+  const doc = downloadBySlug(lead.doc);
+
+  const mailbox = context.freeMailbox
+    ? `<span style="color:#C0442E">Free mailbox — confirm the dairy before releasing</span>`
+    : "Company domain";
+
+  const rows: Array<[string, string]> = [
+    ["Document", doc ? `${doc.title} (${doc.kind})` : lead.doc],
+    ["Company", lead.company],
+    ["Contact", lead.name],
+    ["Role", requesterRoleLabel(lead.role)],
+    ["Work email", lead.email],
+    ["Email domain", context.emailDomain],
+    ["Phone", lead.phone],
+    ["City", lead.city],
+    ["Country", lead.country],
+  ];
+
+  const body = rows
+    .map(
+      ([k, v]) =>
+        `<tr><th align="left" style="padding:6px 16px 6px 0;color:#4A5654;font-weight:400;vertical-align:top">${escapeHtml(
+          k
+        )}</th><td style="padding:6px 0;color:#0C1413">${escapeHtml(v)}</td></tr>`
+    )
+    .join("");
+
+  return `<div style="border:1px solid #DCE7E7;padding:16px;margin:0 0 24px">
+    <h2 style="font-size:15px;margin:0 0 12px;color:#0B3B3C">Verify before releasing</h2>
+    <table style="border-collapse:collapse;font-size:14px">${body}
+      <tr><th align="left" style="padding:6px 16px 6px 0;color:#4A5654;font-weight:400">Mailbox</th><td style="padding:6px 0;color:#0C1413">${mailbox}</td></tr>
+    </table>
+    <p style="margin:16px 0 0"><a href="${escapeHtml(
+      context.releaseUrl
+    )}" style="color:#0B3B3C">Release this data sheet</a></p>
+  </div>`;
 }
 
 export type DeliveryResult = { delivered: boolean; reason?: string };
 
-export async function deliverLead(lead: Lead): Promise<DeliveryResult> {
+export async function deliverLead(
+  lead: Lead,
+  context?: DownloadContext
+): Promise<DeliveryResult> {
   // Structured record regardless of transport, so a lead is never lost to a
   // missing API key. Replace with a CRM webhook at this seam.
   // CRM-WEBHOOK-SEAM: post `lead` here when a CRM is chosen.
@@ -114,7 +194,7 @@ export async function deliverLead(lead: Lead): Promise<DeliveryResult> {
       to: inboxFor(lead),
       replyTo: lead.email,
       subject: subjectFor(lead),
-      html: renderHtml(lead),
+      html: renderHtml(lead, context),
     });
 
     await resend.emails.send({

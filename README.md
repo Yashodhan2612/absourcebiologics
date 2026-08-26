@@ -335,6 +335,50 @@ portrait has and warns if one can no longer serve a 2x display.
 
 ---
 
+## The homepage is deliberately short
+
+After client review the homepage dropped from thirteen sections to ten. Four
+blocks were removed because another page already carries them in more detail —
+the product rail (/products), the certification strip (/quality), the client
+wall (/customers) and the services grid (/services) — and the challenge/response
+table dropped from six rows to three with a link to the rest.
+
+**Do not re-add them.** The rule the client gave is that the homepage does not
+explain what another section explains in detail. If you add a block, say which
+page it is *not* duplicating.
+
+Two consequences worth knowing:
+
+- Deleting the services grid orphaned two service pages from the footer. They
+  were added to `footerNav` in `nav.ts` as the mitigation. Check that before
+  removing anything else that links to a leaf page.
+- `ChallengeResponse` takes a `pick` prop that filters by row id. It is a
+  filter, not a second array, precisely so the homepage and /why-absource
+  cannot drift apart. Do not copy the rows.
+
+---
+
+## Data sheets are released by a person
+
+The download flow is **verify-then-release**, not instant download. A data
+sheet carries composition, dosage and incubation parameters, and the client
+asked to authenticate the dairy before one goes out.
+
+- Every field on the gate is required: company, name, role, work email, phone,
+  city, country.
+- `DownloadDoc.release` decides the behaviour. All four documents are
+  `on-approval`; `instant` remains in the union so a future brochure can be
+  ungated without a code change.
+- The sales notification leads with a "Verify before releasing" block and a
+  release link valid for seven days. Free-mailbox addresses are **flagged, not
+  blocked** — a large share of mid-size Indian dairies genuinely run on gmail
+  or rediff, and the client asked to verify, not to exclude.
+- The requester's IP is deliberately absent from the notification. `legal.ts`
+  says the site collects "only what you type into a form"; adding it would make
+  the privacy page false.
+
+---
+
 ## Known gaps
 
 - **Application photography for the eight solution pages.** See

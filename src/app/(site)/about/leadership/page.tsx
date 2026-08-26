@@ -6,7 +6,7 @@ import { CTABand } from "@/components/sections/CTABand";
 import { leadership } from "@/content/leadership";
 
 export const metadata = pageMetadata({
-  title: "Leadership | ABsource Biologics",
+  title: "Leadership",
   description:
     "Founded by Dr. Mukesh Vinze, a biochemist, and Mr. Jagannath Sonavane, a biotechnologist. The science sits inside the company.",
   path: "/about/leadership",

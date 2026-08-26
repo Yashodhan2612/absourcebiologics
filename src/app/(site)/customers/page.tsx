@@ -5,7 +5,7 @@ import { CTABand } from "@/components/sections/CTABand";
 import { CaseStudy, type CaseStudyData } from "@/components/sections/CaseStudy";
 
 export const metadata = pageMetadata({
-  title: "Customers | ABsource Biologics",
+  title: "Customers",
   description:
     "300+ dairy customers across India and export markets, supplied with indigenous DVS starter cultures from Pune since 2016.",
   path: "/customers",
@@ -67,7 +67,9 @@ export default function CustomersPage() {
       <CTABand
         title="Trial us against your current culture."
         body="The honest way to evaluate a supplier is a trial batch on your own milk, against your existing control."
-        cta="Request a sample"
+        cta="Send us your spec"
+        secondaryHref="/products?category=cultures"
+        secondaryCta="Pick a culture to trial"
       />
     </>
   );

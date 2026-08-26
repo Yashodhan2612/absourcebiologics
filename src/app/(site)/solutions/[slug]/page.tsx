@@ -24,7 +24,9 @@ export async function generateMetadata({
   const solution = solutionBySlug(slug);
   if (!solution) return {};
   return pageMetadata({
-    title: `${solution.name} cultures | ABsource Biologics`.slice(0, 60),
+    // No brand suffix: the root layout template appends "| ABsource Biologics"
+    // to every title, so adding one here rendered it twice.
+    title: `${solution.name} cultures`.slice(0, 60),
     description: `${solution.headline} ${solution.summary}`.slice(0, 155),
     path: `/solutions/${slug}`,
   });
