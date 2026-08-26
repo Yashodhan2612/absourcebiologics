@@ -33,7 +33,7 @@ export default function OpenGraphImage() {
             color: "#7FA9A9",
           }}
         >
-          India&apos;s first DVS culture manufacturer · Est. 2014
+          India&apos;s first indigenous DVS culture manufacturer · Since 2016
         </div>
 
         <div

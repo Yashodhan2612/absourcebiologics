@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { REQUESTER_ROLES, type RequesterRole } from "@/content/downloads";
 
 /**
  * Shared validation. The same schemas run on the client for inline field
@@ -70,11 +71,69 @@ export const exportLeadSchema = z.object({
   regulatorySupport: z.enum(["yes", "no", "unsure"]).optional(),
 });
 
+/**
+ * Data-sheet requests are held to a higher bar than a general enquiry.
+ *
+ * A technical data sheet carries composition, dosage and incubation
+ * parameters, and the client asked to authenticate the dairy before releasing
+ * one. So every field here is required — there is enough to phone the plant
+ * and confirm the request is real before the file goes out.
+ */
+const workEmail = z
+  .string()
+  .min(1, "Enter your work email — we send data sheets to the dairy that will use them.")
+  .email("That doesn't look like an email address — check for a typo.");
+
+const dairyName = z.string().min(2, "Which dairy or company will use this data sheet?");
+
+const workPhone = z
+  .string()
+  .min(1, "Add a phone number so a technologist can call if something needs checking.")
+  .regex(
+    /^[+\d][\d\s()-]{7,19}$/,
+    "That doesn't look like a phone number — include the country code if you are outside India."
+  );
+
+const ROLE_VALUES = REQUESTER_ROLES.map((r) => r.value) as [
+  RequesterRole,
+  ...RequesterRole[],
+];
+
+/**
+ * Free-mailbox detection is a SIGNAL, not a rejection.
+ *
+ * Plenty of small and mid-size Indian dairies genuinely run on gmail or
+ * rediff. Blocking them would turn a verification control into lost business,
+ * and the client asked to verify, not to exclude. This flags the request in
+ * the sales notification so a person can decide.
+ */
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.in", "yahoo.in",
+  "ymail.com", "hotmail.com", "hotmail.co.in", "outlook.com", "live.com",
+  "msn.com", "rediffmail.com", "rediff.com", "aol.com", "icloud.com",
+  "me.com", "protonmail.com", "proton.me", "zoho.com", "zohomail.com",
+  "mail.com", "gmx.com", "yandex.com",
+]);
+
+export function emailDomain(value: string): string {
+  return value.split("@")[1]?.toLowerCase().trim() ?? "";
+}
+
+export function isFreeEmailDomain(value: string): boolean {
+  return FREE_EMAIL_DOMAINS.has(emailDomain(value));
+}
+
 export const downloadLeadSchema = z.object({
   leadType: z.literal("download"),
-  email,
-  name: name.optional(),
-  company: companyName.optional(),
+  email: workEmail,
+  name,
+  company: dairyName,
+  phone: workPhone,
+  role: z.enum(ROLE_VALUES, {
+    errorMap: () => ({ message: "Tell us what you do at the dairy." }),
+  }),
+  city: z.string().min(2, "Which city is the plant in?"),
+  country: z.string().min(2, "Which country is the plant in?"),
   /** Which document — a TDS request is a materially hotter lead. */
   doc: z.string().min(1),
   ...antiSpam,

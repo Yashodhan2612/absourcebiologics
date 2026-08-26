@@ -9,6 +9,7 @@ import { recommend, type SelectorAnswers } from "@/lib/selector-engine";
 import type { MakingAnswer } from "@/content/types";
 import { StrainCode } from "@/components/ui/StrainCode";
 import { ProductPackShot } from "@/components/ui/PackShot";
+import { packArtworkNote, products } from "@/content/products";
 import { ButtonLink } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SelectorLeadForm } from "./SelectorLeadForm";
@@ -221,13 +222,25 @@ function SelectorResult({
     );
   }
 
+  const topProduct = products.find((p) => p.slug === top.slug);
+
   return (
     <div>
       <Eyebrow className="mb-6">Your match</Eyebrow>
 
       <div className="grid gap-10 border border-ab-chill bg-ab-white p-6 md:grid-cols-[minmax(0,16rem)_1fr] md:gap-12 md:p-10">
-        <div className="relative aspect-[4/5] overflow-hidden">
-          <ProductPackShot slug={top.slug} sizes="(min-width: 768px) 16rem, 100vw" />
+        <div>
+          <div className="relative aspect-[4/5] overflow-hidden">
+            <ProductPackShot slug={top.slug} sizes="(min-width: 768px) 16rem, 100vw" />
+          </div>
+          {/* Only where the pack shot is real artwork — a SKU with no image
+              falls back to an abstract colony plate, which this would then be
+              describing as colour-coded packaging. */}
+          {topProduct?.image ? (
+            <p className="mt-3 text-[0.8125rem] leading-[1.5] text-ab-ink-60">
+              {packArtworkNote.short}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-col justify-center">
           <div className="mb-4 flex items-center gap-3">

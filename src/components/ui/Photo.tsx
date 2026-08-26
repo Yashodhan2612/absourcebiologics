@@ -49,9 +49,19 @@ export function Photo({
     return <div className={cn("absolute inset-0", className)}>{image}</div>;
   }
 
+  // The positioning stays on a wrapper rather than being handed to Parallax.
+  // cn() is a plain joiner, not tailwind-merge, so passing "absolute inset-0"
+  // into a component whose base class is "relative" put both position
+  // utilities on one element — and Tailwind emits `.relative` after
+  // `.absolute`, so `relative` won. The box then had no height of its own and
+  // its only child was absolutely positioned, which collapsed every
+  // parallaxed photograph on the site to 0px. Measured: the homepage QC-lab
+  // photo and all five /why-absource differentiator photos rendered blank.
   return (
-    <Parallax className={cn("absolute inset-0", className)} depth={depth}>
-      {image}
-    </Parallax>
+    <div className={cn("absolute inset-0", className)}>
+      <Parallax className="h-full w-full" depth={depth}>
+        {image}
+      </Parallax>
+    </div>
   );
 }

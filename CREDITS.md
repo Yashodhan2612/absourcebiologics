@@ -50,10 +50,11 @@ that no third-party shader licence — Ashima's simplex noise being the usual on
 
 **The hero background contains no third-party imagery.** The client supplied a
 reference photograph of stained Streptococcus for direction. That image is not
-in this repo and is not used: the chains are generated from
-`webgl/strepLayout.ts`, and only the stain colour was taken from it. If anyone
-later proposes shipping the reference image itself, its licence needs
-establishing first — it has the look of a stock microscopy photograph.
+in this repo and nothing from it ships: the chains are generated entirely from
+`webgl/strepLayout.ts`, and the purple is the colour the client asked for in
+review, not a colour sampled from the photograph. If anyone later proposes
+shipping the reference image itself, its licence needs establishing first — it
+has the look of a stock microscopy photograph.
 
 ### ABsource's own photography
 

@@ -9,7 +9,7 @@ import { differentiators, milestones } from "@/content/company";
 import { certifications } from "@/content/certifications";
 
 export const metadata = pageMetadata({
-  title: "Why ABsource | Indigenous DVS culture manufacturer",
+  title: "Why an indigenous DVS culture manufacturer",
   description:
     "Five differentiators, the six problems we solve, and what changes for your business. The page to forward when justifying a supplier switch.",
   path: "/why-absource",
@@ -38,7 +38,7 @@ const DIFFERENTIATOR_PHOTOS = [
   },
   {
     src: "/assets/facility/qc-lab.webp",
-    alt: "A microbiologist at the in-process QC lab microscope",
+    alt: "Checking a culture sample under the microscope",
   },
 ] as const;
 
@@ -135,7 +135,7 @@ export default function WhyAbsourcePage() {
           <SectionHeading
             tone="reversed"
             eyebrow="Timeline"
-            title="Nine years ahead of the national push."
+            title="In production nine years before the national plant opened."
             className="mb-12 max-w-3xl"
           />
           <ol className="grid gap-px border border-ab-milk/15 bg-ab-milk/15 md:grid-cols-3">
@@ -168,7 +168,7 @@ export default function WhyAbsourcePage() {
       <CTABand
         title="Take this to your next supplier review."
         body="Send us the product you would switch first and we will send a sample and the parameters to trial it against."
-        cta="Request a sample"
+        cta="Send us your spec"
         secondaryHref="/quality"
         secondaryCta="See how we verify quality"
       />

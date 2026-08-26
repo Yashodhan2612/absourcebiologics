@@ -24,8 +24,7 @@ export function SelectorTeaser() {
       <div>
         <Eyebrow className="mb-5">Culture Selector</Eyebrow>
         <h2 className="text-[2rem] leading-[0.98] tracking-[-0.03em] text-ab-ink md:text-[2.75rem]">
-          Thirteen culture lines. Answer eight questions and we&rsquo;ll narrow it to
-          three.
+          Answer a few questions and we&rsquo;ll narrow the range to three.
         </h2>
         <p className="measure-ab mt-6 text-base leading-[1.6] text-ab-ink-60">
           It takes under a minute, it asks the questions a dairy technologist would ask,
@@ -36,7 +35,7 @@ export function SelectorTeaser() {
       <div>
         <fieldset>
           <legend className="mono-ab mb-5 text-ab-ink-60">
-            Question 1 of 8 &middot; What are you making?
+            What are you making?
           </legend>
           <div className="grid grid-cols-2 gap-px border border-ab-chill bg-ab-chill sm:grid-cols-3">
             {MAKING_OPTIONS.map((option) => (

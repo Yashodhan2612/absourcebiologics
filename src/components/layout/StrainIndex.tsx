@@ -3,14 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { cultures } from "@/content/products";
+// codedCultures, not cultures: the rail renders the strain code as a link's
+// ONLY text, so a culture line without a published code (ABFERMENTA) would
+// produce an anchor with no accessible name.
+import { codedCultures } from "@/content/products";
 
 /**
  * The strain register rail — the site's signature element (Section 7).
  *
  * The strain code system (CU01, LF01, YC01 ...) is a genuine artifact of the
  * business, not decoration, so it is used as a structural device: a horizontal
- * monospace rail of all thirteen codes, like a strain register on a lab wall.
+ * monospace rail of every published code, like a strain register on a lab wall.
  *
  * Behaviour:
  * - `ticker` mode scrolls continuously on the homepage, pauses on hover and
@@ -20,7 +23,7 @@ import { cultures } from "@/content/products";
  * - Hovering or focusing a code reveals the SKU name and its one-line
  *   application in a slim inline panel. The panel is reserved in the layout at
  *   a fixed height so revealing it cannot shift the page.
- * - Every code is a real link in the DOM. All thirteen are server-rendered and
+ * - Every code is a real link in the DOM. All of them are server-rendered and
  *   crawlable — nothing here depends on JavaScript to exist.
  */
 export function StrainIndex({
@@ -33,7 +36,7 @@ export function StrainIndex({
   const [active, setActive] = useState<string | null>(null);
 
   const activeProduct = active
-    ? cultures.find((c) => c.strainCode === active)
+    ? codedCultures.find((c) => c.strainCode === active)
     : undefined;
 
   const rail = (
@@ -43,7 +46,7 @@ export function StrainIndex({
         mode === "ticker" && "ab-ticker-track shrink-0 pr-8"
       )}
     >
-      {cultures.map((product) => (
+      {codedCultures.map((product) => (
         <li key={product.slug}>
           <Link
             href={`/products/cultures/${product.slug}`}

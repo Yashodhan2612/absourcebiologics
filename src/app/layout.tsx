@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | ABsource Biologics",
   },
   description:
-    "India's first indigenous DVS starter culture manufacturer. Direct Vat Set cultures developed and manufactured in Pune, formulated for Indian dairy.",
+    "India's first indigenous DVS starter culture manufacturer, in commercial production since 2016. Direct Vat Set cultures made in Pune.",
   robots: { index: true, follow: true },
 };
 

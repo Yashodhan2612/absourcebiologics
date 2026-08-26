@@ -16,10 +16,42 @@
  * code change.
  */
 
+/**
+ * Who is asking. Sales needs this to know whether the request is credible:
+ * a QA manager pulling a data sheet and an unspecified visitor pulling the
+ * same sheet are different leads and warrant different handling.
+ */
+export const REQUESTER_ROLES = [
+  { value: "qa", label: "QA / quality" },
+  { value: "production", label: "Production / plant" },
+  { value: "rnd", label: "R&D / new product development" },
+  { value: "procurement", label: "Procurement / purchase" },
+  { value: "management", label: "Management / owner" },
+  { value: "consultant", label: "Consultant / advisor" },
+  { value: "other", label: "Something else" },
+] as const;
+
+export type RequesterRole = (typeof REQUESTER_ROLES)[number]["value"];
+
+/** Never print the raw enum value in an email — sales reads labels. */
+export function requesterRoleLabel(value: string): string {
+  return REQUESTER_ROLES.find((r) => r.value === value)?.label ?? value;
+}
+
 export type DownloadDoc = {
   readonly slug: string;
   readonly title: string;
   readonly kind: "tds" | "certificate" | "brochure";
+  /**
+   * "on-approval" holds the file until a person releases it; "instant" streams
+   * it straight back once the lead is recorded.
+   *
+   * Every document is currently on-approval, at the client's request: a data
+   * sheet carries composition, dosage and incubation parameters, and they want
+   * to authenticate the dairy before it goes out. "instant" stays in the union
+   * so a future brochure can be ungated without a code change.
+   */
+  readonly release: "instant" | "on-approval";
   /** Bare filename inside private/docs/. No path separators permitted. */
   readonly file: string;
   /** Product slug this document belongs to, for lead scoring. */
@@ -30,6 +62,7 @@ export type DownloadDoc = {
 export const downloads: readonly DownloadDoc[] = [
   {
     slug: "abdahi-tds",
+    release: "on-approval",
     title: "ABDAHI (CU01) — technical data sheet",
     kind: "tds",
     file: "abdahi-cu01-tds.pdf",
@@ -38,6 +71,7 @@ export const downloads: readonly DownloadDoc[] = [
   },
   {
     slug: "abyogurt-tds",
+    release: "on-approval",
     title: "ABYOGURT (YC01) — technical data sheet",
     kind: "tds",
     file: "abyogurt-yc01-tds.pdf",
@@ -46,6 +80,7 @@ export const downloads: readonly DownloadDoc[] = [
   },
   {
     slug: "abcheese-tds",
+    release: "on-approval",
     title: "ABCHEESE (CH01) — technical data sheet",
     kind: "tds",
     file: "abcheese-ch01-tds.pdf",
@@ -54,6 +89,7 @@ export const downloads: readonly DownloadDoc[] = [
   },
   {
     slug: "certifications-pack",
+    release: "on-approval",
     title: "Certification pack — ISO 9001, ISO 22000, HACCP, HALAL",
     kind: "certificate",
     file: "absource-certifications.pdf",

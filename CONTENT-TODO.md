@@ -81,6 +81,55 @@ fetch script if you need them back.
 
 ---
 
+## 0b. ABFERMENTA — added on request, almost nothing known
+
+The client asked for "Fermenta" to be added to the product list. It is now in
+`src/content/products.ts` as **ABFERMENTA**, and it is the only SKU on the site
+about which we can state essentially nothing.
+
+It does not exist on the live site either — a search of absourcebiologics.com
+and its media library returns only the words "fermentation" and "fermented" —
+so there was no existing copy to work from and nothing has been inferred.
+
+**Blocking, in priority order:**
+
+1. **Is it a DVS starter culture, a dairy ingredient, or a taste maker?** It is
+   currently filed under cultures, because the client wrote "product/strain"
+   and because the naming convention is consistent (cultures are AB + an
+   end-product or organism word — ABDAHI, ABYOGURT, ABKEFIR; ingredients are
+   AB + a function word — ABBIND, ABRENNO, ABMERGE). That choice is published:
+   it sets the "DVS starter cultures" label on the card and the detail page.
+
+   Because of this, every *count* on the site now reads **"fourteen culture
+   lines"**, not "fourteen DVS culture lines" — on `/products`, `/quality`,
+   `/why-absource` and in `stats.cultureLines`. Thirteen of the fourteen
+   declare Direct Vat Set on their own page, where it is true; a count is the
+   one place a qualifier gets silently applied to a member that has not earned
+   it. Put "DVS" back into those four strings once this is confirmed.
+2. **What is its strain code?** The other thirteen codes are real identifiers
+   printed on the sachet — they are literally the live site's own pack-image
+   filenames — so one could not be invented here. Until it arrives ABFERMENTA
+   does not appear in the strain rail or the hero chain motif, both of which
+   now track *published codes* rather than culture lines.
+3. **Is there pack artwork?** There is none in `public/assets/products/`, so
+   the page falls back to the abstract colony plate. The pack-artwork note is
+   suppressed on this SKU — it would otherwise describe a colony plate as
+   colour-coded packaging.
+4. **Which application families does it serve?** `applications` is empty, so it
+   appears under no solution page's "What we would trial". An application tag
+   is a technical recommendation and was not guessed.
+5. **cultureType** — thermophilic, mesophilic, blended or probiotic?
+6. **The eight specification rows** — every one ships as a `todo`, so the spec
+   table lists them as available on the data sheet and asserts nothing. It uses
+   `UNSPECIFIED_COMMON_SPECS`, not `DVS_COMMON_SPECS`, so it does not even
+   claim Direct Vat Set, freeze-dried or phage-resistant.
+7. **Selector characteristics** — none, so the Culture Selector will never
+   recommend it. That is correct until someone can say what it suits.
+8. **The summary and description.** They currently say only that it is part of
+   the range, which is the only fact the client's message established.
+
+---
+
 ## 1. Blocking: product technical data
 
 **Every technical figure on all 21 SKUs is unconfirmed and therefore unpublished.**
@@ -224,6 +273,18 @@ Recorded so nobody "helpfully" adds them back.
   generically.
 - **Self-reliance language on `/export` and product pages** — banned outright
   there. `ValueTable` enforces it structurally via the `audience` prop.
+  Measured after the feedback round: `/` = 1, `/export` = 0, every product
+  detail page = 0.
+
+  `/about` renders four and `/why-absource` two, over the one-per-domestic-page
+  guideline. **Left deliberately.** One of the two on each page is the dated
+  2025 Anand RUC milestone, which is a fact about national policy rather than a
+  positioning line. The rest are the client's own approved copy — the Promise
+  pillars ("Indigenous capability", "'Made in India' is a benchmark"), the
+  Promise closing ("a stronger, self-reliant Indian dairy ecosystem") and the
+  `ValueTable` "Strategic" row. Editing those is a copy decision for the client,
+  not a feedback fix, so they are flagged here rather than rewritten. Say the
+  word and they can be softened in one pass over `src/content/company.ts`.
 - **`Lorem ipsum`** — the live About page's "Why Choose Us" block is not carried
   over.
 - **ABYOGURT copy-paste error** — the live description ends with the ABDAHI

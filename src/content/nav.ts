@@ -44,7 +44,7 @@ export const primaryNav: readonly NavItem[] = [
     label: "Products",
     href: "/products",
     panelIntro:
-      "Twenty-one SKUs across cultures, ingredients and taste makers. Every culture carries a strain code.",
+      "Twenty-two SKUs across cultures, ingredients and taste makers.",
     children: [
       {
         href: "/products?category=cultures",
@@ -64,7 +64,7 @@ export const primaryNav: readonly NavItem[] = [
       {
         href: "/culture-selector",
         label: "Culture Selector",
-        description: "Narrow 13 culture lines to 3 in under a minute",
+        description: "Narrow the range to three in under a minute",
         highlighted: true,
       },
     ],
@@ -86,7 +86,7 @@ export const primaryNav: readonly NavItem[] = [
     label: "Company",
     href: "/about",
     panelIntro:
-      "Founded in Pune in 2014 by a scientist and a biotechnologist. In commercial production since 2016.",
+      "Founded in Pune in 2014. In commercial production since 2016.",
     children: [
       { href: "/about", label: "About", description: "Why the company exists" },
       { href: "/about/leadership", label: "Leadership", description: "The founders" },
@@ -133,6 +133,10 @@ export const footerNav: readonly { title: string; links: readonly NavLink[] }[] 
       { href: "/request-a-quote", label: "Request a quote" },
       { href: "/export", label: "Export enquiries" },
       { href: "/services/custom-culture-development", label: "Custom culture development" },
+      // Added when the homepage services grid was removed — without these two
+      // the only route to them is the Services mega menu.
+      { href: "/services/turnkey-plant-setup", label: "Turnkey plant setup" },
+      { href: "/services/microbiology-testing", label: "Microbiology testing" },
       { href: "/contact", label: "Contact" },
     ],
   },

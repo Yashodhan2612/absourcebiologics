@@ -18,7 +18,8 @@ export async function generateMetadata({
   const service = serviceBySlug(slug);
   if (!service) return {};
   return pageMetadata({
-    title: `${service.name} | ABsource Biologics`.slice(0, 60),
+    // The root layout template appends the brand — see solutions/[slug].
+    title: service.name.slice(0, 60),
     description: service.summary.slice(0, 155),
     path: `/services/${slug}`,
   });

@@ -135,21 +135,34 @@ export function SelectField({
       required={required}
       className={className}
     >
-      <select
-        id={id}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy(id, hint, error)}
-        required={required}
-        className={cn(CONTROL, controlTone(Boolean(error)), "appearance-none pr-10")}
-        {...rest}
-      >
-        {placeholder ? <option value="">{placeholder}</option> : null}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      {/* `appearance-none` strips the platform chevron, and nothing was drawn
+          in its place — the control read as a text input that would not accept
+          typing. The replacement is a chevron rather than the native one so it
+          matches the 4px-radius, no-shadow control set. */}
+      <div className="relative">
+        <select
+          id={id}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy(id, hint, error)}
+          required={required}
+          className={cn(CONTROL, controlTone(Boolean(error)), "appearance-none pr-10")}
+          {...rest}
+        >
+          {placeholder ? <option value="">{placeholder}</option> : null}
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 12 8"
+          className="pointer-events-none absolute right-3.5 top-1/2 h-2 w-3 -translate-y-1/2 text-ab-ink-60"
+        >
+          <path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      </div>
     </Shell>
   );
 }

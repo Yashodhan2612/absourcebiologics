@@ -4,7 +4,7 @@ import { SolutionList } from "@/components/sections/SolutionGrid";
 import { CTABand } from "@/components/sections/CTABand";
 
 export const metadata = pageMetadata({
-  title: "Dairy culture solutions by application | ABsource",
+  title: "Dairy culture solutions by application",
   description:
     "Eight application families: curd and dahi, yoghurt, cheese and paneer, buttermilk and lassi, shrikhand, cultured ghee, probiotics and fermented beverages.",
   path: "/solutions",

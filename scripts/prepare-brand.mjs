@@ -28,8 +28,14 @@ const OUT = "public/assets/brand";
 const SRC = "public/assets/_source/brand";
 const URL = "https://absourcebiologics.com/wp-content/uploads/2020/12/Artboard-1.png";
 
-/** Largest height the logo is rendered at, in CSS pixels. Keep in step with Logo.tsx. */
-const MAX_DISPLAY_HEIGHT = 44;
+/**
+ * Largest height the logo is rendered at, in CSS pixels. Report-only — it feeds
+ * the closing console.log and does not affect the emitted files.
+ *
+ * Keep in step with the two places the height actually lives: Header.tsx
+ * (h-8 md:h-10) and Footer.tsx (h-10). It is not in Logo.tsx.
+ */
+const MAX_DISPLAY_HEIGHT = 40;
 
 await mkdir(OUT, { recursive: true });
 await mkdir(SRC, { recursive: true });

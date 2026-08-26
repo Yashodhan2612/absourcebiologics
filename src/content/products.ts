@@ -1,7 +1,7 @@
 import type { Product, SpecRow } from "./types";
 
 /**
- * The 21 SKUs: 13 DVS culture lines, 7 dairy ingredients, 1 taste maker.
+ * The 22 SKUs: 14 culture lines, 7 dairy ingredients, 1 taste maker.
  *
  * SOURCING NOTE — important, read before editing.
  * Phase 2 of the brief asks for the live site's own product descriptions as
@@ -32,12 +32,38 @@ const DVS_COMMON_SPECS: readonly SpecRow[] = [
   { label: "Form", value: "Freeze-dried" },
   { label: "Phage resistance", value: "Phage-resistant strains" },
   { label: "Quality release", value: "24 quality checks before release" },
+  {
+    label: "Pack artwork",
+    value:
+      "Colour-coded per culture line for the catalogue. Delivered product comes in the standard blue and white ABsource sachet.",
+  },
   { label: "Organism composition", todo: "Species/genera present — confirm per SKU with R&D" },
   { label: "Incubation temperature", todo: "Confirm range in degC per SKU" },
   { label: "Incubation time", todo: "Confirm hours to target acidity per SKU" },
   { label: "Recommended dosage", todo: "Confirm units per 100 L milk per SKU" },
   { label: "Target acidity", todo: "Confirm % lactic acid / target pH per SKU" },
   { label: "Packaging sizes", todo: "Confirm sachet/pack sizes offered" },
+  { label: "Storage conditions", todo: "Confirm storage temperature" },
+  { label: "Shelf life", todo: "Confirm shelf life at stated storage temperature" },
+];
+
+/**
+ * For a SKU that is in the range but whose specification has not reached us.
+ *
+ * Deliberately NOT DVS_COMMON_SPECS. That array asserts four things — Direct
+ * Vat Set, freeze-dried, phage-resistant, 24 quality checks — which are true of
+ * the DVS range as a whole and so are safe on a SKU we have data for. Asserting
+ * them on a product whose category we are still confirming would be inventing
+ * product data, which this file does not do. Every row here is a `todo`, so the
+ * spec table shows them as available on the data sheet and claims nothing.
+ */
+const UNSPECIFIED_COMMON_SPECS: readonly SpecRow[] = [
+  { label: "Format", todo: "Confirm whether supplied as Direct Vat Set" },
+  { label: "Form", todo: "Confirm physical form (freeze-dried powder, granule, liquid)" },
+  { label: "Composition", todo: "Confirm declared composition — organisms and/or ingredients" },
+  { label: "Recommended dosage", todo: "Confirm dosage and basis" },
+  { label: "Application notes", todo: "Confirm process stage and method of addition" },
+  { label: "Packaging sizes", todo: "Confirm pack sizes offered" },
   { label: "Storage conditions", todo: "Confirm storage temperature" },
   { label: "Shelf life", todo: "Confirm shelf life at stated storage temperature" },
 ];
@@ -59,8 +85,47 @@ const VERSUS_IMPORTED_DEFAULT: readonly [string, string, string] = [
   "The strain blend can be adjusted to your product by the team that makes it — not requested through a distributor.",
 ];
 
+/**
+ * Why the sachets are different colours.
+ *
+ * The catalogue shows a differently coloured pack per culture line, and a
+ * buyer reasonably reads that as "these arrive looking different". They do
+ * not: the colour exists so a plant can tell the lines apart on a shelf and in
+ * this catalogue, and delivered product ships in the standard blue and white
+ * sachet.
+ *
+ * Deliberately says "sachet", not "pouch". "Pouch" already means two other
+ * things here — it is a Culture Selector answer for the DAIRY's own retail
+ * pack format (cup / pouch / bucket / bulk), and it is the right noun for the
+ * ingredient stand-up packs, which ARE the delivery pack and must not be
+ * covered by this note. Using "pouch" on the selector result would read as
+ * though it described the answer the buyer had just given.
+ *
+ * Count-agnostic on purpose: ABFERMENTA is a culture line with no artwork yet,
+ * so "the fourteen culture lines" would be wrong the moment you counted packs.
+ *
+ * CULTURES ONLY. The seven ingredients and the taste maker are photographed as
+ * the real stand-up packs they ship in.
+ *
+ * Says nothing about what is printed on the delivered sachet. The CU01 artwork
+ * carries its strain code on the face, but that has not been confirmed for the
+ * other twelve, and this note is not the place to infer it.
+ */
+export const packArtworkNote = {
+  // Says "culture pack" because on /products this sits above a grid that also
+  // holds ingredients and the taste maker, which ship in their own real
+  // stand-up packs. Scoping the sentence is better than hiding the note the
+  // moment anything else is on screen — the default view is the mixed one.
+  catalogue:
+    "The colour on each culture pack is there to tell the culture lines apart in the catalogue. Delivered culture comes in the standard blue and white ABsource sachet.",
+  detail:
+    "This artwork is colour-coded to tell the culture lines apart in the catalogue. Delivered product comes in the standard blue and white ABsource sachet.",
+  short:
+    "Pack colours tell the range apart. Delivered product comes in the standard blue and white ABsource sachet.",
+} as const;
+
 export const products: readonly Product[] = [
-  /* ===================== DVS STARTER CULTURES (13) ===================== */
+  /* ===================== DVS STARTER CULTURES (14) ===================== */
   {
     slug: "abdahi",
     name: "ABDAHI",
@@ -329,7 +394,11 @@ export const products: readonly Product[] = [
     strainCode: "PB01",
     category: "cultures",
     cultureType: "probiotic",
-    applications: ["probiotics-functional"],
+    // curd-dahi and yoghurt are declared because selectorProfile.making already
+    // recommends this SKU for both. Without them the selector suggested a
+    // culture that then did not appear under "What we would trial" on either
+    // solution page, and carried no application chip on its own detail page.
+    applications: ["probiotics-functional", "curd-dahi", "yoghurt"],
     summary: "Probiotic cultures for functional dairy",
     description:
       "A Direct Vat Set probiotic culture for functional dairy and fermented products. Supplied freeze-dried for direct addition to the vat.",
@@ -383,7 +452,13 @@ export const products: readonly Product[] = [
     strainCode: "BS01",
     category: "cultures",
     cultureType: "blended",
-    applications: ["probiotics-functional", "fermented-foods-beverages"],
+    // As ABPROBIO: making already recommends it for curd and yoghurt.
+    applications: [
+      "probiotics-functional",
+      "fermented-foods-beverages",
+      "curd-dahi",
+      "yoghurt",
+    ],
     summary: "Bioprotective culture for fermented dairy",
     description:
       "A Direct Vat Set bioprotective culture used alongside a primary starter. Supplied freeze-dried for direct addition to the vat.",
@@ -402,6 +477,50 @@ export const products: readonly Product[] = [
       rationale: "Runs alongside a primary starter rather than replacing it.",
       caveats: ["This is an adjunct culture — pair it with a primary starter, do not substitute."],
     },
+  },
+
+  {
+    /**
+     * Added at the client's request ("Fermenta needs to be added to the
+     * product list"). Everything except the name is unconfirmed, and the repo
+     * had no trace of this SKU — it is not on the live site either, so there
+     * was no existing copy to work from.
+     *
+     * Placed LAST in the cultures block on purpose: productsByApplication()[0]
+     * feeds SolutionMedia, so a SKU with no pack artwork must not sit earlier
+     * and become the lead image on a solution card.
+     *
+     * strainCode is null rather than invented. The other thirteen codes are
+     * real identifiers printed on the sachet — they are literally the live
+     * site's own pack-image filenames — so one cannot be minted here.
+     * applications and selectorProfile are empty for the same reason: an
+     * application tag is a technical recommendation and the selector would
+     * otherwise offer a product nobody can specify.
+     *
+     * See CONTENT-TODO.md for the full list of what the client needs to
+     * confirm before this page can say anything more.
+     */
+    slug: "abfermenta",
+    name: "ABFERMENTA",
+    strainCode: null,
+    category: "cultures",
+    cultureType: null,
+    applications: [],
+    summary: "Specification available on request",
+    description:
+      "ABFERMENTA is part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
+    image: "",
+    specs: UNSPECIFIED_COMMON_SPECS,
+    // NOT VERSUS_IMPORTED_DEFAULT. That asserts manufacture in Pune, rupee
+    // invoicing and that the strain blend can be adjusted — three claims about
+    // a product whose category is still being confirmed. These two say only
+    // what is true of ABsource as a supplier.
+    versusImported: [
+      "Supplied and supported from Pune, by the team you would be dealing with directly.",
+      "We confirm the specification against your product before we send a sample.",
+      "If the specification does not fit, our R&D develops to your requirement.",
+    ],
+    selectorProfile: null,
   },
 
   /* ======================= DAIRY INGREDIENTS (7) ======================= */
@@ -535,11 +654,18 @@ export const cultures = products.filter((p) => p.category === "cultures");
 export const ingredients = products.filter((p) => p.category === "ingredients");
 export const tasteMakers = products.filter((p) => p.category === "taste-makers");
 
-/** The thirteen strain codes, in catalogue order. Drives the StrainIndex rail
- *  and the thirteen colony seeds in the hero simulation. */
-export const strainCodes: readonly string[] = cultures
-  .map((p) => p.strainCode)
-  .filter((c): c is string => c !== null);
+/**
+ * The published strain codes, in catalogue order. Drives the StrainIndex rail.
+ *
+ * Derived rather than counted: not every culture line has a published code —
+ * ABFERMENTA's has not reached us — so this is deliberately shorter than
+ * `cultures`. Do not write copy that assumes the two are the same length.
+ */
+export const codedCultures = cultures.filter(
+  (p): p is Product & { strainCode: string } => p.strainCode !== null
+);
+
+export const strainCodes: readonly string[] = codedCultures.map((p) => p.strainCode);
 
 export function productBySlug(
   category: string,

@@ -8,7 +8,7 @@ import { certifications, qualityClaims } from "@/content/certifications";
 import { stats } from "@/content/stats";
 
 export const metadata = pageMetadata({
-  title: "Quality & certification | ABsource Biologics",
+  title: "Quality & certification",
   description:
     "ISO 9001:2015, ISO 22000:2018, HACCP and HALAL. 24 quality checks, clean-room manufacturing and phage-resistant strains.",
   path: "/quality",
@@ -42,7 +42,7 @@ export default function QualityPage() {
           />
           <div className="mt-14 flex flex-wrap gap-16">
             <Stat entry={stats.qualityChecks} label="Quality checks per batch" />
-            <Stat entry={stats.cultureLines} label="DVS culture lines" />
+            <Stat entry={stats.cultureLines} label="culture lines" />
             <Stat entry={stats.customersServed} label="Customers served" />
           </div>
         </div>

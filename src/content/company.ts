@@ -44,7 +44,7 @@ export const positioning = {
     "India's first indigenous DVS starter culture manufacturer. In commercial production since 2016 — nine years before the national Ready-to-Use Culture plant opened at Anand.",
   thesis: "India's dairy shouldn't have to import its bacteria.",
   subhead:
-    "Direct Vat Set starter cultures, developed and manufactured in Pune. Formulated for Indian dairy. Delivered in three to five days.",
+    "Direct Vat Set starter cultures, developed and manufactured in Pune. Supplied across India and to export markets. Delivered in three to five days in India.",
 } as const;
 
 /**
@@ -67,12 +67,30 @@ export const vision = {
   body: "ABsource aims to become the largest manufacturer of dairy starter cultures in India, and to rank among the top three globally.",
 } as const;
 
-/** The proposition. Carries the sharpest sentence the client has written. */
+/**
+ * The proposition. Carries the sharpest sentence the client has written.
+ *
+ * The body was rewritten after client review. What it used to say listed the
+ * same disciplines three times over — "a company of scientists ... founded by
+ * a scientist and a biotechnologist, backed by microbiologists,
+ * biotechnologists and dairy technologists" — seven discipline nouns carrying
+ * one fact. It also repeated the certification list (already on the proof bar
+ * directly above) and the import-cost argument (already in challengeResponse
+ * directly below).
+ *
+ * What is here now substantiates both halves of the headline instead: body[0]
+ * is the "manufacturers" claim, body[1] the "innovators" claim. Do not re-add
+ * the certification list or the discipline roll-call.
+ *
+ * "the cultures we sell", not "every culture we sell": the categorical form
+ * would assert that ABsource manufactures the seven dairy ingredients and the
+ * taste maker too, which nothing in products.ts supports.
+ */
 export const proposition = {
   headline: "We are not traders; we are manufacturers and innovators.",
   body: [
-    "Indigenously developed Direct Vat Set cultures that free Indian dairies from import dependency, at a quality and a price that stand up to the imported alternative.",
-    "A company of scientists and dairy technologists — founded by a scientist and a biotechnologist, backed by microbiologists, biotechnologists and dairy technologists. Our own R&D lab, our own ISO, HACCP and HALAL certified clean-room production.",
+    "We make the cultures we sell. Strain screening, fermentation, freeze-drying and batch release all happen in our own clean-room facility, with an in-process QC lab on site.",
+    "A scientist and a biotechnologist founded the company, and we still develop every blend in our own R&D lab. The science sits inside the company rather than being bought in.",
   ],
 } as const;
 
@@ -101,12 +119,41 @@ export const promise = {
     "When you work with ABsource you are not just buying a starter culture. You are investing in a partnership that guarantees consistency, fosters innovation, and builds a stronger, self-reliant Indian dairy ecosystem.",
 } as const;
 
+/**
+ * The market, widened.
+ *
+ * Added at the client's request: the homepage was framed entirely on Indian
+ * dairy and they asked for the international picture and the company's vision
+ * to sit alongside it.
+ *
+ * Carries NO NUMBER, deliberately. stats.countriesServed is flagged unverified
+ * ("5+" reads small beside "300+ customers" and CONTENT-TODO says do not
+ * inflate it), so the international claim is made on what ABsource actually
+ * does — supplying importers and distributors, certifying for overseas audit,
+ * developing blends to order — rather than on a figure nobody has confirmed.
+ *
+ * The framing is deliberately not import-substitution. That argument is the
+ * page's one permitted self-reliance instance and it already lives in the hero
+ * headline; running it again here would breach the once-per-page rule.
+ */
+export const globalReach = {
+  eyebrow: "The market",
+  title: "What we built for Indian dairy now leaves Pune for export markets.",
+  body: [
+    "Any plant that ferments milk depends on a starter culture, and where that culture is made decides the lead time, the currency it is priced in, and whether anyone will adjust the blend when the product has to change. That is as true outside India as it is inside it.",
+    "So we supply importers and distributors directly, on the certifications an overseas buyer's own audit asks for, and we develop new blends for products a global catalogue does not carry.",
+  ],
+} as const;
+
 /** Five differentiators — backbone of /why-absource and the homepage. */
 export const differentiators = [
   {
     id: "pioneer",
     title: "The pioneer advantage",
-    body: "Founded in 2014, in commercial production from 2016 — nine years ahead of the national push for self-reliance in cultures. That is a decade of production data behind every batch we ship.",
+    // "longer than anyone else in India" is not a claim anyone has sourced,
+    // and it is a superlative of the kind the brief bans outright. The dated
+    // form says the same thing and is checkable.
+    body: "Founded in 2014, in commercial production from 2016 — nine years before the national Ready-to-Use Culture plant opened at Anand. That is nearly a decade of production data behind every batch we ship.",
   },
   {
     id: "science-led",
@@ -116,7 +163,7 @@ export const differentiators = [
   {
     id: "breadth",
     title: "Portfolio breadth and customisation",
-    body: "Thirteen distinct DVS culture lines spanning dahi, lassi, a wide cheese range and probiotic foods — plus in-house R&D that builds entirely new cultures from scratch, which an importer structurally cannot do.",
+    body: "Fourteen distinct culture lines spanning dahi, lassi, a wide cheese range and probiotic foods — plus in-house R&D that builds entirely new cultures from scratch, which an importer structurally cannot do.",
   },
   {
     id: "end-to-end",
@@ -126,7 +173,7 @@ export const differentiators = [
   {
     id: "proven",
     title: "Proven quality and trust",
-    body: "300+ customers, a decade of operation, and ISO 9001:2015, ISO 22000:2018, HACCP and HALAL certification.",
+    body: "300+ customers, commercial production since 2016, and ISO 9001:2015, ISO 22000:2018, HACCP and HALAL certification."
   },
 ] as const;
 
@@ -135,34 +182,45 @@ export const differentiators = [
  * the section that does the actual selling. Rendered as a two-column editorial
  * list on desktop and a stacked accordion on mobile — never a card grid, never
  * with icons, never numbered. These are parallel problems, not a sequence.
+ *
+ * Every row carries a stable `id` so the homepage can render a subset without
+ * duplicating the array. The whole point of sharing this data between the
+ * homepage and /why-absource is that the two cannot drift apart — a second
+ * copy would defeat it.
  */
 export const challengeResponse = [
   {
+    id: "import-dependency",
     challenge: "Import dependency",
     response:
-      "Indigenous manufacture breaks reliance on expensive, often inconsistent foreign supply. It secures the supply chain and conserves foreign exchange.",
+      "Manufacturing here breaks reliance on expensive, often inconsistent foreign supply, and it secures the supply chain against a disruption you cannot control.",
   },
   {
+    id: "inconsistent-quality",
     challenge: "Inconsistent quality",
     response:
       "Freeze-dried, phage-resistant DVS cultures remove the variability of traditional bulk starters. Bacterial concentration and purity are guaranteed through 24 quality checks.",
   },
   {
+    id: "production-cost",
     challenge: "High production cost",
     response:
       "Local manufacture delivers the same standard of culture at a lower price point than imports, which improves your margin directly.",
   },
   {
+    id: "expertise-gap",
     challenge: "Technical expertise gap",
     response:
       "Direct Vat Set means ready to use. No in-house propagation, no specialist propagation skills, far lower contamination risk.",
   },
   {
+    id: "no-customisation",
     challenge: "No customisation",
     response:
       "Bespoke culture development: our scientists work directly with you to build a unique blend — a creamier dahi, a sharper cheese, a novel fermented beverage.",
   },
   {
+    id: "fragmented-support",
     challenge: "Fragmented support",
     response:
       "Microbiology testing for product safety and turnkey plant consultancy alongside the cultures themselves.",

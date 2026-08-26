@@ -16,7 +16,8 @@ export async function generateMetadata({
   const page = legalBySlug(slug);
   if (!page) return {};
   return pageMetadata({
-    title: `${page.title} | ABsource Biologics`,
+    // The root layout template appends the brand — see solutions/[slug].
+    title: page.title,
     description: `${page.title} for absourcebiologics.com.`,
     path: `/legal/${slug}`,
     noIndex: true,

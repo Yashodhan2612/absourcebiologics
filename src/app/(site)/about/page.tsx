@@ -13,7 +13,7 @@ import {
 } from "@/content/company";
 
 export const metadata = pageMetadata({
-  title: "About ABsource Biologics | Founded Pune, 2014",
+  title: "About the company — founded in Pune, 2014",
   description:
     "Indian demand for quality dairy starters is rising while almost nobody manufactures them here. That gap is why ABsource exists.",
   path: "/about",
@@ -80,7 +80,7 @@ export default function AboutPage() {
                   shrikhand.
                 </p>
                 <p>
-                  The range now runs to thirteen culture lines, seven dairy ingredients
+                  The range now runs to fourteen culture lines, seven dairy ingredients
                   and a taste maker, supplied to 300+ customers from a clean-room
                   facility with an in-process QC lab.
                 </p>
@@ -158,10 +158,17 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Not "Request a sample". The client asked for sample requests to be
+          raised from the Product section, against a chosen product or strain,
+          so that one always arrives attached to a SKU. The product and
+          solution pages keep that label because their CTA carries the SKU; a
+          general page sends you to the same form as an enquiry, and calling
+          that "Request a sample" is what made the homepage button a problem in
+          the first place. */}
       <CTABand
         title="Come and see what we make."
         body="Send us a product you would like to make better, and we will send a culture recommendation and a sample."
-        cta="Request a sample"
+        cta="Send us your spec"
         secondaryHref="/quality"
         secondaryCta="How we verify quality"
       />

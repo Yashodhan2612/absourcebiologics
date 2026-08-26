@@ -127,7 +127,7 @@ export default function StyleguidePage() {
       <Block title="Buttons">
         <div className="flex flex-wrap items-center gap-4">
           <Button variant="primary">Request a sample</Button>
-          <Button variant="secondary">Download the data sheet</Button>
+          <Button variant="secondary">Request the data sheet</Button>
           <Button variant="quiet">Find your culture</Button>
           <Button variant="primary" disabled>
             Sending
@@ -170,7 +170,7 @@ export default function StyleguidePage() {
         </p>
         <div className="flex flex-wrap gap-16">
           <Stat entry={stats.customersServed} label="Customers served" />
-          <Stat entry={stats.cultureLines} label="DVS culture lines" />
+          <Stat entry={stats.cultureLines} label="culture lines" />
           <Stat entry={stats.qualityChecks} label="Quality checks" />
           <Stat entry={stats.countriesServed} label="Countries (should not render)" />
           <Stat entry={stats.flavourPortfolio} label="Flavours (should not render)" />

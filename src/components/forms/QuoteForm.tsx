@@ -83,7 +83,7 @@ export function QuoteForm() {
             setStep((s) => s + 1);
             return;
           }
-          void submit(values);
+          void submit(values, e.currentTarget);
         }}
       >
         {step === 0 ? (

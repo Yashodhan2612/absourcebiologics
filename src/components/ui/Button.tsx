@@ -5,7 +5,7 @@ type Variant = "primary" | "secondary" | "reversed" | "quiet";
 type Size = "md" | "lg";
 
 /**
- * Buttons name the outcome ("Request a sample", "Download the data sheet").
+ * Buttons name the outcome ("Request a sample", "Request the data sheet").
  * Never "Submit", never "Learn more", never "Click here" — Section 13.
  *
  * 4px radius is the only radius in the system and applies here and to form

@@ -13,7 +13,7 @@ import * as THREE from "three";
  * pack artwork. A QA manager evaluating a strain wants to recognise the pack
  * on their bench.
  *
- * ONE model, one texture swap per SKU. Do not author thirteen models.
+ * ONE model, one texture swap per SKU. Do not author one model per product.
  *
  * Lighting is three lights and no environment map. A baked HDR would be a
  * second network request inside a lazy chunk for a gain nobody would notice on

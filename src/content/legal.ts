@@ -33,7 +33,7 @@ export const legalPages: readonly LegalPage[] = [
         heading: "What we collect",
         body: [
           "Only what you type into a form. That is: the quote request, the export enquiry, the contact form, the careers form, the data sheet request, and the optional email capture at the end of the Culture Selector.",
-          "Depending on the form, that can include your name, work email, phone number, company, city or country, and whatever you write in the message field. The Culture Selector submission also includes the answers you gave, so a technologist can see what you specified.",
+          "Depending on the form, that can include your name, work email, phone number, company, your role there, your city and country, and whatever you write in the message field. The data sheet request asks for all of these, because we confirm the dairy before releasing a specification. The Culture Selector submission also includes the answers you gave, so a technologist can see what you specified.",
           "We do not run advertising trackers, and the site sets no non-essential cookies of its own. The map on the contact page is only loaded if you click to load it, because it is served by Google and sets its own cookies.",
         ],
       },
@@ -41,14 +41,14 @@ export const legalPages: readonly LegalPage[] = [
         heading: "What we do with it",
         body: [
           `Enquiries are sent to ${company.email} and are used to reply to you. Export enquiries route to the export team.`,
-          "One functional cookie is set after you request a document, so you are not asked for your email again in the same session.",
+          "Data sheets are released by a person rather than automatically: we check the details you give against the dairy before sending one. That check is why we ask for a company, a role and a phone number.",
           "We do not sell your information or pass it to third parties for their own marketing.",
         ],
       },
       {
         heading: "How long we keep it",
         body: [
-          "Enquiries are kept in our email records for as long as the commercial relationship or conversation is live.",
+          "Enquiries are kept in our email records for as long as the commercial relationship or conversation is live. A copy is also written to our web server log, where our hosting provider retains it for a short rolling window before it is discarded automatically.",
         ],
       },
       {

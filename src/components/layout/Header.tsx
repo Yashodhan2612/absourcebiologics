@@ -150,10 +150,14 @@ export function Header() {
             className="shrink-0"
             aria-label="ABsource Biologics — home"
           >
-            {/* 36px on mobile, 44px from md. Below about 32px the letterspaced
-                "BIOLOGICS" line stops resolving; above 44px the lockup starts
-                crowding the quote button on a 390px screen. */}
-            <Logo className="h-9 md:h-11" priority />
+            {/* 32px on mobile, 40px from md.
+                40px is the floor on a DPR-1 display, measured rather than
+                guessed: the letterspaced "BIOLOGICS" stems are 4px of a 179px
+                artwork, so they cover 1.01 device pixels at 40 and only 0.91 at
+                36 — below one device pixel they grey out letter by letter. 40
+                also matches the 40px nav pills inside the 72px row. Phones are
+                DPR 2-3, so 32px still gives those stems 1.6-2.4 device px. */}
+            <Logo className="h-8 md:h-10" priority />
           </Link>
 
           <nav aria-label="Primary" className="hidden lg:block">

@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { DownloadLibrary } from "@/components/forms/DownloadLibrary";
 
 export const metadata = pageMetadata({
-  title: "Data sheets & documentation | ABsource Biologics",
+  title: "Data sheets & documentation",
   description:
     "Technical data sheets for the DVS culture range and the current certification pack, for QA and vendor-approval files.",
   path: "/downloads",
@@ -26,7 +26,7 @@ export default function DownloadsPage() {
             as="h1"
             eyebrow="Documentation"
             title="Data sheets and certification."
-            lede="We ask for an email once, so we know who to answer questions from. After that, downloads in this session are open."
+            lede="Data sheets carry composition, dosage and incubation parameters, so we confirm the dairy before we send one. Tell us who you are and a technologist emails it across."
           />
         </div>
       </section>

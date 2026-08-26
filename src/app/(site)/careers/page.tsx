@@ -5,7 +5,7 @@ import { CareersForm } from "@/components/forms/CareersForm";
 import { vision } from "@/content/company";
 
 export const metadata = pageMetadata({
-  title: "Careers | ABsource Biologics, Pune",
+  title: "Careers in Pune",
   description:
     "Microbiologists, biotechnologists and dairy technologists. We build cultures that did not exist in India before 2016.",
   path: "/careers",

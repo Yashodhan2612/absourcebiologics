@@ -22,11 +22,28 @@ import { challengeResponse } from "@/content/company";
  */
 export function ChallengeResponse({
   weight = "full",
+  pick,
 }: {
   /** "full" gives the section a viewport of its own on the homepage.
    *  "compact" tightens it for /why-absource, where it is one of several. */
   weight?: "full" | "compact";
+  /**
+   * Render only these rows, by id, in the order given.
+   *
+   * A filter rather than a second array, deliberately. The homepage shows a
+   * subset and /why-absource shows all six; the entire reason this data is
+   * shared is so the wording cannot drift between them, and a duplicated array
+   * would defeat that. Unknown ids are ignored rather than throwing — a typo
+   * should not take down the homepage.
+   */
+  pick?: readonly string[];
 }) {
+  const rows = pick
+    ? pick
+        .map((id) => challengeResponse.find((r) => r.id === id))
+        .filter((r): r is (typeof challengeResponse)[number] => r !== undefined)
+    : challengeResponse;
+
   const [collapsible, setCollapsible] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -43,7 +60,7 @@ export function ChallengeResponse({
 
   return (
     <dl className={cn("border-t border-ab-chill", weight === "compact" && "text-[0.95em]")}>
-      {challengeResponse.map((row, i) => {
+      {rows.map((row, i) => {
         const open = !collapsible || openIndex === i;
         return (
           <div

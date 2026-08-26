@@ -43,7 +43,7 @@ export function CareersForm() {
       successBody={`Thanks — we'll be in touch if there's a fit. Send your CV to ${company.email} with the same name so we can match them up.`}
       onSubmit={(e) => {
         e.preventDefault();
-        void submit(values);
+        void submit(values, e.currentTarget);
       }}
     >
       <TextField
