@@ -36,6 +36,30 @@ finished with all motion disabled.
 
 ---
 
+## Package manager
+
+**pnpm, pinned to the version in `packageManager`.** Vercel installs with
+`--frozen-lockfile`, so a `package.json` changed without regenerating
+`pnpm-lock.yaml` fails the deploy with `ERR_PNPM_OUTDATED_LOCKFILE` rather
+than building something the lockfile does not describe.
+
+```bash
+corepack enable          # or: npm install -g pnpm@9.15.9
+pnpm install
+```
+
+Do not use `npm install` here. It writes a `package-lock.json` — gitignored,
+but it makes Next mis-detect the workspace root — and it leaves
+`pnpm-lock.yaml` untouched, which is exactly the deploy failure above. After
+any dependency change, run `pnpm install` and commit the lockfile, then
+confirm with:
+
+```bash
+pnpm install --frozen-lockfile   # what Vercel runs
+```
+
+---
+
 ## Environment variables
 
 **Every one of these is optional.** The app builds and runs without any of
@@ -100,8 +124,8 @@ accepts and shows a success state, and the lead is written to the server log,
 but no email is sent. That is the intended degradation, and it is the failure
 people discover after launch rather than before — so run the verifier.
 
-Also confirm `hr@absourcebiologics.com` and `qa@absourcebiologics.com` exist
-and are monitored. They are defaults, and nothing checks that they resolve.
+`info@`, `hr@` and `qa@absourcebiologics.com` are all confirmed by the client
+as existing, monitored mailboxes.
 
 Where each form lands is a total `Record<LeadType, string>` in
 `src/lib/email.ts`, so adding a lead type without routing it is a compile
