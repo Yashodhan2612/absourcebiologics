@@ -44,14 +44,38 @@ them; each missing service degrades rather than breaking.
 | Variable | Used for | Without it |
 |---|---|---|
 | `RESEND_API_KEY` | Lead + autoresponder email | Leads are logged to the console as structured records. Nothing is lost. |
-| `SALES_INBOX` | Domestic lead destination | Falls back to `info@absourcebiologics.com` |
-| `EXPORT_INBOX` | Export lead destination | Falls back to `SALES_INBOX` |
+| `SALES_INBOX` | Quote, contact, selector and data-sheet leads | Falls back to `info@absourcebiologics.com` |
+| `EXPORT_INBOX` | Export enquiries | Falls back to `SALES_INBOX` |
+| `HR_INBOX` | Careers applications | Falls back to `hr@absourcebiologics.com` |
+| `QA_INBOX` | Vendor audit requests | Falls back to `qa@absourcebiologics.com` |
 | `LEAD_FROM` | From address | Falls back to `noreply@absourcebiologics.com` |
 | `UPSTASH_REDIS_REST_URL` / `..._TOKEN` | Rate limiting (5/hour/IP) | Falls back to an in-process counter — weaker (per-instance, resets on cold start) but better than none |
 | `DOWNLOAD_SECRET` | Signing gated-document tokens | A per-boot random secret is used; tokens simply expire on restart. Never fails open. |
 
 Set `DOWNLOAD_SECRET` in production, or every deploy invalidates outstanding
 download links.
+
+### Email will not send until Resend is configured
+
+This is the one that catches people. Every form on the site validates, accepts
+a submission, shows a success state and sends an autoresponse *path* — but
+`deliverLead` returns early when `RESEND_API_KEY` is absent, so **no email
+reaches anyone**. The lead is written to the server log as a structured record
+and nothing is lost, but nobody is notified.
+
+To go live:
+
+1. Set `RESEND_API_KEY`.
+2. Verify `absourcebiologics.com` as a sending domain in Resend, and publish
+   the SPF and DKIM records it gives you. Without this, mail to
+   `hr@`/`qa@`/`info@` on the same domain is likely to be filed as spam.
+3. Confirm `hr@absourcebiologics.com` and `qa@absourcebiologics.com` exist and
+   are monitored. They are the defaults and nothing checks that they resolve.
+4. Submit one of each form type and confirm arrival.
+
+Where each form lands is a total `Record<LeadType, string>` in
+`src/lib/email.ts`, so adding a lead type without routing it is a compile
+error, and `src/lib/email.test.ts` pins every destination.
 
 ---
 
