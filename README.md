@@ -43,7 +43,10 @@ them; each missing service degrades rather than breaking.
 
 | Variable | Used for | Without it |
 |---|---|---|
-| `RESEND_API_KEY` | Lead + autoresponder email | Leads are logged to the console as structured records. Nothing is lost. |
+| `SMTP_HOST` | Mail relay hostname, e.g. `smtp.gmail.com` | Leads are logged to the console as structured records. Nothing is lost, but nobody is notified. |
+| `SMTP_PORT` | `465` (implicit TLS) or `587` (STARTTLS) | Defaults to `465` |
+| `SMTP_USER` | The mailbox to authenticate as | As `SMTP_HOST` |
+| `SMTP_PASS` | Its password, or an App Password | As `SMTP_HOST` |
 | `SALES_INBOX` | Quote, contact, selector and data-sheet leads | Falls back to `info@absourcebiologics.com` |
 | `EXPORT_INBOX` | Export enquiries | Falls back to `SALES_INBOX` |
 | `HR_INBOX` | Careers applications | Falls back to `hr@absourcebiologics.com` |
@@ -55,27 +58,56 @@ them; each missing service degrades rather than breaking.
 Set `DOWNLOAD_SECRET` in production, or every deploy invalidates outstanding
 download links.
 
-### Email will not send until Resend is configured
+### Email: plain SMTP, no email service
 
-This is the one that catches people. Every form on the site validates, accepts
-a submission, shows a success state and sends an autoresponse *path* — but
-`deliverLead` returns early when `RESEND_API_KEY` is absent, so **no email
-reaches anyone**. The lead is written to the server log as a structured record
-and nothing is lost, but nobody is notified.
+Notifications go out over SMTP through any mailbox that accepts authenticated
+submission. There is no email API account to create and nothing to pay for —
+a spare Gmail address is enough.
 
-To go live:
+**With a Gmail account**, which is the cheapest thing that works:
 
-1. Set `RESEND_API_KEY`.
-2. Verify `absourcebiologics.com` as a sending domain in Resend, and publish
-   the SPF and DKIM records it gives you. Without this, mail to
-   `hr@`/`qa@`/`info@` on the same domain is likely to be filed as spam.
-3. Confirm `hr@absourcebiologics.com` and `qa@absourcebiologics.com` exist and
-   are monitored. They are the defaults and nothing checks that they resolve.
-4. Submit one of each form type and confirm arrival.
+1. Turn on 2-Step Verification for the account.
+2. Create an **App Password** (Google Account → Security → App passwords). It
+   is 16 characters. The ordinary login password will not work; Google
+   removed that in 2022.
+3. Set:
+
+   ```
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=465
+   SMTP_USER=absource.website@gmail.com
+   SMTP_PASS=<the 16-character App Password>
+   ```
+
+4. `node scripts/verify-email.mjs --send` and check the three inboxes.
+
+Any other provider works the same way — Zoho, Outlook, the hosting company's
+own SMTP. Only the four variables change.
+
+**The sender does not have to be an ABsource address.** With Gmail it cannot
+be: Gmail rewrites `From` to the authenticated account. That is fine, because
+the notification only has to *reach* `info@` / `hr@` / `qa@`, and it arrives as
+an ordinary authenticated Gmail message — which lands far more reliably than
+an unverified `noreply@absourcebiologics.com` would. `replyTo` is set to the
+person who filled the form, so replying to the notification reaches them.
+
+The one cosmetic cost: the autoresponse the enquirer receives also comes from
+that address. If that matters, use a mailbox on the company domain instead and
+set `LEAD_FROM` — the code does not care which.
+
+**Nothing is notified until these are set.** Every form still validates,
+accepts and shows a success state, and the lead is written to the server log,
+but no email is sent. That is the intended degradation, and it is the failure
+people discover after launch rather than before — so run the verifier.
+
+Also confirm `hr@absourcebiologics.com` and `qa@absourcebiologics.com` exist
+and are monitored. They are defaults, and nothing checks that they resolve.
 
 Where each form lands is a total `Record<LeadType, string>` in
 `src/lib/email.ts`, so adding a lead type without routing it is a compile
-error, and `src/lib/email.test.ts` pins every destination.
+error. `src/lib/email.test.ts` pins every destination, and
+`scripts/verify-email-routing.mjs` proves the whole path end to end against a
+throwaway local SMTP server — no credentials needed.
 
 ---
 

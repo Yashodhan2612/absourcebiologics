@@ -2,22 +2,62 @@ import type { Lead, LeadType } from "./schema";
 import { downloadBySlug, requesterRoleLabel } from "@/content/downloads";
 
 /**
- * Transactional email.
+ * Transactional email, over plain SMTP.
  *
- * Resend is optional at build and run time. With RESEND_API_KEY absent the app
- * still builds, still accepts submissions and logs a structured record to the
- * console — so local development and a preview deploy never silently lose a
- * lead, and a missing env var can never take the forms down in production.
+ * NO EMAIL API SERVICE. This talks SMTP directly, so it relays through any
+ * mailbox that will accept authenticated submission — a spare Gmail account, a
+ * Zoho or Outlook mailbox, or the hosting provider's own SMTP. Nothing has to
+ * be bought and no account beyond the mailbox itself has to be created.
  *
- * The Resend SDK is imported dynamically so it stays out of the bundle graph
- * entirely when unused.
+ * One thing worth being straight about: code cannot put a message in someone's
+ * inbox on its own. Something has to relay it, and delivering straight to the
+ * recipient's mail server from an application is not an option — cloud hosts
+ * block outbound port 25, and mail arriving from a datacentre IP with no SPF,
+ * DKIM or reverse DNS is rejected or spam-filed on sight. Authenticating to a
+ * mailbox that already has a delivery reputation is what makes this arrive.
+ *
+ * SENDER vs RECIPIENT. The sender does not have to be an ABsource address, and
+ * with Gmail it cannot be — Gmail rewrites From to the authenticated account.
+ * That is fine: the notification only has to REACH info@ / hr@ / qa@, and it
+ * arrives as an ordinary authenticated Gmail message, which is considerably
+ * more deliverable than an unverified noreply@absourcebiologics.com would be.
+ * `replyTo` is set to the person who filled the form, so replying still works.
+ *
+ * With SMTP_HOST absent the app still builds, still accepts submissions and
+ * logs a structured record to the console — a missing env var can never take
+ * the forms down.
+ *
+ * nodemailer is imported dynamically so it stays out of the bundle graph when
+ * unused, and it keeps this route on the Node runtime rather than Edge, which
+ * has no TCP sockets.
  */
 
 const SALES_INBOX = process.env.SALES_INBOX ?? "info@absourcebiologics.com";
 const EXPORT_INBOX = process.env.EXPORT_INBOX ?? SALES_INBOX;
 const HR_INBOX = process.env.HR_INBOX ?? "hr@absourcebiologics.com";
 const QA_INBOX = process.env.QA_INBOX ?? "qa@absourcebiologics.com";
-const FROM = process.env.LEAD_FROM ?? "ABsource Biologics <noreply@absourcebiologics.com>";
+/**
+ * SMTP connection. Every field is an environment variable; nothing is
+ * hardcoded, so the same build points at a throwaway mailbox in preview and
+ * the real one in production.
+ *
+ * Port 465 is implicit TLS, 587 is STARTTLS. Defaulting to 465 because that is
+ * what Gmail wants and it fails closed rather than starting in the clear.
+ */
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_PORT = Number(process.env.SMTP_PORT ?? 465);
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+
+/**
+ * The From address.
+ *
+ * Defaults to the authenticated SMTP user, because most providers — Gmail
+ * certainly — refuse to send as anything else, and a From the provider
+ * rewrites is worse than one chosen honestly. Override with LEAD_FROM only
+ * when the mailbox is allowed to send as that address.
+ */
+const FROM = process.env.LEAD_FROM ?? SMTP_USER ?? "noreply@absourcebiologics.com";
 
 /**
  * Where each kind of enquiry lands.
@@ -245,6 +285,77 @@ function renderVerificationBlock(lead: Lead, context: DownloadContext): string {
   </div>`;
 }
 
+/**
+ * The SMTP transport, created once per warm instance.
+ *
+ * Serverless reuses a container across invocations, so caching the transporter
+ * lets nodemailer keep the connection pool alive and skips a TLS handshake on
+ * every submission. `pool: true` is what makes that reuse actually happen; a
+ * cold start pays for one connection and subsequent leads ride on it.
+ *
+ * Typed as an inline structural type rather than importing nodemailer's own,
+ * because a top-level type import would pull the package into the bundle
+ * graph and defeat the dynamic import below.
+ */
+type MailTransport = {
+  sendMail(options: {
+    from: string;
+    to: string;
+    replyTo?: string;
+    subject: string;
+    html: string;
+  }): Promise<unknown>;
+  verify(): Promise<true>;
+};
+
+let transportPromise: Promise<MailTransport> | null = null;
+
+function getTransport(): Promise<MailTransport> {
+  transportPromise ??= (async () => {
+    const nodemailer = await import("nodemailer");
+    return nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      // 465 is implicit TLS; 587 upgrades with STARTTLS. Getting this wrong is
+      // the single most common cause of a hang on submit.
+      secure: SMTP_PORT === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+      pool: true,
+      maxConnections: 2,
+      // Fail fast. A lead form that hangs for the platform's full function
+      // timeout is worse than one that reports a failure the caller can act
+      // on — and the lead is already in the log either way.
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
+    }) as unknown as MailTransport;
+  })();
+  return transportPromise;
+}
+
+/**
+ * Prove the credentials work without sending anything.
+ *
+ * Used by scripts/verify-email.mjs and worth calling after any change to the
+ * mail environment — an SMTP misconfiguration is otherwise invisible until a
+ * real lead is lost.
+ */
+export async function verifyTransport(): Promise<DeliveryResultVerify> {
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    return { ok: false, reason: "SMTP_HOST/SMTP_USER/SMTP_PASS not set" };
+  }
+  try {
+    await (await getTransport()).verify();
+    return { ok: true, host: SMTP_HOST, port: SMTP_PORT, user: SMTP_USER, from: FROM };
+  } catch (error) {
+    return { ok: false, reason: error instanceof Error ? error.message : "verify failed" };
+  }
+}
+
+export type DeliveryResultVerify =
+  | { ok: true; host: string; port: number; user: string; from: string }
+  | { ok: false; reason: string };
+
 export type DeliveryResult = { delivered: boolean; reason?: string };
 
 export async function deliverLead(
@@ -259,16 +370,22 @@ export async function deliverLead(
     JSON.stringify({ at: new Date().toISOString(), ...lead, companyWebsite: undefined })
   );
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    return { delivered: false, reason: "RESEND_API_KEY not set — logged to console only" };
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    return {
+      delivered: false,
+      reason: "SMTP_HOST/SMTP_USER/SMTP_PASS not set — logged to console only",
+    };
   }
 
   try {
-    const { Resend } = await import("resend");
-    const resend = new Resend(apiKey);
+    const transport = await getTransport();
 
-    await resend.emails.send({
+    // The team notification is the one that matters, so it is sent and awaited
+    // first and on its own. If the autoresponse to the requester then fails —
+    // a typo'd address is the usual cause — the lead has still been delivered
+    // and the team still knows. Sending both together would let a bad
+    // recipient address on the customer's side hide a perfectly good lead.
+    await transport.sendMail({
       from: FROM,
       to: inboxFor(lead),
       replyTo: lead.email,
@@ -276,18 +393,25 @@ export async function deliverLead(
       html: renderHtml(lead, context),
     });
 
-    await resend.emails.send({
-      from: FROM,
-      to: lead.email,
-      subject: "We've got your enquiry — ABsource Biologics",
-      html: renderAutoresponse(lead),
-    });
+    try {
+      await transport.sendMail({
+        from: FROM,
+        to: lead.email,
+        subject: "We've got your enquiry — ABsource Biologics",
+        html: renderAutoresponse(lead),
+      });
+    } catch (error) {
+      console.warn("[lead] autoresponse failed; notification was delivered", error);
+    }
 
     return { delivered: true };
   } catch (error) {
     // Never fail the user's submission because email failed — the lead is
     // already in the log above and can be recovered from there.
     console.error("[lead] delivery failed", error);
-    return { delivered: false, reason: "delivery failed" };
+    return {
+      delivered: false,
+      reason: error instanceof Error ? error.message : "delivery failed",
+    };
   }
 }
