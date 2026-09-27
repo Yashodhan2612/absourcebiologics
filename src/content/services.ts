@@ -52,23 +52,33 @@ export const services: readonly Service[] = [
     ],
   },
   {
-    slug: "microbiology-testing",
-    name: "Microbiology testing",
+    slug: "custom-product-development",
+    name: "Custom product development",
     summary:
-      "Product safety and quality testing for dairy manufacturers, run in our own lab.",
+      "The finished dairy product developed end to end — recipe, process and culture together — not just the culture that goes into it.",
     forWhom:
-      "Producers who need testing capacity they do not have in-house, and anyone validating a new product before launch.",
+      "Producers launching a product rather than reformulating one: a new dahi variant for a new market, a fermented beverage, a cheese the line has never run.",
+    /**
+     * Distinct from custom culture development, and the distinction matters
+     * commercially. That service ends at a blend that performs. This one owns
+     * the product: the recipe around the blend, the process parameters to make
+     * it repeatable, and the shelf-life behaviour it has to survive.
+     */
     includes: [
-      "Product safety testing",
-      "Culture viability and count verification",
-      "Shelf-life studies",
-      "Contamination investigation when a batch fails",
+      "Product concept worked up against your market and your price point",
+      "Recipe development — milk standardisation, solids, stabiliser and culture together",
+      "The culture blend selected or developed to suit that recipe",
+      "Process parameters: incubation, cooling, packing and the limits on each",
+      "Shelf-life and stability behaviour across your distribution chain",
+      "Pilot batches, then scale-up on your own line",
     ],
     process: [
-      { step: "Define the question", detail: "What you need to know, and what decision rests on it." },
-      { step: "Sampling plan", detail: "What to send, how much, and how to transport it." },
-      { step: "Testing", detail: "Run in our in-process QC lab." },
-      { step: "Report", detail: "Results with an interpretation you can act on, not just a number." },
+      { step: "The brief", detail: "The product you want to sell, who buys it and what it has to cost." },
+      { step: "Formulation", detail: "Recipe and culture developed together in our R&D lab." },
+      { step: "Pilot", detail: "Small batches, assessed against the brief rather than against a spec sheet." },
+      { step: "Plant trial", detail: "The formulation run on your own line, at your own volumes." },
+      { step: "Stabilise", detail: "Process parameters fixed, shelf life confirmed, limits documented." },
+      { step: "Launch support", detail: "Commercial supply of the culture, and support through the first production runs." },
     ],
   },
 ];

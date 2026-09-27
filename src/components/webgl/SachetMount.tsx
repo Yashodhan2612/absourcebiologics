@@ -49,7 +49,7 @@ export function SachetMount({
   // error event, the loader promise rejects, and it throws through the bare
   // Suspense below. There is no error boundary anywhere under src/app, so that
   // takes the whole route down rather than degrading to the flat pack.
-  // ABFERMENTA has no artwork yet.
+  // FERMENTA has no artwork yet.
   const eligible =
     tier === 3 && category === "cultures" && image.length > 0 && !failed;
   const idle = useDeferredMount(eligible && near);

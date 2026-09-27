@@ -40,7 +40,7 @@ export function CareersForm() {
       startedAt={startedAt}
       submitLabel="Send application"
       successTitle="Received."
-      successBody={`Thanks — we'll be in touch if there's a fit. Send your CV to ${company.email} with the same name so we can match them up.`}
+      successBody={`Thanks — your application has gone to our HR team and a person will read it. Send your CV to ${company.hrEmail} with the same name so we can match them up.`}
       onSubmit={(e) => {
         e.preventDefault();
         void submit(values, e.currentTarget);
@@ -84,8 +84,8 @@ export function CareersForm() {
       />
       <p className="text-[0.875rem] leading-[1.6] text-ab-ink-60">
         Send your CV to{" "}
-        <a href={`mailto:${company.email}`} className="link-wipe text-ab-ink no-underline">
-          {company.email}
+        <a href={`mailto:${company.hrEmail}`} className="link-wipe text-ab-ink no-underline">
+          {company.hrEmail}
         </a>{" "}
         after submitting this form and we will match it to your application.
       </p>

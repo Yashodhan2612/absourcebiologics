@@ -151,7 +151,7 @@ export const solutions: readonly Solution[] = [
     faqs: [
       {
         q: "Can you support the regulatory side of a probiotic claim?",
-        a: "We can supply the culture and our microbiology testing service. The claim itself must be confirmed against current FSSAI requirements — talk to a technologist early.",
+        a: "We can supply the culture, and develop the product around it if the claim is central to it. The claim itself must be confirmed against current FSSAI requirements — talk to a technologist early.",
       },
     ],
   },

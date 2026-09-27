@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { Chip, ChipStatic } from "@/components/ui/Chip";
 import { Stat } from "@/components/ui/Stat";
 import { CardLink, CardMedia, CardBody } from "@/components/ui/Card";
@@ -141,15 +141,15 @@ export default function StyleguidePage() {
         </div>
       </Block>
 
-      <Block title="Strain codes">
+      <Block title="Product codes">
         <div className="flex flex-wrap items-center gap-3">
-          <StrainCode code="CU01" />
-          <StrainCode code="YC01" />
-          <StrainCode code="MD01" tone="muted" />
+          <ProductCode code="CU01" />
+          <ProductCode code="YC01" />
+          <ProductCode code="MD01" tone="muted" />
         </div>
         <div className="ab-reversed mt-4 flex gap-3 bg-ab-tank p-6">
-          <StrainCode code="CH01" tone="reversed" />
-          <StrainCode code="PB01" tone="reversed" />
+          <ProductCode code="CH01" tone="reversed" />
+          <ProductCode code="PB01" tone="reversed" />
         </div>
       </Block>
 

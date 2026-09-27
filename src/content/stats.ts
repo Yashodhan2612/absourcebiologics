@@ -46,14 +46,18 @@ export const stats = {
   /**
    * Derived, not typed in. A hardcoded count silently disagrees with the
    * catalogue the moment a SKU is added — which is exactly what happened when
-   * ABFERMENTA arrived and this said 13 while /products listed 14.
+   * FERMENTA arrived and this said 13 while /products listed 14.
+   *
+   * Labelled "culture lines", not "DVS culture lines". Thirteen of the
+   * fourteen declare Direct Vat Set on their own page; FERMENTA's format is
+   * still to be confirmed (CONTENT-TODO §0b), and a count is the one place a
+   * qualifier gets silently applied to a member that has not earned it. Put
+   * "DVS" back once the client confirms.
+   *
+   * This counts PRODUCT LINES. The coded cultures within them (around forty,
+   * in src/content/cultures.ts) are a different number and are never conflated
+   * with this one.
    */
-  //
-  // Labelled "culture lines", not "DVS culture lines". Thirteen of the
-  // fourteen declare Direct Vat Set on their own page; ABFERMENTA's format is
-  // still to be confirmed (CONTENT-TODO §0b), and a count is the one place a
-  // qualifier gets silently applied to a member that has not earned it. Put
-  // "DVS" back once the client confirms.
   cultureLines: { value: cultures.length, verified: true },
   qualityChecks: { value: 24, verified: true },
   flavourPortfolio: {

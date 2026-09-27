@@ -33,6 +33,17 @@ export const company = {
     country: "India",
   },
   email: "info@absourcebiologics.com",
+  /**
+   * Departmental inboxes. Recruitment and vendor audits do not belong in the
+   * sales inbox: different people answer them, on different timescales, and a
+   * candidate's CV sitting in a sales queue is how applications get lost.
+   *
+   * These are display addresses. Where the SERVER routes a submission is set
+   * in src/lib/email.ts, which reads them from environment variables so a
+   * preview deploy can point elsewhere. Keep the two in step.
+   */
+  hrEmail: "hr@absourcebiologics.com",
+  qaEmail: "qa@absourcebiologics.com",
   phones: ["+91 91686 96640", "+91 90283 11133"],
 } as const;
 
@@ -93,6 +104,40 @@ export const proposition = {
     "A scientist and a biotechnologist founded the company, and we still develop every blend in our own R&D lab. The science sits inside the company rather than being bought in.",
   ],
 } as const;
+
+/**
+ * The closing line of "Why we exist" — the four credentials behind the claim.
+ *
+ * WORDING IS THE CLIENT'S OWN, supplied verbatim. Two notes for whoever edits
+ * this next, so neither gets "corrected" by accident:
+ *
+ *  1. "State-of-the-Art" is on the banned-words list in Section 13 of the
+ *     build brief. It is here because the client specified this line
+ *     explicitly. Their copy decision overrides the house style rule; do not
+ *     silently rewrite it, raise it with them.
+ *
+ *  2. GMP is the one credential on this list with NO supporting document in
+ *     the asset set. ISO 9001, ISO 22000 and HALAL are all in
+ *     certifications.ts with scans; GMP is not, and the FSSAI licence does not
+ *     mention it either. It is published on the client's own assertion.
+ *     Tracked in CONTENT-TODO.md §0h — get the certificate.
+ *
+ * `body` is optional and omitted here: these are credentials, not capability
+ * descriptions, and padding each with a sentence would dilute them.
+ */
+export type Capability = {
+  readonly id: string;
+  readonly title: string;
+  /** Optional supporting line. Omitted for credentials, which stand alone. */
+  readonly body?: string;
+};
+
+export const capabilities: readonly Capability[] = [
+  { id: "clean-rooms", title: "State-of-the-Art Clean Rooms" },
+  { id: "gmp", title: "GMP compliance certificate" },
+  { id: "iso", title: "ISO 9001, ISO 22000 certified company" },
+  { id: "halal", title: "HALAL certified products" },
+];
 
 /** Our promise — four commitments. Parallel structure retained deliberately. */
 export const promise = {
@@ -223,7 +268,7 @@ export const challengeResponse = [
     id: "fragmented-support",
     challenge: "Fragmented support",
     response:
-      "Microbiology testing for product safety and turnkey plant consultancy alongside the cultures themselves.",
+      "Custom product development and turnkey plant consultancy alongside the cultures themselves.",
   },
 ] as const;
 

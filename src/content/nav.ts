@@ -90,9 +90,10 @@ export const primaryNav: readonly NavItem[] = [
     children: [
       { href: "/about", label: "About", description: "Why the company exists" },
       { href: "/about/leadership", label: "Leadership", description: "The founders" },
+      { href: "/team", label: "The team", description: "The department heads" },
       { href: "/customers", label: "Customers", description: "Who we supply" },
       { href: "/news", label: "News & events", description: "Exhibitions and technical notes" },
-      { href: "/careers", label: "Careers", description: "Open roles" },
+      { href: "/careers", label: "Careers", description: "Send an open application" },
     ],
   },
   // Deliberately a distinct top-level item rather than a Company child — the
@@ -122,6 +123,7 @@ export const footerNav: readonly { title: string; links: readonly NavLink[] }[] 
       { href: "/quality", label: "Quality" },
       { href: "/about", label: "About" },
       { href: "/about/leadership", label: "Leadership" },
+      { href: "/team", label: "The team" },
       { href: "/customers", label: "Customers" },
       { href: "/news", label: "News & events" },
       { href: "/careers", label: "Careers" },
@@ -136,7 +138,7 @@ export const footerNav: readonly { title: string; links: readonly NavLink[] }[] 
       // Added when the homepage services grid was removed — without these two
       // the only route to them is the Services mega menu.
       { href: "/services/turnkey-plant-setup", label: "Turnkey plant setup" },
-      { href: "/services/microbiology-testing", label: "Microbiology testing" },
+      { href: "/services/custom-product-development", label: "Custom product development" },
       { href: "/contact", label: "Contact" },
     ],
   },

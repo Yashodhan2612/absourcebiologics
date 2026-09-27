@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
 import { SelectorWizard } from "@/components/selector/SelectorWizard";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { cultures } from "@/content/products";
+import { CultureLines } from "@/components/selector/CultureLines";
 
 export const metadata = pageMetadata({
   title: "Culture Selector — find your DVS starter",
@@ -16,7 +16,7 @@ export const metadata = pageMetadata({
  *
  * The wizard itself is a client component because its state lives in URL
  * params, but the culture lines are rendered server-side below it so
- * that every SKU name and strain code is in the crawlable HTML regardless of
+ * that every SKU name and product code is in the crawlable HTML regardless of
  * how far into the wizard a visitor gets.
  */
 export default function CultureSelectorPage() {
@@ -50,24 +50,24 @@ export default function CultureSelectorPage() {
         </div>
       </section>
 
-      {/* Server-rendered so the whole range is indexable from this page. */}
+      {/*
+        The culture catalogue. Every panel is in the server-rendered HTML and
+        hidden with `hidden` rather than unmounted, so every code is indexable
+        and findable with find-in-page whichever tab is open.
+      */}
       <section className="border-t border-ab-chill py-16">
         <div className="container-ab">
-          <h2 className="mono-ab mb-6 text-ab-ink-60">
-            The DVS culture lines
-          </h2>
-          <ul className="flex flex-wrap gap-x-8 gap-y-2">
-            {cultures.map((culture) => (
-              <li key={culture.slug} className="text-[0.9375rem] text-ab-ink-60">
-                {culture.strainCode ? (
-                  <>
-                    <span className="mono-ab text-ab-tank">{culture.strainCode}</span>{" "}
-                  </>
-                ) : null}
-                {culture.name} &middot; {culture.summary}
-              </li>
-            ))}
-          </ul>
+          <div className="mb-8 max-w-3xl">
+            <h2 className="text-[1.75rem] leading-[1.1] tracking-[-0.02em] md:text-[2.25rem]">
+              The DVS culture lines
+            </h2>
+            <p className="measure-ab mt-4 text-base leading-[1.65] text-ab-ink-60">
+              Each product line covers several coded cultures, separated by how
+              the curd sets and how sour it finishes. These are the codes to
+              quote on an order.
+            </p>
+          </div>
+          <CultureLines />
         </div>
       </section>
     </>

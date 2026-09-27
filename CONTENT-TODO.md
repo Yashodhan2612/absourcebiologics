@@ -81,10 +81,11 @@ fetch script if you need them back.
 
 ---
 
-## 0b. ABFERMENTA — added on request, almost nothing known
+## 0b. FERMENTA — added on request, almost nothing known
 
 The client asked for "Fermenta" to be added to the product list. It is now in
-`src/content/products.ts` as **ABFERMENTA**, and it is the only SKU on the site
+`src/content/products.ts` as **FERMENTA** (renamed from ABFERMENTA at the
+client's instruction — the product is Fermenta, not ABFermenta), and it is the only SKU on the site
 about which we can state essentially nothing.
 
 It does not exist on the live site either — a search of absourcebiologics.com
@@ -108,7 +109,7 @@ so there was no existing copy to work from and nothing has been inferred.
    it. Put "DVS" back into those four strings once this is confirmed.
 2. **What is its strain code?** The other thirteen codes are real identifiers
    printed on the sachet — they are literally the live site's own pack-image
-   filenames — so one could not be invented here. Until it arrives ABFERMENTA
+   filenames — so one could not be invented here. Until it arrives FERMENTA
    does not appear in the strain rail or the hero chain motif, both of which
    now track *published codes* rather than culture lines.
 3. **Is there pack artwork?** There is none in `public/assets/products/`, so
@@ -127,6 +128,121 @@ so there was no existing copy to work from and nothing has been inferred.
    recommend it. That is correct until someone can say what it suits.
 8. **The summary and description.** They currently say only that it is part of
    the range, which is the only fact the client's message established.
+
+---
+
+## 0c. Product codes — two transcription calls to confirm
+
+The real codes are now on the site, from "Curd variants as per the Taste
+profile.xlsx", and the placeholder codes written during the build (CU01, LF01,
+YC01, BU01, LB01, CH01, LA01, MD01, SH01, CR01, PB01, KF01, BS01) have been
+deleted. A buyer could not tell the two apart, which made them worse than no
+code at all.
+
+Two cells needed a judgement call. Both are one-line fixes if wrong:
+
+1. **"AB452Nx"** is published as **AB452NX**. Casing only.
+2. **"AB755"** (Mild & thick set) is published as **AB755NX**, because AB755NX
+   appears in two other cells and a bare AB755 appears in exactly one. If these
+   are genuinely two different codes, say so and the entry splits back in two.
+
+Also outstanding: cell B19 of the spreadsheet reads **"CAN GO AT RT"** under the
+Creamy & Rich column. It has not been published anywhere — it reads like a note
+about room-temperature stability, but a storage claim is not something to infer
+from three words in a spreadsheet. Confirm what it means and where it applies.
+
+**No codes at all were supplied for:** cheese, paneer, buttermilk/chach, lassi,
+shrikhand, mishti doi, cultured ghee, kefir, probiotic-functional (beyond the
+three curd probiotic codes) or the fermented-beverage lines. Those product
+pages therefore show no codes, and the Culture Selector returns the product
+line without one. Send the catalogue for those families and they populate with
+no code change.
+
+---
+
+## 0d. The four certificate scans expired in 2023
+
+All four are now displayed on /quality and on /why-absource, at a size where a
+reader can see the dates. The expiry printed on each scan we hold:
+
+| Certificate | Expiry on the scan |
+| --- | --- |
+| ISO 9001:2015 | 07 May 2023 |
+| ISO 22000:2018 | 24 May 2023 |
+| HACCP | 30 June 2023 |
+| HALAL | 28 May 2023 |
+
+The site continues to claim all four in the present tense, on the client's own
+assertion that certification is current. **That claim and these images now
+disagree in public.** Send the renewed scans; each one is a file swap plus one
+date in `src/content/certifications.ts` (`scanExpires`). `staleScans()` in that
+file returns everything still outstanding.
+
+Two of the files were also mislabelled — `iso-22000.*` contained the HALAL
+certificate and `halal.*` contained ISO 22000. Corrected.
+
+The **FSSAI licence is current** (Central Licence 10020022011369, valid to
+17 March 2029) and is published in full as a PDF at `/docs/fssai-licence.pdf`.
+
+---
+
+## 0e. The curd footage is illustrative, not the client's product
+
+The "Set curd that holds a clean cut" section plays a six-second loop built
+from a generated macro image of set curd taking a spoon cut
+(`public/assets/video/curd-scoop.mp4`, poster at
+`public/assets/editorial/curd-scoop.*`).
+
+**It is not a photograph of ABsource product and must never be captioned as
+one.** It is there because the client asked for scooping footage behind that
+statement and no real footage exists. Shoot five seconds of actual product at
+the plant and drop it in at the same paths — the markup needs no change.
+
+This replaced a WebGL milk-to-curd simulation, which is why nothing on the site
+pins to the scroll any more.
+
+---
+
+## 0f. AB704 and the vegan cultures — featured, but not supplied
+
+The brief asked for AB704, the vegan cultures and FERMENTA to be featured
+together. Only FERMENTA shipped: no specification arrived for the other two,
+and a featured slot is the worst place to put a name with nothing behind it.
+
+`src/content/featured.ts` has both stubbed out in comments with exactly the
+fields they need. Send for each: what it is, which product family, the taste or
+functional profile, and the codes. The section heading counts itself, so adding
+them needs no other change.
+
+---
+
+## 0g. /why-absource block 4 was briefed as a handshake
+
+No handshake photograph exists in the asset set, and stock imagery of strangers
+shaking hands is exactly the padding this site refuses. Block 4 ("End-to-end
+partnership") shows two operators working one vessel together instead — real
+people from the client's own plant, actually collaborating.
+
+If a handshake is wanted, it needs to be a real photograph of real people at
+ABsource. Every one of the five blocks now uses a distinct image used nowhere
+else on the site.
+
+---
+
+## 0h. GMP — claimed on the homepage, no certificate held
+
+The "Why we exist" credential strip publishes **"GMP compliance certificate"**
+at the client's explicit request. There is no GMP certificate in the asset set,
+it is not in `certifications.ts`, and the FSSAI licence does not mention it.
+
+Every other credential on that strip is backed by a document. This one is
+published on the client's assertion alone. Get the certificate, add it to
+`certifications.ts` alongside the others, and it joins the certificate wall.
+
+Note also that the same strip uses **"State-of-the-Art"**, which Section 13 of
+the build brief bans outright. It is the client's own specified wording and
+their decision overrides the house style rule — but it is the only banned word
+anywhere on the site, so do not "fix" it by reflex.
 
 ---
 

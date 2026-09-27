@@ -3,7 +3,7 @@ import Link from "next/link";
 import { pageMetadata, BreadcrumbJsonLd, FaqJsonLd } from "@/lib/seo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Accordion } from "@/components/ui/Accordion";
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { ColonyPlate } from "@/components/ui/ColonyPlate";
 import { SolutionIcon } from "@/components/ui/SolutionIcon";
 import { SpecTable } from "@/components/sections/SpecTable";
@@ -60,7 +60,7 @@ export default async function SolutionPage({
         <div className="absolute inset-0 -z-10" aria-hidden="true">
           {/* Full-bleed atmospheric ground, which is what ColonyPlate is for.
               A pack shot does not work here: it is object-contain by necessity
-              (cropping a sachet cuts off the strain code), so at 100vw it
+              (cropping a sachet cuts off the product code), so at 100vw it
               floats in the middle of the hero looking like a mistake. Pack
               photography belongs on the solution cards, where the media well
               is card-sized and the contain fit reads correctly. */}
@@ -118,7 +118,7 @@ export default async function SolutionPage({
                     className="group flex h-full flex-col gap-3 p-6 no-underline"
                   >
                     {product.strainCode ? (
-                      <StrainCode code={product.strainCode} tone="muted" />
+                      <ProductCode code={product.strainCode} tone="muted" />
                     ) : null}
                     <span className="font-display text-[1.25rem] tracking-[-0.02em] text-ab-ink transition-colors duration-150 ease-ab group-hover:text-ab-tank">
                       {product.name}

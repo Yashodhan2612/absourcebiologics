@@ -5,8 +5,8 @@ import { ChallengeResponse } from "@/components/sections/ChallengeResponse";
 import { ValueTable } from "@/components/sections/ValueTable";
 import { CTABand } from "@/components/sections/CTABand";
 import { Photo } from "@/components/ui/Photo";
+import { CertificateWall } from "@/components/sections/CertificateWall";
 import { differentiators, milestones } from "@/content/company";
-import { certifications } from "@/content/certifications";
 
 export const metadata = pageMetadata({
   title: "Why an indigenous DVS culture manufacturer",
@@ -18,27 +18,43 @@ export const metadata = pageMetadata({
 /**
  * Photography for the five differentiator blocks.
  *
- * There are three usable plant photographs, so the set cycles. That is
- * deliberate: repeating a real photograph of the actual facility is more
- * honest, and reads better to a technical buyer, than padding the page out
- * with stock imagery of a laboratory that is not ours.
+ * One photograph per block, each used NOWHERE ELSE on the site. The set used
+ * to be three photographs cycled across five slots, which put the same picture
+ * in blocks 1 and 4, repeated the homepage's QC-lab shot in block 3, and gave
+ * the customisation block a picture of a corridor. The client's new plant
+ * photography made that unnecessary.
  *
- * A fourth photograph exists in the asset set (a team group photo at an
- * event). It is a phone selfie and does not hold up at this size — it is left
- * for /careers if the client wants it there. See CONTENT-TODO.md.
+ * Each image is chosen to argue its own block rather than to decorate it:
+ *  01 pioneer        — the clean-room corridor: the plant itself.
+ *  02 science-led    — two technologists at the microscope.
+ *  03 customisation  — the packing hall, where different blends are filled to
+ *                      different specifications. The closest thing we have to a
+ *                      picture of "range".
+ *  04 partnership    — two operators working one vessel together.
+ *  05 proven quality — no photograph. The certificates and the FSSAI licence
+ *                      are the evidence, so the block shows the documents.
+ *
+ * Block 4 was briefed as a handshake. No such photograph exists in the asset
+ * set and stock imagery of strangers shaking hands is exactly the padding this
+ * site refuses, so it shows two people actually working together instead.
+ * Recorded in CONTENT-TODO.md §0g.
  */
 const DIFFERENTIATOR_PHOTOS = [
   {
-    src: "/assets/facility/plant-01.webp",
+    src: "/assets/facility/cleanroom-corridor.webp",
     alt: "The clean-room corridor at the ABsource plant in Chinchwad",
   },
   {
-    src: "/assets/facility/fermentation.webp",
-    alt: "Stainless-steel fermentation vessels in the production area",
+    src: "/assets/facility/microscopy.webp",
+    alt: "Two technologists examining a culture sample under the microscope",
   },
   {
-    src: "/assets/facility/qc-lab.webp",
-    alt: "Checking a culture sample under the microscope",
+    src: "/assets/facility/packing-hall.webp",
+    alt: "Blended cultures being weighed and filled into sachets in the packing hall",
+  },
+  {
+    src: "/assets/facility/inoculation-vessel.webp",
+    alt: "Two operators preparing an inoculation vessel together",
   },
 ] as const;
 
@@ -71,7 +87,9 @@ export default function WhyAbsourcePage() {
       <section className="section-ab-tight">
         <div className="container-ab">
           <ul className="flex flex-col">
-            {differentiators.map((item, i) => (
+            {differentiators.map((item, i) => {
+              const photo = DIFFERENTIATOR_PHOTOS[i];
+              return (
               <li
                 key={item.id}
                 className="grid items-center gap-10 border-b border-ab-chill py-14 lg:grid-cols-2 lg:gap-20"
@@ -85,21 +103,26 @@ export default function WhyAbsourcePage() {
                     {item.body}
                   </p>
                 </div>
-                <div
-                  className={`relative aspect-[16/10] overflow-hidden ${
-                    i % 2 === 1 ? "lg:order-1" : ""
-                  }`}
-                >
-                  <Photo
-                    src={DIFFERENTIATOR_PHOTOS[i % DIFFERENTIATOR_PHOTOS.length]!.src}
-                    alt={DIFFERENTIATOR_PHOTOS[i % DIFFERENTIATOR_PHOTOS.length]!.alt}
-                    sizes="(min-width: 1024px) 50vw, 100vw"
-                    parallax
-                    depth={0.45}
-                  />
+                <div className={i % 2 === 1 ? "lg:order-1" : undefined}>
+                  {photo ? (
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Photo
+                        src={photo.src}
+                        alt={photo.alt}
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        parallax
+                        depth={0.45}
+                      />
+                    </div>
+                  ) : (
+                    /* The last block argues proven quality, so it shows the
+                       documents rather than another picture of the plant. */
+                    <CertificateWall variant="compact" />
+                  )}
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
       </section>
@@ -149,19 +172,6 @@ export default function WhyAbsourcePage() {
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      <section className="section-ab-tight border-b border-ab-chill">
-        <div className="container-ab">
-          <Eyebrow className="mb-8">Certified</Eyebrow>
-          <ul className="flex flex-wrap gap-x-12 gap-y-4">
-            {certifications.map((c) => (
-              <li key={c.slug} className="font-display text-[1.5rem] tracking-[-0.02em] text-ab-tank">
-                {c.name}
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 

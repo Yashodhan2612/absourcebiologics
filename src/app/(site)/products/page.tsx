@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
-import { StrainIndex } from "@/components/layout/StrainIndex";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ChipLink } from "@/components/ui/Chip";
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { PackShot } from "@/components/ui/PackShot";
 import { CTABand } from "@/components/sections/CTABand";
 import {
@@ -80,7 +79,6 @@ export default async function ProductsPage({
         </div>
       </section>
 
-      <StrainIndex mode="sticky" />
 
       <section className="section-ab-tight">
         <div className="container-ab">
@@ -174,7 +172,7 @@ export default async function ProductsPage({
                       </div>
                       {product.strainCode ? (
                         <div className="absolute left-4 top-4">
-                          <StrainCode code={product.strainCode} />
+                          <ProductCode code={product.strainCode} />
                         </div>
                       ) : null}
                     </div>
