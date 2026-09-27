@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { pageMetadata, ProductJsonLd, BreadcrumbJsonLd } from "@/lib/seo";
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { ChipLink } from "@/components/ui/Chip";
 import { SachetMount } from "@/components/webgl/SachetMount";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -15,6 +15,7 @@ import {
   CATEGORY_LABELS,
   CULTURE_TYPE_LABELS,
 } from "@/content/products";
+import { profilesForProduct } from "@/content/cultures";
 import { solutions } from "@/content/solutions";
 import { downloadsForProduct } from "@/content/downloads";
 
@@ -56,6 +57,9 @@ export default async function ProductPage({
   const { category, slug } = await params;
   const product = productBySlug(category, slug);
   if (!product) notFound();
+
+  /** The coded taste profiles ordered against this line. Often empty. */
+  const lineProfiles = profilesForProduct(product.slug);
 
   const relatedApps = solutions.filter((s) =>
     (product.applications as readonly string[]).includes(s.slug)
@@ -118,7 +122,7 @@ export default async function ProductPage({
 
             <div className="flex flex-col justify-center">
               <div className="mb-6 flex items-center gap-3">
-                {product.strainCode ? <StrainCode code={product.strainCode} /> : null}
+                {product.strainCode ? <ProductCode code={product.strainCode} /> : null}
                 <Eyebrow>{CATEGORY_LABELS[product.category]}</Eyebrow>
               </div>
 
@@ -194,6 +198,54 @@ export default async function ProductPage({
         </div>
       </section>
 
+      {/*
+        The coded cultures inside this product line.
+        
+        A culture is a sub-category of a product, so this is the one place the
+        codes belong on a product page: after the specification, where a
+        technologist is deciding which variant to trial. The catalogue grid at
+        /products deliberately does NOT show them — that page lists products.
+        Renders nothing for lines with no coded catalogue yet.
+      */}
+      {lineProfiles.length > 0 ? (
+        <section className="section-ab-tight border-t border-ab-chill bg-ab-white">
+          <div className="container-ab">
+            <h2 className="mb-3 text-[2rem]">Cultures in this line</h2>
+            <p className="measure-ab mb-10 text-base leading-[1.65] text-ab-ink-60">
+              {product.name} covers {lineProfiles.length} taste{" "}
+              {lineProfiles.length === 1 ? "profile" : "profiles"}. Which one we
+              supply depends on your milk and the finish you are after — quote
+              the code, or tell us the product and we will confirm it.
+            </p>
+
+            <ul className="grid gap-px border border-ab-chill bg-ab-chill md:grid-cols-2">
+              {lineProfiles.map((profile) => (
+                <li key={profile.slug} className="bg-ab-white p-6 md:p-8">
+                  <h3 className="text-[1.25rem] leading-[1.25] text-ab-ink">
+                    {profile.name}
+                  </h3>
+                  <p className="mt-2 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
+                    {profile.summary}
+                  </p>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {profile.codes.map((code) => (
+                      <li key={code.code} className="flex flex-col gap-1">
+                        <ProductCode code={code.code} tone="muted" />
+                        {code.note ? (
+                          <span className="text-[0.8125rem] leading-[1.4] text-ab-ink-60">
+                            {code.note}
+                          </span>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
       {related.length > 0 ? (
         <section className="section-ab-tight border-t border-ab-chill bg-ab-white">
           <div className="container-ab">
@@ -205,7 +257,7 @@ export default async function ProductPage({
                     href={`/products/${p.category}/${p.slug}`}
                     className="group flex h-full flex-col gap-2 p-6 no-underline"
                   >
-                    {p.strainCode ? <StrainCode code={p.strainCode} tone="muted" /> : null}
+                    {p.strainCode ? <ProductCode code={p.strainCode} tone="muted" /> : null}
                     <span className="font-display text-[1.25rem] tracking-[-0.02em] text-ab-ink group-hover:text-ab-tank">
                       {p.name}
                     </span>

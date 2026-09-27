@@ -101,14 +101,14 @@ const VERSUS_IMPORTED_DEFAULT: readonly [string, string, string] = [
  * covered by this note. Using "pouch" on the selector result would read as
  * though it described the answer the buyer had just given.
  *
- * Count-agnostic on purpose: ABFERMENTA is a culture line with no artwork yet,
+ * Count-agnostic on purpose: FERMENTA is a culture line with no artwork yet,
  * so "the fourteen culture lines" would be wrong the moment you counted packs.
  *
  * CULTURES ONLY. The seven ingredients and the taste maker are photographed as
  * the real stand-up packs they ship in.
  *
  * Says nothing about what is printed on the delivered sachet. The CU01 artwork
- * carries its strain code on the face, but that has not been confirmed for the
+ * carries its product code on the face, but that has not been confirmed for the
  * other twelve, and this note is not the place to infer it.
  */
 export const packArtworkNote = {
@@ -129,7 +129,7 @@ export const products: readonly Product[] = [
   {
     slug: "abdahi",
     name: "ABDAHI",
-    strainCode: "CU01",
+    strainCode: null,
     category: "cultures",
     cultureType: "thermophilic",
     applications: ["curd-dahi"],
@@ -155,13 +155,13 @@ export const products: readonly Product[] = [
   {
     slug: "abdahi-low-fat",
     name: "ABDAHI LOW FAT",
-    strainCode: "LF01",
+    strainCode: null,
     category: "cultures",
     cultureType: "thermophilic",
     applications: ["curd-dahi"],
     summary: "Set curd on toned, double-toned and low-fat milk",
     description:
-      "A Direct Vat Set starter culture for curd made on reduced-fat milk, where body and mouthfeel are harder to hold. Supplied freeze-dried for direct addition to the vat.",
+      "A Direct Vat Set starter culture made on reduced fat milk, where body and mouthfeel are harder to hold, achieved by selecting EPS-producing bacterial strains specially designed for low fat milk. Supplied freeze-dried for direct addition to the vat.",
     image: "/assets/products/cultures/abdahi-low-fat.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
@@ -181,7 +181,7 @@ export const products: readonly Product[] = [
   {
     slug: "abyogurt",
     name: "ABYOGURT",
-    strainCode: "YC01",
+    strainCode: null,
     category: "cultures",
     cultureType: "thermophilic",
     applications: ["yoghurt"],
@@ -209,7 +209,7 @@ export const products: readonly Product[] = [
   {
     slug: "abchach",
     name: "ABCHACH",
-    strainCode: "BU01",
+    strainCode: null,
     category: "cultures",
     cultureType: "mesophilic",
     applications: ["buttermilk-lassi"],
@@ -235,7 +235,7 @@ export const products: readonly Product[] = [
   {
     slug: "ablaban",
     name: "ABLABAN",
-    strainCode: "LB01",
+    strainCode: null,
     category: "cultures",
     cultureType: "blended",
     applications: ["buttermilk-lassi", "fermented-foods-beverages"],
@@ -261,7 +261,7 @@ export const products: readonly Product[] = [
   {
     slug: "abcheese",
     name: "ABCHEESE",
-    strainCode: "CH01",
+    strainCode: null,
     category: "cultures",
     cultureType: "mesophilic",
     applications: ["cheese-paneer"],
@@ -287,7 +287,7 @@ export const products: readonly Product[] = [
   {
     slug: "ablassi",
     name: "ABLASSI",
-    strainCode: "LA01",
+    strainCode: null,
     category: "cultures",
     cultureType: "blended",
     applications: ["buttermilk-lassi"],
@@ -313,7 +313,7 @@ export const products: readonly Product[] = [
   {
     slug: "abmishti",
     name: "ABMISHTI",
-    strainCode: "MD01",
+    strainCode: null,
     category: "cultures",
     cultureType: "thermophilic",
     applications: ["shrikhand-mishti-doi"],
@@ -339,7 +339,7 @@ export const products: readonly Product[] = [
   {
     slug: "abshri",
     name: "ABSHRI",
-    strainCode: "SH01",
+    strainCode: null,
     category: "cultures",
     cultureType: "thermophilic",
     applications: ["shrikhand-mishti-doi"],
@@ -365,7 +365,7 @@ export const products: readonly Product[] = [
   {
     slug: "abcream",
     name: "ABCREAM",
-    strainCode: "CR01",
+    strainCode: null,
     category: "cultures",
     cultureType: "mesophilic",
     applications: ["cultured-ghee-butter"],
@@ -391,7 +391,7 @@ export const products: readonly Product[] = [
   {
     slug: "abprobio",
     name: "ABPROBIO",
-    strainCode: "PB01",
+    strainCode: null,
     category: "cultures",
     cultureType: "probiotic",
     // curd-dahi and yoghurt are declared because selectorProfile.making already
@@ -423,7 +423,7 @@ export const products: readonly Product[] = [
   {
     slug: "abkefir",
     name: "ABKEFIR",
-    strainCode: "KF01",
+    strainCode: null,
     category: "cultures",
     cultureType: "blended",
     applications: ["fermented-foods-beverages", "probiotics-functional"],
@@ -449,7 +449,7 @@ export const products: readonly Product[] = [
   {
     slug: "abbio-shield",
     name: "ABBIO-SHIELD",
-    strainCode: "BS01",
+    strainCode: null,
     category: "cultures",
     cultureType: "blended",
     // As ABPROBIO: making already recommends it for curd and yoghurt.
@@ -461,7 +461,7 @@ export const products: readonly Product[] = [
     ],
     summary: "Bioprotective culture for fermented dairy",
     description:
-      "A Direct Vat Set bioprotective culture used alongside a primary starter. Supplied freeze-dried for direct addition to the vat.",
+      "A Direct Vat Set bioprotective culture used alongside a primary starter, providing protection to the final dairy product against spoilage bacteria and moulds. Supplied freeze-dried for direct addition to the vat.",
     image: "/assets/products/cultures/abbio-shield.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
@@ -500,15 +500,15 @@ export const products: readonly Product[] = [
      * See CONTENT-TODO.md for the full list of what the client needs to
      * confirm before this page can say anything more.
      */
-    slug: "abfermenta",
-    name: "ABFERMENTA",
+    slug: "fermenta",
+    name: "FERMENTA",
     strainCode: null,
     category: "cultures",
     cultureType: null,
     applications: [],
     summary: "Specification available on request",
     description:
-      "ABFERMENTA is part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
+      "FERMENTA is part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
     image: "",
     specs: UNSPECIFIED_COMMON_SPECS,
     // NOT VERSUS_IMPORTED_DEFAULT. That asserts manufacture in Pune, rupee
@@ -655,17 +655,17 @@ export const ingredients = products.filter((p) => p.category === "ingredients");
 export const tasteMakers = products.filter((p) => p.category === "taste-makers");
 
 /**
- * The published strain codes, in catalogue order. Drives the StrainIndex rail.
+ * Product codes are no longer carried on the product.
  *
- * Derived rather than counted: not every culture line has a published code —
- * ABFERMENTA's has not reached us — so this is deliberately shorter than
- * `cultures`. Do not write copy that assumes the two are the same length.
+ * A code (AB436NX) identifies a taste profile WITHIN a product line, not the
+ * line itself — several codes are all ways of buying ABDAHI. They live in
+ * src/content/cultures.ts, keyed to the product they are ordered against, and
+ * the rail reads them from there.
+ *
+ * `strainCode` survives on the Product type as `string | null` and is null on
+ * every SKU today. It is kept because the client may yet publish one code per
+ * line alongside the profile codes; every consumer already guards on null.
  */
-export const codedCultures = cultures.filter(
-  (p): p is Product & { strainCode: string } => p.strainCode !== null
-);
-
-export const strainCodes: readonly string[] = codedCultures.map((p) => p.strainCode);
 
 export function productBySlug(
   category: string,

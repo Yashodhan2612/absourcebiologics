@@ -12,10 +12,11 @@ import { positioning } from "@/content/company";
  * chains then form onto it; tier 1 gets a static poster instead. A canvas must
  * never become the LCP element (Section 7A.1).
  *
- * Thirteen chains, one per published strain code — the same motif the
- * StrainIndex rail carries. That is not decorative trivia; keep it if you edit
- * this. Note the range now has fourteen culture lines: ABFERMENTA's code has
- * not reached us, so the chain count tracks the RAIL, not the catalogue.
+ * Thirteen chains. This used to be "one per published product code", back when
+ * the site carried thirteen placeholder codes. The real catalogue has around
+ * forty, so the count is now a composition decision rather than a data one —
+ * thirteen is what fills the frame at this scale without reading as noise.
+ * Do not re-couple it to any catalogue length.
  *
  * Contrast: the scrim below is the only thing keeping saturated purple from
  * sitting under body copy, so it is load-bearing rather than decorative.

@@ -147,10 +147,12 @@ const SWEEP_DURATION = 1.9;
 const GROW_DURATION = 0.55;
 
 /**
- * Thirteen chains at full tier — one per published strain code, the same motif
- * the StrainIndex rail carries. Not decorative trivia. It tracks the rail
- * rather than the catalogue: the range has fourteen culture lines, but
- * ABFERMENTA has no published code yet.
+ * Thirteen chains at full tier.
+ *
+ * Formerly one chain per published product code, when there were thirteen
+ * placeholder codes. The real catalogue runs to around forty, so this is a
+ * composition constant now — the density that fills the frame without reading
+ * as noise — and is deliberately NOT derived from any catalogue length.
  */
 const CHAINS_FULL = 13;
 const CHAINS_REDUCED = 7;

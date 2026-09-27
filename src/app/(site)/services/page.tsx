@@ -7,7 +7,7 @@ import { services } from "@/content/services";
 export const metadata = pageMetadata({
   title: "Custom cultures, plant setup and testing",
   description:
-    "Custom culture development, turnkey dairy plant setup and microbiology testing — the work around the culture.",
+    "Custom culture development, turnkey dairy plant setup and custom product development — the work around the culture.",
   path: "/services",
 });
 

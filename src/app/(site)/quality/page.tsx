@@ -2,9 +2,11 @@ import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Photo } from "@/components/ui/Photo";
-import { CTABand } from "@/components/sections/CTABand";
 import { Stat } from "@/components/ui/Stat";
-import { certifications, qualityClaims } from "@/content/certifications";
+import { qualityClaims } from "@/content/certifications";
+import { CertificateWall } from "@/components/sections/CertificateWall";
+import { VendorAuditForm } from "@/components/forms/VendorAuditForm";
+import { company } from "@/content/company";
 import { stats } from "@/content/stats";
 
 export const metadata = pageMetadata({
@@ -48,27 +50,21 @@ export default function QualityPage() {
         </div>
       </section>
 
+      {/*
+        The documents themselves, not a list of their names. The page used to
+        print the four titles and then explain in a paragraph why the
+        certificates were not shown; an auditor reading that assumes the worst.
+        The licence leads because its number is checkable on a public register.
+      */}
       <section className="section-ab-tight">
         <div className="container-ab">
-          <SectionHeading eyebrow="Certification" title="What we hold." className="mb-12 max-w-3xl" />
-          <ul className="grid gap-px border border-ab-chill bg-ab-chill sm:grid-cols-2">
-            {certifications.map((cert) => (
-              <li key={cert.slug} className="bg-ab-white p-8">
-                <h2 className="font-display text-[1.75rem] tracking-[-0.02em] text-ab-tank">
-                  {cert.name}
-                </h2>
-                <p className="mono-ab mt-2 text-ab-ink-60">{cert.standard}</p>
-                <p className="measure-ab mt-5 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
-                  {cert.what}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <p className="measure-ab mt-8 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
-            Certificates are supplied directly for vendor-approval and audit files rather
-            than published here, so you receive the current document with its issuing body
-            and validity rather than a screenshot.
-          </p>
+          <SectionHeading
+            eyebrow="Certification"
+            title="What we hold, and the licence behind it."
+            lede="The FSSAI licence number below is on the public register and can be checked without asking us. Certificates are supplied in full for vendor-approval files."
+            className="mb-12 max-w-3xl"
+          />
+          <CertificateWall />
         </div>
       </section>
 
@@ -113,8 +109,8 @@ export default function QualityPage() {
               </div>
               <div className="relative mt-10 aspect-[16/9] overflow-hidden">
                 <Photo
-                  src="/assets/facility/fermentation.webp"
-                  alt="Stainless-steel fermentation vessels in the production area"
+                  src="/assets/facility/qc-bench.webp"
+                  alt="Technologists at the in-process QC bench, with microscope and laminar flow cabinets"
                   sizes="(min-width: 768px) 66vw, 100vw"
                   parallax
                   depth={0.5}
@@ -125,12 +121,39 @@ export default function QualityPage() {
         </div>
       </section>
 
-      <CTABand
-        title="Auditing us as a vendor?"
-        body="Tell us which documents your approval process needs and we will send the current set."
-        href="/contact"
-        cta="Request documentation"
-      />
+      {/*
+        The audit request is a FORM on this page, not a link to /contact.
+        Someone running a vendor approval is already here reading the
+        certifications; sending them to a general contact form loses both the
+        context and the routing — this goes straight to QA.
+      */}
+      <section className="ab-reversed section-ab-tight bg-ab-tank">
+        <div className="container-ab">
+          <div className="grid gap-12 lg:grid-cols-[1fr_minmax(0,32rem)] lg:gap-20">
+            <div>
+              <SectionHeading
+                tone="reversed"
+                eyebrow="Vendor approval"
+                title="Auditing us as a vendor?"
+                lede="Tell us which documents your approval process needs and we will send the current set. This reaches our quality assurance team directly."
+              />
+              <p className="measure-ab mt-6 text-[0.9375rem] leading-[1.65] text-ab-tank-300">
+                Or email{" "}
+                <a
+                  href={`mailto:${company.qaEmail}`}
+                  className="link-wipe text-ab-ghee no-underline"
+                >
+                  {company.qaEmail}
+                </a>{" "}
+                if you would rather attach your questionnaire.
+              </p>
+            </div>
+            <div className="border border-ab-milk/15 bg-ab-milk p-6 md:p-8">
+              <VendorAuditForm />
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

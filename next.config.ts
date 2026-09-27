@@ -16,6 +16,12 @@ const LEGACY_REDIRECTS: ReadonlyArray<{ source: string; destination: string }> =
   { source: "/ab-careers", destination: "/careers" },
   { source: "/ab-contact-us", destination: "/contact" },
   { source: "/Curd-Discovery.html", destination: "/culture-selector" },
+
+  // Retired service. The page existed on this site and is linkable, so it
+  // redirects to the hub rather than 404ing — microbiology testing was
+  // withdrawn from the service list at the client's request, and the work it
+  // described is now part of custom product development.
+  { source: "/services/microbiology-testing", destination: "/services" },
 ];
 
 const nextConfig: NextConfig = {

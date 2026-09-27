@@ -7,9 +7,10 @@ import { cn } from "@/lib/cn";
 import { stepsFor, type StepKey } from "@/lib/selector-questions";
 import { recommend, type SelectorAnswers } from "@/lib/selector-engine";
 import type { MakingAnswer } from "@/content/types";
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { ProductPackShot } from "@/components/ui/PackShot";
 import { packArtworkNote, products } from "@/content/products";
+import { profileMatchesForProduct } from "@/lib/culture-match";
 import { ButtonLink } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SelectorLeadForm } from "./SelectorLeadForm";
@@ -224,6 +225,17 @@ function SelectorResult({
 
   const topProduct = products.find((p) => p.slug === top.slug);
 
+  /**
+   * The codes to actually quote.
+   *
+   * The product line answers "what do I buy"; this answers "which one". It is
+   * deliberately allowed to come back empty — cheese, lassi and kefir have no
+   * coded profile catalogue yet, and naming a code we are not confident about
+   * is worse than naming none, because a code is what gets typed onto a
+   * purchase order.
+   */
+  const codeMatches = profileMatchesForProduct(top.slug, answers);
+
   return (
     <div>
       <Eyebrow className="mb-6">Your match</Eyebrow>
@@ -244,7 +256,7 @@ function SelectorResult({
         </div>
         <div className="flex flex-col justify-center">
           <div className="mb-4 flex items-center gap-3">
-            {top.strainCode ? <StrainCode code={top.strainCode} /> : null}
+            {top.strainCode ? <ProductCode code={top.strainCode} /> : null}
             <span className="mono-ab text-ab-culture">{top.score}% fit</span>
           </div>
           <h2 className="text-[2.75rem] leading-[0.95] tracking-[-0.03em]">{top.name}</h2>
@@ -262,6 +274,38 @@ function SelectorResult({
                   {caveat}
                 </p>
               ))}
+            </div>
+          ) : null}
+
+          {codeMatches.length > 0 ? (
+            <div className="mt-8 border-t border-ab-chill pt-6">
+              <p className="mono-ab text-ab-ink-60">
+                {codeMatches.length === 1 ? "The code to ask for" : "The codes to ask for"}
+              </p>
+              <ul className="mt-4 flex flex-col gap-4">
+                {codeMatches.map((match) => (
+                  <li key={match.profile.slug}>
+                    <p className="text-[0.9375rem] text-ab-ink">
+                      {match.profile.name}
+                      <span className="mono-ab ml-3 text-ab-culture">
+                        {match.score}% fit
+                      </span>
+                    </p>
+                    <ul className="mt-2 flex flex-wrap gap-2">
+                      {match.profile.codes.map((code) => (
+                        <li key={code.code}>
+                          <ProductCode code={code.code} />
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+              <p className="measure-ab mt-4 text-[0.875rem] leading-[1.55] text-ab-ink-60">
+                Quote any of these against {top.name}. Which one we send depends
+                on your milk, so a technologist confirms it before the sample
+                goes out.
+              </p>
             </div>
           ) : null}
 
@@ -288,7 +332,7 @@ function SelectorResult({
                 >
                   <div className="flex items-center gap-3">
                     {match.strainCode ? (
-                      <StrainCode code={match.strainCode} tone="muted" />
+                      <ProductCode code={match.strainCode} tone="muted" />
                     ) : null}
                     <span className="mono-ab text-ab-ink-60">{match.score}% fit</span>
                   </div>

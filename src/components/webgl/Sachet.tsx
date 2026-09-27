@@ -110,7 +110,7 @@ function Pouch({ texture }: { texture: THREE.Texture }) {
         />
       </mesh>
       {/* The reverse is unprinted foil. Mirroring the artwork onto it would
-          show the strain code backwards, which a buyer will notice. */}
+          show the product code backwards, which a buyer will notice. */}
       <mesh geometry={back} rotation={[0, Math.PI, 0]}>
         <meshStandardMaterial
           color="#e9edee"
@@ -134,7 +134,7 @@ export default function Sachet({
 
   return (
     <Canvas
-      // Decorative: the pack image, name and strain code are all in the DOM.
+      // Decorative: the pack image, name and product code are all in the DOM.
       aria-hidden="true"
       role="presentation"
       dpr={[1, 1.75]}

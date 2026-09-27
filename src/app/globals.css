@@ -160,7 +160,7 @@
   }
 }
 
-/* Monospace utility type: strain codes, spec tables, dosage figures,
+/* Monospace utility type: product codes, spec tables, dosage figures,
    eyebrows — and nothing else. */
 @utility mono-ab {
   font-family: var(--font-mono);
@@ -209,7 +209,7 @@
 }
 
 /* =========================================================================
-   StrainIndex ticker (see components/layout/StrainIndex.tsx)
+   ProductCodeIndex ticker (see components/layout/ProductCodeIndex.tsx)
 
    Scoped to prefers-reduced-motion: no-preference, so under reduced motion
    the rail is simply a static row of links — no animation to disable at

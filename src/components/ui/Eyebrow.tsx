@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Monospace eyebrow. The mono face is reserved for strain codes, spec tables,
+ * Monospace eyebrow. The mono face is reserved for product codes, spec tables,
  * dosage figures and eyebrows — nothing else (Section 6, Typography).
  */
 export function Eyebrow({

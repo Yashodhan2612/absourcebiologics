@@ -64,13 +64,17 @@ fetch_list <<EOF
 $BASE/2020/12/Artboard-1-1-300x300.png  brand/mark.png
 EOF
 
-echo "Facility"
-fetch_list <<EOF
-$BASE/2020/12/Picture3.jpg                                    facility/qc-lab.jpg
-$BASE/2020/12/Picture2-1024x643.jpg                           facility/fermentation.jpg
-$BASE/2021/08/DSC00556-Copy-1024x683.jpg                      facility/plant-01.jpg
-$BASE/2022/06/IMG-20220621-WA0085-e1731388862439-1024x691.jpg facility/plant-02.jpg
-EOF
+# Facility photography is NO LONGER fetched from the live site.
+#
+# The client supplied ten new plant photographs ("Facility Photographs.docx"),
+# which are higher resolution, show people working, and cover rooms the scraped
+# set did not — the lyophiliser, the packing hall, the laminar benches. Those
+# live in public/assets/_source/facility/ and are committed.
+#
+# The four scraped images this block used to download (qc-lab, fermentation,
+# plant-01, plant-02) have been deleted. Re-enabling these lines would
+# reintroduce them and put the same picture on two pages again, which is the
+# exact problem the new set was supplied to fix.
 
 # Leadership portraits are NOT fetched here. They need cropping — the sources
 # are 3:2 landscape and the page shows 3:4 portraits — and running that crop is

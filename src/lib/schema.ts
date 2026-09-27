@@ -165,6 +165,25 @@ export const careersLeadSchema = z.object({
   ...antiSpam,
 });
 
+/**
+ * "Auditing us as a vendor?" — the request from a customer's QA function for
+ * audit documentation or a site visit.
+ *
+ * Separate from `contact` because it routes to a different inbox and is a
+ * different job: QA answers it, not sales, and the fields are the ones QA
+ * needs to prepare rather than the ones sales needs to qualify.
+ */
+export const auditLeadSchema = z.object({
+  leadType: z.literal("audit"),
+  ...base,
+  /** What the auditor actually wants, so QA can prepare before replying. */
+  request: z
+    .enum(["documentation", "site-visit", "questionnaire", "other"], {
+      message: "Tell us what you need so the right person replies",
+    })
+    .optional(),
+});
+
 /** One route, one discriminated union (Section 10). */
 export const leadSchema = z.discriminatedUnion("leadType", [
   quoteLeadSchema,
@@ -173,6 +192,7 @@ export const leadSchema = z.discriminatedUnion("leadType", [
   selectorLeadSchema,
   contactLeadSchema,
   careersLeadSchema,
+  auditLeadSchema,
 ]);
 
 export type Lead = z.infer<typeof leadSchema>;

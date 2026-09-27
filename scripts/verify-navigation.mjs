@@ -28,7 +28,7 @@ const ROUTES = [
   "/products/cultures/abdahi",
   // The SKU with no strain code, no artwork and no application tags — it
   // exercises every null-handling path the catalogue has.
-  "/products/cultures/abfermenta",
+  "/products/cultures/fermenta",
   "/products/ingredients/abpro",
   "/products/taste-makers/abspice",
   "/culture-selector",
@@ -42,6 +42,7 @@ const ROUTES = [
   "/export",
   "/news",
   "/careers",
+  "/team",
   "/contact",
   "/request-a-quote",
   "/downloads",

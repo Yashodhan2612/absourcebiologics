@@ -8,7 +8,7 @@ import { products, productsByApplication } from "@/content/products";
  *
  * The packs are shot against white with a lot of headroom, so they are
  * `object-contain` on a faint ab-chill ground rather than cropped to fill —
- * cropping a sachet cuts the strain code off the artwork, which is the one
+ * cropping a sachet cuts the product code off the artwork, which is the one
  * thing on the pack a buyer is looking for.
  *
  * Falls back to a seeded ColonyPlate if an image is genuinely missing, so a

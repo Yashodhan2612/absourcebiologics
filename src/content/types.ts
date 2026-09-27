@@ -89,12 +89,16 @@ export function isKnownSpec(
 export type Product = {
   readonly slug: string;
   readonly name: string;
-  /** Strain code — CU01, LF01, YC01 ... Cultures only; null for ingredients. */
+  /**
+   * A single code for the whole line, if the client ever publishes one.
+   * Null on every SKU today — codes identify a taste profile within a line
+   * (see src/content/cultures.ts), not the line itself.
+   */
   readonly strainCode: string | null;
   readonly category: Category;
   readonly cultureType: CultureType | null;
   readonly applications: readonly ApplicationTag[];
-  /** One line. Used in the StrainIndex hover panel and catalogue cards. */
+  /** One line. Used in the ProductCodeIndex hover panel and catalogue cards. */
   readonly summary: string;
   /** Two sentences, "what it is". */
   readonly description: string;

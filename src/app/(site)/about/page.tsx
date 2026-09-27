@@ -94,8 +94,8 @@ export default function AboutPage() {
             </div>
             <div className="relative aspect-[4/3] overflow-hidden">
               <Photo
-                src="/assets/facility/plant-01.webp"
-                alt="The clean-room corridor at the ABsource plant, Kinetic Innovation Park, Chinchwad"
+                src="/assets/facility/process-room.webp"
+                alt="A fermenter and laminar flow bench in the process room at the Chinchwad plant"
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 parallax
               />

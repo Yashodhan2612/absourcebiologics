@@ -1,4 +1,4 @@
-import { StrainCode } from "@/components/ui/StrainCode";
+import { ProductCode } from "@/components/ui/ProductCode";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 
 /**
@@ -31,7 +31,7 @@ export function CaseStudy({ study }: { study: CaseStudyData }) {
           {study.skus.map((sku) => (
             <li key={sku.name}>
               {sku.strainCode ? (
-                <StrainCode code={sku.strainCode} tone="muted" />
+                <ProductCode code={sku.strainCode} tone="muted" />
               ) : (
                 <span className="mono-ab text-ab-ink-60">{sku.name}</span>
               )}
