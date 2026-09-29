@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -18,12 +19,10 @@ export const metadata = pageMetadata({
  * photographs and long biographies. This page is the department heads: the
  * people a customer actually deals with once an account is live.
  *
- * NO PORTRAITS. None were supplied. Rather than leave holes, or fill them with
- * stock photographs of people who do not work here, each person gets a
- * typographic card built from their initials — which is a deliberate treatment
- * in the site's own type system, not a broken image. `src/content/team.ts`
- * documents how to add real photographs when they arrive; the grid takes them
- * without a redesign.
+ * PORTRAITS. The client's own photographs, cropped to one consistent 3:4 size
+ * (see scripts/prepare-team-portraits.mjs). Anyone without one still renders,
+ * as the monogram card this page used before the photographs arrived — so
+ * adding a person never has to wait for their photo.
  */
 export default function TeamPage() {
   return (
@@ -51,22 +50,57 @@ export default function TeamPage() {
 
       <section className="section-ab-tight">
         <div className="container-ab">
-          <ul className="grid gap-px border border-ab-chill bg-ab-chill md:grid-cols-2 lg:grid-cols-3">
-            {team.map((person) => (
-              <li key={person.slug} className="flex flex-col bg-ab-white p-8">
-                {/*
-                  Initials, not an avatar. A monogram in the display face is
-                  part of the type system; a grey silhouette is a missing
-                  photograph with a shape drawn over it.
-                */}
-                <span
-                  aria-hidden="true"
-                  className="font-display flex h-16 w-16 shrink-0 items-center justify-center border border-ab-tank/20 text-[1.375rem] tracking-[-0.02em] text-ab-tank"
-                >
-                  {initials(person.name)}
-                </span>
+          {/*
+            Individually bordered cards with a real gap, not the shared-hairline
+            `gap-px` grid used elsewhere on the site.
 
-                <h2 className="mt-6 font-display text-[1.5rem] leading-[1.15] tracking-[-0.02em] text-ab-ink">
+            Seven people in a three-column grid leaves two empty cells, and in a
+            hairline grid the container's background paints them — so the last
+            row rendered as one card beside a large blank panel. That reads as a
+            loading failure. The certificate grid on /quality already uses this
+            same treatment, so it is house style rather than an exception.
+          */}
+          <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {team.map((person) => (
+              <li
+                key={person.slug}
+                className="flex flex-col border border-ab-chill bg-ab-white"
+              >
+                {person.image ? (
+                  /*
+                    3:4, matching the crop, so the box never has to letterbox
+                    or crop a second time. `sizes` describes the real rendered
+                    width at each breakpoint — the grid is three across at lg,
+                    two at md, one below — so the browser does not fetch a file
+                    wider than the slot.
+                  */
+                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-ab-chill/40">
+                    <Image
+                      src={person.image}
+                      alt={`${person.name}, ${person.designation}, ${person.department} at ABsource Biologics`}
+                      fill
+                      sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  /*
+                    Initials, not an avatar. A monogram in the display face is
+                    part of the type system; a grey silhouette is a missing
+                    photograph with a shape drawn over it.
+                  */
+                  <div className="flex aspect-[3/4] w-full items-center justify-center bg-ab-chill/40">
+                    <span
+                      aria-hidden="true"
+                      className="font-display text-[2.5rem] tracking-[-0.02em] text-ab-tank/70"
+                    >
+                      {initials(person.name)}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex flex-col p-8">
+                <h2 className="font-display text-[1.5rem] leading-[1.15] tracking-[-0.02em] text-ab-ink">
                   {person.name}
                 </h2>
 
@@ -78,6 +112,7 @@ export default function TeamPage() {
                 <p className="mt-5 text-[0.9375rem] leading-[1.65] text-ab-ink-60">
                   {person.bio}
                 </p>
+                </div>
               </li>
             ))}
           </ul>
