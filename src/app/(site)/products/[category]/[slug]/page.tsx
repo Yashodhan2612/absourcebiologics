@@ -3,6 +3,7 @@ import Link from "next/link";
 import { pageMetadata, ProductJsonLd, BreadcrumbJsonLd } from "@/lib/seo";
 import { ProductCode } from "@/components/ui/ProductCode";
 import { ChipLink } from "@/components/ui/Chip";
+import Image from "next/image";
 import { SachetMount } from "@/components/webgl/SachetMount";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/Button";
@@ -12,6 +13,7 @@ import {
   products,
   productBySlug,
   packArtworkNote,
+  CATEGORY_COPY,
   CATEGORY_LABELS,
   CULTURE_TYPE_LABELS,
 } from "@/content/products";
@@ -77,6 +79,14 @@ export default async function ProductPage({
   const docs = downloadsForProduct(product.slug);
   const quoteHref = `/request-a-quote?sku=${product.slug}`;
 
+  /**
+   * A pilot product exists but cannot yet be ordered, sampled or specified.
+   * Everything below that would otherwise offer one of those keys off this, so
+   * the page never invites a request nobody can fulfil.
+   */
+  const isPilot = product.availability === "pilot";
+  const isLabel = product.imageKind === "label";
+
   return (
     <>
       <ProductJsonLd product={product} />
@@ -103,6 +113,7 @@ export default async function ProductPage({
                   slug={product.slug}
                   strainCode={product.strainCode ?? undefined}
                   category={product.category}
+                  flat={isLabel}
                 />
               </div>
 
@@ -113,17 +124,60 @@ export default async function ProductPage({
                   ingredient packs ARE the delivery pack — and only where pack
                   artwork actually exists, or it captions the abstract colony
                   plate that stands in for a missing image. */}
-              {product.category === "cultures" && product.image ? (
+              {product.category === "cultures" && product.image && !isLabel ? (
                 <p className="measure-ab mt-3 border-t border-ab-chill pt-3 text-[0.875rem] leading-[1.55] text-ab-ink-60">
                   {packArtworkNote.detail}
                 </p>
+              ) : null}
+
+              {/*
+                The reverse of a printed label. It carries the storage
+                temperature, shelf life, manufacturing address and the FSSAI
+                licence number, which is exactly what a buyer turns a pack over
+                to read — so it is shown, not just the front.
+
+                No pack-artwork note here or above: that caption says the
+                colour is illustrative and the delivered pack is the standard
+                blue and white sachet, which is true of the sachet photographs
+                and not of a label, which is the thing itself.
+              */}
+              {product.imageBack ? (
+                <figure className="mt-6">
+                  {/* A thumbnail cannot carry the storage temperature and the
+                      licence number at 16rem, so it opens full size. Plain
+                      anchor to the file: no lightbox to build, focus or trap. */}
+                  <a
+                    href={product.imageBack}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative block aspect-[945/1300] w-full max-w-[16rem] overflow-hidden border border-ab-chill bg-ab-chill/35"
+                  >
+                    <Image
+                      src={product.imageBack}
+                      alt={`Reverse of the ${product.name} label, showing storage, shelf life and manufacturer details`}
+                      fill
+                      sizes="16rem"
+                      className="object-contain"
+                    />
+                    <span className="sr-only"> — opens full size in a new tab</span>
+                  </a>
+                  <figcaption className="mono-ab mt-2 text-[0.8125rem] text-ab-ink-60">
+                    Reverse of the label &middot; select to enlarge
+                  </figcaption>
+                </figure>
               ) : null}
             </div>
 
             <div className="flex flex-col justify-center">
               <div className="mb-6 flex items-center gap-3">
                 {product.strainCode ? <ProductCode code={product.strainCode} /> : null}
-                <Eyebrow>{CATEGORY_LABELS[product.category]}</Eyebrow>
+                <Eyebrow>{CATEGORY_COPY[product.category]?.item ?? product.category}</Eyebrow>
+                {isPilot ? (
+                  // Loud enough to be seen before the description is read.
+                  <span className="mono-ab border border-ab-ghee-dark px-1.5 py-0.5 leading-none text-ab-ink">
+                    New · in pilot
+                  </span>
+                ) : null}
               </div>
 
               <h1 className="text-[2.75rem] leading-[0.95] tracking-[-0.03em] md:text-[3.75rem]">
@@ -149,7 +203,7 @@ export default async function ProductPage({
 
               <div className="mt-10 flex flex-wrap gap-4">
                 <ButtonLink href={quoteHref} size="lg">
-                  Request a sample
+                  {isPilot ? "Register your interest" : "Request a sample"}
                 </ButtonLink>
                 {docs[0] ? (
                   <ButtonLink
@@ -170,30 +224,50 @@ export default async function ProductPage({
         <div className="container-ab">
           <div className="grid gap-16 lg:grid-cols-[1fr_minmax(0,22rem)] lg:gap-24">
             <div>
-              <h2 className="mb-8 text-[2rem]">Technical specification</h2>
-              <SpecTable
-                rows={product.specs}
-                downloadHref={docs[0] ? `/downloads?doc=${docs[0].slug}` : "/downloads"}
-                caption={
-                  product.cultureType
-                    ? `${CULTURE_TYPE_LABELS[product.cultureType]} · Direct Vat Set`
-                    : undefined
-                }
-              />
+              <h2 className="mb-8 text-[2rem]">
+                {isPilot ? "Availability" : "Technical specification"}
+              </h2>
+              {isPilot ? (
+                // No table, and no "available on the data sheet" list: that
+                // list is a promise of a document, and there is no document.
+                <div className="border border-ab-chill bg-ab-white p-6 md:p-8">
+                  <p className="text-[1.0625rem] leading-[1.5] text-ab-ink">
+                    {product.name} is in early testing and in pilot with select
+                    customers. It will launch and be available soon.
+                  </p>
+                  <p className="measure-ab mt-4 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
+                    The specification will be published at launch. If you would
+                    like to hear when it is available, register your interest and
+                    we will get in touch.
+                  </p>
+                </div>
+              ) : (
+                <SpecTable
+                  rows={product.specs}
+                  downloadHref={docs[0] ? `/downloads?doc=${docs[0].slug}` : "/downloads"}
+                  caption={
+                    product.cultureType
+                      ? `${CULTURE_TYPE_LABELS[product.cultureType]} · Direct Vat Set`
+                      : undefined
+                  }
+                />
+              )}
             </div>
 
-            <aside>
-              <h2 className="mb-6 text-[1.5rem]">
-                Why this over an imported equivalent
-              </h2>
-              <ul className="flex flex-col gap-5 border-t border-ab-chill pt-6">
-                {product.versusImported.map((point) => (
-                  <li key={point} className="text-[0.9375rem] leading-[1.6] text-ab-ink-60">
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </aside>
+            {product.versusImported.length > 0 ? (
+              <aside>
+                <h2 className="mb-6 text-[1.5rem]">
+                  Why this over an imported equivalent
+                </h2>
+                <ul className="flex flex-col gap-5 border-t border-ab-chill pt-6">
+                  {product.versusImported.map((point) => (
+                    <li key={point} className="text-[0.9375rem] leading-[1.6] text-ab-ink-60">
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            ) : null}
           </div>
         </div>
       </section>
@@ -271,10 +345,18 @@ export default async function ProductPage({
       ) : null}
 
       <CTABand
-        title={`Trial ${product.name} on your own milk.`}
-        body="Tell us your volumes and what you are targeting. We will send a sample and the parameters to run it against."
+        title={
+          isPilot
+            ? `${product.name} is coming soon.`
+            : `Trial ${product.name} on your own milk.`
+        }
+        body={
+          isPilot
+            ? "It is in pilot with select customers now. Tell us what you would use it for and we will be in touch when it is available."
+            : "Tell us your volumes and what you are targeting. We will send a sample and the parameters to run it against."
+        }
         href={quoteHref}
-        cta="Request a sample"
+        cta={isPilot ? "Register your interest" : "Request a sample"}
       />
     </>
   );

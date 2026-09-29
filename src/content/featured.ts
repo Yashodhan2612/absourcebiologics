@@ -1,16 +1,24 @@
 /**
  * Cultures the client wants pulled out of the catalogue and shown on their own.
  *
- * The brief named three — AB704, the vegan cultures, and FERMENTA. Only
- * FERMENTA is here: no specification arrived for the other two, and a featured
- * slot is the worst place on the site to put a name with nothing behind it.
- * Both are stubbed below, commented out, with exactly the fields they need —
- * fill them in and they appear. Tracked in CONTENT-TODO.md §0f.
+ * The brief named three — AB704, the vegan cultures, and FERMENTA. FERMENTA and
+ * ABVEGAN are here. AB704 is not: no specification arrived, and a featured slot
+ * is the worst place on the site to put a name with nothing behind it. It is
+ * stubbed below, commented out, with exactly the fields it needs — fill it in
+ * and it appears. Tracked in CONTENT-TODO.md §0f.
  *
- * `status` is what keeps this honest. "in-range" means the SKU is orderable
- * and its page carries a real specification; "spec-on-request" means the line
- * exists and the specification is confirmed against your product before a
- * sample ships. Nothing here fabricates composition, dosage or a claim.
+ * `status` is what keeps this honest, and each value maps to a product state:
+ *   "in-range"        orderable, and its page carries a real specification.
+ *   "spec-on-request" the line exists; the specification is confirmed against
+ *                     your product before a sample ships.
+ *   "pilot"           not yet orderable. In testing with select customers and
+ *                     launching soon — the card says so and offers interest
+ *                     registration, never a sample or a specification.
+ * Nothing here fabricates composition, dosage or a claim.
+ *
+ * The section's own copy makes no claim about how often anything is asked for.
+ * An earlier version said FERMENTA was "most often asked for by name". Nothing
+ * supported that, and it cannot be said of a product that has not launched.
  */
 
 export type FeaturedCulture = {
@@ -20,15 +28,14 @@ export type FeaturedCulture = {
   readonly kicker: string;
   readonly summary: string;
   readonly body: string;
-  readonly status: "in-range" | "spec-on-request";
+  readonly status: "in-range" | "spec-on-request" | "pilot";
   /** Where the card goes. A product page, never a code. */
   readonly href: string;
 };
 
 export const featuredIntro = {
   eyebrow: "Featured",
-  title: "Three lines we are asked about by name.",
-  lede: "Outside the main dahi and yoghurt ranges, these are developed against a specific brief rather than a taste profile.",
+  lede: "Outside the main dahi and yoghurt ranges.",
 } as const;
 
 export const featuredCultures: readonly FeaturedCulture[] = [
@@ -37,9 +44,18 @@ export const featuredCultures: readonly FeaturedCulture[] = [
     name: "FERMENTA",
     kicker: "Specification confirmed per application",
     summary: "Specification available on request",
-    body: "Part of the ABsource range, and the line most often asked for by name without a catalogue reference. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
+    body: "Part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
     status: "spec-on-request",
     href: "/products/cultures/fermenta",
+  },
+  {
+    slug: "abvegan",
+    name: "ABVEGAN",
+    kicker: "New · in pilot",
+    summary: "Launching soon",
+    body: "A new product offering, currently in early stages of testing and pilot with select customers. It will launch and be available soon.",
+    status: "pilot",
+    href: "/products/cultures/abvegan",
   },
   // {
   //   slug: "ab704",
@@ -50,23 +66,15 @@ export const featuredCultures: readonly FeaturedCulture[] = [
   //   status: "in-range",
   //   href: "/products/cultures/ab704",
   // },
-  // {
-  //   slug: "vegan",
-  //   name: "Vegan cultures",
-  //   kicker: "…",
-  //   summary: "…",
-  //   body: "…",
-  //   status: "in-range",
-  //   href: "/products/cultures/vegan",
-  // },
 ];
 
 /**
- * The heading adapts to how many are actually published, so featuring one line
- * does not render a section titled "three lines" with one card under it.
+ * The heading adapts to how many are actually published, so featuring two lines
+ * does not render a section titled "three lines" with two cards under it.
  */
 export function featuredTitle(count: number): string {
-  if (count === 1) return "One line we are asked about by name.";
-  if (count === 2) return "Two lines we are asked about by name.";
-  return "Lines we are asked about by name.";
+  if (count === 1) return "One line to know about.";
+  if (count === 2) return "Two lines to know about.";
+  if (count === 3) return "Three lines to know about.";
+  return "Lines to know about.";
 }

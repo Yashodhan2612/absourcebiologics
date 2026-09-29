@@ -102,7 +102,11 @@ export function QuoteForm() {
               onChange={(e) => set("sku")(e.target.value)}
               options={products.map((p) => ({
                 value: p.slug,
-                label: p.strainCode ? `${p.name} (${p.strainCode})` : p.name,
+                label: [
+                  p.strainCode ? `${p.name} (${p.strainCode})` : p.name,
+                  // Not sampleable yet, so say so where it is being chosen.
+                  p.availability === "pilot" ? " — in pilot, launching soon" : "",
+                ].join(""),
               }))}
             />
             <TextField

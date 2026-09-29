@@ -1,7 +1,8 @@
 import type { Product, SpecRow } from "./types";
 
 /**
- * The 22 SKUs: 14 culture lines, 7 dairy ingredients, 1 taste maker.
+ * The 23 SKUs: 15 product lines, 7 dairy ingredients, 1 taste maker.
+ * (Counts printed on the site come from src/content/counts.ts, not from here.)
  *
  * SOURCING NOTE — important, read before editing.
  * Phase 2 of the brief asks for the live site's own product descriptions as
@@ -102,7 +103,7 @@ const VERSUS_IMPORTED_DEFAULT: readonly [string, string, string] = [
  * though it described the answer the buyer had just given.
  *
  * Count-agnostic on purpose: FERMENTA is a culture line with no artwork yet,
- * so "the fourteen culture lines" would be wrong the moment you counted packs.
+ * so "the N product lines" would be wrong the moment you counted packs.
  *
  * CULTURES ONLY. The seven ingredients and the taste maker are photographed as
  * the real stand-up packs they ship in.
@@ -125,7 +126,7 @@ export const packArtworkNote = {
 } as const;
 
 export const products: readonly Product[] = [
-  /* ===================== DVS STARTER CULTURES (14) ===================== */
+  /* ============ PRODUCT LINES — DVS STARTER CULTURES (15) ============ */
   {
     slug: "abdahi",
     name: "ABDAHI",
@@ -509,7 +510,10 @@ export const products: readonly Product[] = [
     summary: "Specification available on request",
     description:
       "FERMENTA is part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
-    image: "",
+    // The client's own printed label, not a sachet photograph — see imageKind.
+    image: "/assets/products/cultures/fermenta-label-front.webp",
+    imageKind: "label",
+    imageBack: "/assets/products/cultures/fermenta-label-back.webp",
     specs: UNSPECIFIED_COMMON_SPECS,
     // NOT VERSUS_IMPORTED_DEFAULT. That asserts manufacture in Pune, rupee
     // invoicing and that the strain blend can be adjusted — three claims about
@@ -520,6 +524,32 @@ export const products: readonly Product[] = [
       "We confirm the specification against your product before we send a sample.",
       "If the specification does not fit, our R&D develops to your requirement.",
     ],
+    selectorProfile: null,
+  },
+  {
+    slug: "abvegan",
+    name: "ABVEGAN",
+    strainCode: null,
+    category: "cultures",
+    cultureType: null,
+    // Empty on purpose. An application tag is a technical recommendation, and
+    // nothing has been published about what ABVEGAN is recommended for. It
+    // therefore appears under no solution page.
+    applications: [],
+    summary: "New — in pilot, launching soon",
+    description:
+      "ABVEGAN is a new product offering from ABsource. It is in the early stages of testing and in pilot with a small number of select customers, and will launch and be available soon.",
+    image: "",
+    // A pilot product is not yet orderable, so nothing here can be sampled or
+    // specified. Every CTA and spec block on the detail page keys off this.
+    availability: "pilot",
+    specs: [],
+    // Empty rather than borrowed. "Why this over an imported equivalent" is a
+    // set of comparative claims about a product buyers can obtain; ABVEGAN is
+    // not obtainable yet, and no comparison has been made.
+    versusImported: [],
+    // Not selectable. The Culture Selector recommends what can be sampled and
+    // trialled today, and a profile for ABVEGAN would be invented.
     selectorProfile: null,
   },
 
@@ -680,11 +710,55 @@ export function productsByApplication(tag: string): readonly Product[] {
   );
 }
 
-export const CATEGORY_LABELS: Record<string, string> = {
-  cultures: "DVS starter cultures",
-  ingredients: "Dairy ingredients",
-  "taste-makers": "Taste makers",
+/** The client's stated size of the culture portfolio. Also exported by counts.ts. */
+export const CULTURES_OFFERED_LABEL = "200+";
+
+/**
+ * How each category is named, in the three places it appears.
+ *
+ * The culture range used to be labelled "DVS starter cultures". The client
+ * calls it "Product lines" and wants the DVS descriptor in brackets with the
+ * size of the portfolio beside it, because the range is 200+ cultures and the
+ * old label read as a single product type. That reads well as a filter or a
+ * navigation entry and badly repeated on every catalogue card, so the label
+ * comes in three lengths:
+ *
+ *   name    — the plural noun. Breadcrumbs, structured data, anywhere short.
+ *   filter  — the full label, with the descriptor and the size of the range.
+ *             Filter chips and headings, where there is room and where the
+ *             reader is deciding what to look at.
+ *   item    — per product. "Product line (DVS starter culture)", singular,
+ *             because ABDAHI is a product line, and without the "200+" because
+ *             repeating a portfolio size on fifteen cards is noise.
+ *
+ * Only the culture category changed. Ingredients and taste makers keep their
+ * existing wording in all three.
+ */
+export const CATEGORY_COPY: Record<
+  string,
+  { name: string; filter: string; item: string }
+> = {
+  cultures: {
+    name: "Product lines",
+    filter: `Product lines (DVS starter cultures · ${CULTURES_OFFERED_LABEL})`,
+    item: "Product line (DVS starter culture)",
+  },
+  ingredients: {
+    name: "Dairy ingredients",
+    filter: "Dairy ingredients",
+    item: "Dairy ingredients",
+  },
+  "taste-makers": {
+    name: "Taste makers",
+    filter: "Taste makers",
+    item: "Taste makers",
+  },
 };
+
+/** The short plural names. Kept as its own export because it is imported widely. */
+export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+  Object.entries(CATEGORY_COPY).map(([key, copy]) => [key, copy.name])
+);
 
 export const CULTURE_TYPE_LABELS: Record<string, string> = {
   thermophilic: "Thermophilic",

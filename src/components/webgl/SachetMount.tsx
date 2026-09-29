@@ -32,12 +32,20 @@ export function SachetMount({
   slug,
   strainCode,
   category = "cultures",
+  flat = false,
 }: {
   image: string;
   name: string;
   slug: string;
   strainCode?: string | undefined;
   category?: string;
+  /**
+   * The image is a flat printed label, not a sachet photograph. The sachet
+   * model maps its texture onto a pillow-shaped pouch and expects the front of
+   * one; a label is a different shape and would be stretched across it. It is
+   * shown flat at every tier instead.
+   */
+  flat?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tier = useRenderTier();
@@ -51,7 +59,7 @@ export function SachetMount({
   // takes the whole route down rather than degrading to the flat pack.
   // FERMENTA has no artwork yet.
   const eligible =
-    tier === 3 && category === "cultures" && image.length > 0 && !failed;
+    tier === 3 && category === "cultures" && image.length > 0 && !flat && !failed;
   const idle = useDeferredMount(eligible && near);
   const active = eligible && idle;
 

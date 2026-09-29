@@ -3,11 +3,13 @@ import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
 import { SelectorWizard } from "@/components/selector/SelectorWizard";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { CultureLines } from "@/components/selector/CultureLines";
+import { CATEGORY_COPY, CULTURES_OFFERED_LABEL } from "@/content/products";
+import { spell, productLineCount } from "@/content/counts";
 
 export const metadata = pageMetadata({
   title: "Culture Selector — find your DVS starter",
   description:
-    "Answer a few questions and we narrow the DVS culture range to three, with the reasoning shown. No login, no gate on the result.",
+    `Answer a few questions and we narrow our ${CULTURES_OFFERED_LABEL} DVS starter cultures to three product lines, with the reasoning shown. No login, no gate on the result.`,
   path: "/culture-selector",
 });
 
@@ -59,12 +61,15 @@ export default function CultureSelectorPage() {
         <div className="container-ab">
           <div className="mb-8 max-w-3xl">
             <h2 className="text-[1.75rem] leading-[1.1] tracking-[-0.02em] md:text-[2.25rem]">
-              The DVS culture lines
+              {CATEGORY_COPY.cultures!.filter}
             </h2>
             <p className="measure-ab mt-4 text-base leading-[1.65] text-ab-ink-60">
-              Each product line covers several coded cultures, separated by how
-              the curd sets and how sour it finishes. These are the codes to
-              quote on an order.
+              ABsource offers {CULTURES_OFFERED_LABEL} DVS starter cultures across{" "}
+              {spell(productLineCount)} product lines. Each line covers several
+              coded cultures, separated by how the curd sets and how sour it
+              finishes. Below are the codes for the dahi and yoghurt lines, which
+              are the ones to quote on an order; codes for the other lines are
+              published as they are confirmed.
             </p>
           </div>
           <CultureLines />

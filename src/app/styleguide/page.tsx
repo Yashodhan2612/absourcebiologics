@@ -119,7 +119,7 @@ export default function StyleguidePage() {
           </div>
           <div>
             <p className="mono-ab mb-3 text-ab-ink-60">Utility / data</p>
-            <p className="mono-ab">CU01 · 42&deg;C · 6&ndash;8 H · 0.75% LA</p>
+            <p className="mono-ab">AB436NX · 42&deg;C · 6&ndash;8 H · 0.75% LA</p>
           </div>
         </div>
       </Block>
@@ -143,13 +143,13 @@ export default function StyleguidePage() {
 
       <Block title="Product codes">
         <div className="flex flex-wrap items-center gap-3">
-          <ProductCode code="CU01" />
-          <ProductCode code="YC01" />
-          <ProductCode code="MD01" tone="muted" />
+          <ProductCode code="AB436NX" />
+          <ProductCode code="AB152NX" />
+          <ProductCode code="AB435NX" tone="muted" />
         </div>
         <div className="ab-reversed mt-4 flex gap-3 bg-ab-tank p-6">
-          <ProductCode code="CH01" tone="reversed" />
-          <ProductCode code="PB01" tone="reversed" />
+          <ProductCode code="AB759NX" tone="reversed" />
+          <ProductCode code="AB975NX" tone="reversed" />
         </div>
       </Block>
 
@@ -158,7 +158,7 @@ export default function StyleguidePage() {
           <Chip active>Cheese &amp; paneer</Chip>
           <Chip>Curd &amp; dahi</Chip>
           <Chip>Thermophilic</Chip>
-          <ChipStatic>ABDAHI · CU01</ChipStatic>
+          <ChipStatic>ABDAHI · AB436NX</ChipStatic>
         </div>
       </Block>
 
@@ -170,7 +170,7 @@ export default function StyleguidePage() {
         </p>
         <div className="flex flex-wrap gap-16">
           <Stat entry={stats.customersServed} label="Customers served" />
-          <Stat entry={stats.cultureLines} label="culture lines" />
+          <Stat entry={stats.productLines} label="product lines" />
           <Stat entry={stats.qualityChecks} label="Quality checks" />
           <Stat entry={stats.countriesServed} label="Countries (should not render)" />
           <Stat entry={stats.flavourPortfolio} label="Flavours (should not render)" />

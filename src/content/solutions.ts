@@ -39,7 +39,7 @@ export const solutions: readonly Solution[] = [
       },
       {
         q: "What changes for low-fat and toned milk?",
-        a: "Body is the usual failure mode when fat comes down. ABDAHI LOW FAT (LF01) exists for exactly that case.",
+        a: "Body is the usual failure mode when fat comes down. ABDAHI LOW FAT exists for exactly that case.",
       },
     ],
   },
@@ -57,7 +57,7 @@ export const solutions: readonly Solution[] = [
     faqs: [
       {
         q: "Does the same culture work for Greek-style?",
-        a: "ABYOGURT (YC01) is intended to cover set, Greek, fruit and low-fat. Straining changes the solids, so confirm your target texture with a technologist before scaling.",
+        a: "ABYOGURT is intended to cover set, Greek, fruit and low-fat. Straining changes the solids, so confirm your target texture with a technologist before scaling.",
       },
     ],
   },
@@ -68,7 +68,7 @@ export const solutions: readonly Solution[] = [
     summary: "Cheese starters and microbial rennet for the cheese and paneer line.",
     challenge: [
       "Running a bulk starter for cheese means running a second microbiological process alongside the first, with its own contamination risk and its own failure modes. Phage attack on a propagated starter can cost a full vat.",
-      "A Direct Vat Set starter and a consistent coagulant remove that step. ABCHEESE (CH01) covers the starter side and ABRENNO supplies the microbial rennet.",
+      "A Direct Vat Set starter and a consistent coagulant remove that step. ABCHEESE covers the starter side and ABRENNO supplies the microbial rennet.",
     ],
     image: "/assets/solutions/cheese-paneer.webp",
     processParameters: PROCESS_TODO,
@@ -90,7 +90,7 @@ export const solutions: readonly Solution[] = [
     summary: "Chach, cultured buttermilk, sweet and salted lassi.",
     challenge: [
       "Cultured drinks fail on separation and on acid drift. A product that looks right leaving the plant can whey off in the pouch, and a lassi that keeps souring through its shelf life stops being sweet.",
-      "The starter sets the acid profile and how far it travels. ABCHACH (BU01) and ABLASSI (LA01) are separate lines because a salted chach and a sweet lassi want different acid development.",
+      "The starter sets the acid profile and how far it travels. ABCHACH and ABLASSI are separate lines because a salted chach and a sweet lassi want different acid development.",
     ],
     image: "/assets/solutions/buttermilk-lassi.webp",
     processParameters: PROCESS_TODO,
@@ -108,7 +108,7 @@ export const solutions: readonly Solution[] = [
     summary: "Chakka base for shrikhand, and sweetened set mishti doi.",
     challenge: [
       "Shrikhand and mishti doi are regional products with specific acid and texture targets. A general-purpose yoghurt culture will ferment the milk, but it will not give a mishti doi the mild acidity a sweetened set needs, or a chakka the body that shrikhand is built on.",
-      "These are the products the imported ranges were never tuned for, because the volume that justifies tuning them sits here. ABMISHTI (MD01) and ABSHRI (SH01) exist for that reason.",
+      "These are the products the imported ranges were never tuned for, because the volume that justifies tuning them sits here. ABMISHTI and ABSHRI exist for that reason.",
     ],
     image: "/assets/solutions/shrikhand-mishti-doi.webp",
     processParameters: PROCESS_TODO,
@@ -126,7 +126,7 @@ export const solutions: readonly Solution[] = [
     summary: "Cream cultures ahead of butter and cultured ghee.",
     challenge: [
       "Cultured ghee and cultured butter are made on the cream, and the aroma is the product. Too little culture development and the result is indistinguishable from sweet cream; too much and the profile turns sour rather than buttery.",
-      "ABCREAM (CR01) is a mesophilic cream culture intended for that buttery, diacetyl-forward profile.",
+      "ABCREAM is a mesophilic cream culture intended for that buttery, diacetyl-forward profile.",
     ],
     image: "/assets/solutions/cultured-ghee-butter.webp",
     processParameters: PROCESS_TODO,
@@ -144,7 +144,7 @@ export const solutions: readonly Solution[] = [
     summary: "Probiotic cultures for functional dairy and fermented foods.",
     challenge: [
       "A probiotic claim is a labelling commitment, not a marketing line. It has to hold at the end of shelf life, not on the day of manufacture, and that is a question about viable counts through distribution rather than about the culture alone.",
-      "ABPROBIO (PB01) is the line to trial when the product carries a claim. We would rather talk through the claim wording and the count you need to hold than ship against an assumption.",
+      "ABPROBIO is the line to trial when the product carries a claim. We would rather talk through the claim wording and the count you need to hold than ship against an assumption.",
     ],
     image: "/assets/solutions/probiotics-functional.webp",
     processParameters: PROCESS_TODO,
@@ -162,7 +162,7 @@ export const solutions: readonly Solution[] = [
     summary: "Kefir, laban, cultured beverages and new fermented formats.",
     challenge: [
       "New fermented formats are where an importer runs out of road. If the product does not map onto an existing SKU in a European catalogue, the answer is usually the nearest approximation.",
-      "Because we develop and manufacture here, the answer can instead be a blend built to your spec. ABKEFIR (KF01) and ABLABAN (LB01) cover established formats; anything beyond them goes through custom development.",
+      "Because we develop and manufacture here, the answer can instead be a blend built to your spec. ABKEFIR and ABLABAN cover established formats; anything beyond them goes through custom development.",
     ],
     image: "/assets/solutions/fermented-foods-beverages.webp",
     processParameters: PROCESS_TODO,

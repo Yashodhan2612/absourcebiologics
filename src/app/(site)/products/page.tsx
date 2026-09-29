@@ -8,15 +8,23 @@ import { CTABand } from "@/components/sections/CTABand";
 import {
   products,
   packArtworkNote,
-  CATEGORY_LABELS,
+  CATEGORY_COPY,
   CULTURE_TYPE_LABELS,
+  CULTURES_OFFERED_LABEL,
 } from "@/content/products";
+import {
+  Spell,
+  spell,
+  productLineCount,
+  ingredientCount,
+  tasteMakerCount,
+  skuCount,
+} from "@/content/counts";
 import { solutions } from "@/content/solutions";
 
 export const metadata = pageMetadata({
-  title: "DVS cultures, dairy ingredients & taste makers",
-  description:
-    "Twenty-two SKUs across DVS starter cultures, dairy ingredients and taste makers. Filter by application, culture type and category.",
+  title: "Product lines (DVS starter cultures), ingredients & taste makers",
+  description: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines (DVS starter cultures, ${CULTURES_OFFERED_LABEL} cultures), dairy ingredients and taste makers. Filter by application, culture type and category.`,
   path: "/products",
 });
 
@@ -74,7 +82,7 @@ export default async function ProductsPage({
             as="h1"
             eyebrow={`${products.length} SKUs`}
             title="The catalogue."
-            lede="Fourteen culture lines, seven dairy ingredients and a taste maker."
+            lede={`${CULTURES_OFFERED_LABEL} DVS starter cultures across ${spell(productLineCount)} product lines, alongside ${spell(ingredientCount)} dairy ingredients and ${tasteMakerCount === 1 ? "a taste maker" : `${spell(tasteMakerCount)} taste makers`}.`}
           />
         </div>
       </section>
@@ -88,13 +96,13 @@ export default async function ProductsPage({
               <ChipLink href={qs({ category: undefined })} active={!category}>
                 All
               </ChipLink>
-              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+              {Object.entries(CATEGORY_COPY).map(([value, copy]) => (
                 <ChipLink
                   key={value}
                   href={qs({ category: value })}
                   active={category === value}
                 >
-                  {label}
+                  {copy.filter}
                 </ChipLink>
               ))}
             </FilterRow>
@@ -149,7 +157,9 @@ export default async function ProductsPage({
             {/* Shown only while a culture is on screen. Filtering to
                 ingredients or taste makers shows real stand-up delivery packs,
                 where this note would be wrong. */}
-            {filtered.some((p) => p.category === "cultures" && p.image) ? (
+            {filtered.some(
+              (p) => p.category === "cultures" && p.image && p.imageKind !== "label"
+            ) ? (
               <p className="measure-ab mt-6 border-t border-ab-chill pt-4 text-[0.875rem] leading-[1.55] text-ab-ink-60">
                 {packArtworkNote.catalogue}
               </p>
@@ -165,7 +175,7 @@ export default async function ProductsPage({
                       <div className="absolute inset-0 transition-transform duration-150 ease-ab group-hover:scale-[1.02] motion-reduce:group-hover:scale-100">
                         <PackShot
                           src={product.image}
-                          alt={`${product.name} pack`}
+                          alt={`${product.name} ${product.imageKind === "label" ? "label" : "pack"}`}
                           seed={product.strainCode ?? product.slug}
                           sizes="(min-width: 1024px) 33vw, 50vw"
                         />
@@ -183,8 +193,15 @@ export default async function ProductsPage({
                       <p className="text-[0.9375rem] leading-[1.5] text-ab-ink-60">
                         {product.summary}
                       </p>
-                      <span className="mono-ab mt-auto pt-4 text-ab-ink-60">
-                        {CATEGORY_LABELS[product.category]}
+                      <span className="mono-ab mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-4 text-ab-ink-60">
+                        {CATEGORY_COPY[product.category]?.item ?? product.category}
+                        {product.availability === "pilot" ? (
+                          // In the card, not just on the page behind it: this
+                          // is where someone decides whether to click.
+                          <span className="border border-ab-ghee-dark px-1.5 py-0.5 leading-none text-ab-ink">
+                            New · in pilot
+                          </span>
+                        ) : null}
                       </span>
                     </div>
                   </Link>
