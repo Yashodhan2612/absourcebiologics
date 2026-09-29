@@ -6,10 +6,10 @@
  * a decision about someone's job rather than an editing decision. All seven
  * are here; say which to cut and they come out.
  *
- * NO PORTRAITS. None were supplied, and this page renders a typographic card
- * per person by design rather than leaving broken image slots or filling them
- * with stock photographs of people who do not work here. When real portraits
- * arrive, add `image` to this type and the grid takes them without a redesign.
+ * PORTRAITS. Supplied by the client and cropped to one consistent 3:4 size by
+ * scripts/prepare-team-portraits.mjs — see that file for why they are 480x640.
+ * `image` is optional: anyone without a photograph still renders, as the
+ * typographic monogram card the page used before the photographs arrived.
  *
  * COPY. The bios are rewritten from the source document into the site's voice
  * (Section 13). The originals carry words the brand rules ban outright —
@@ -30,6 +30,12 @@ export type TeamMember = {
   /** Their designation, as the client states it. */
   readonly designation: string;
   readonly bio: string;
+  /**
+   * Portrait, 3:4. Optional — a person with no photograph falls back to a
+   * monogram card rather than a gap, so adding someone never needs an image
+   * before their page entry can go live.
+   */
+  readonly image?: string;
 };
 
 export const teamIntro = {
@@ -48,6 +54,7 @@ export const team: readonly TeamMember[] = [
     department: "Research & Quality Control",
     designation: "Senior Scientist",
     bio: "Manisha heads research and quality control, covering product development, analytical testing and process optimisation. The R&D and QC teams work together under her — developing new formulations, refining existing processes, and holding every batch to the regulatory and quality benchmarks it is released against.",
+    image: "/assets/team/manisha-bhadekar.webp",
   },
   {
     slug: "prajkata-joshi",
@@ -55,6 +62,7 @@ export const team: readonly TeamMember[] = [
     department: "Quality Assurance",
     designation: "Manager",
     bio: "Prajkata runs quality assurance. Her remit is the testing methodology itself and the data that comes out of it — making quality a property of the process rather than a check at the end of it. Where QC measures the batch, QA governs the system that produced it.",
+    image: "/assets/team/prajkata-joshi.webp",
   },
   {
     slug: "suraj-gurav",
@@ -62,13 +70,15 @@ export const team: readonly TeamMember[] = [
     department: "Production",
     designation: "Manager",
     bio: "Suraj oversees daily production: the manufacturing schedule, the teams running it, and the standard every batch has to meet before it moves. He also holds maintenance scheduling and facility upkeep, which is what keeps equipment downtime from becoming a supply problem. Ten years with the company.",
+    image: "/assets/team/suraj-gurav.webp",
   },
   {
     slug: "monika-satkar",
     name: "Ms. Monika Satkar",
-    department: "Final Packaging",
+    department: "Formulations",
     designation: "Executive",
     bio: "Monika runs the department that turns bulk culture into a finished sachet. Bulk cultures are blended to approved formulations and to customer-specific requirements, filled under controlled conditions against established SOPs, then labelled, packed and released for dispatch — with traceability maintained end to end.",
+    image: "/assets/team/monika-satkar.webp",
   },
   {
     slug: "shailesh-deshpande",
@@ -76,6 +86,7 @@ export const team: readonly TeamMember[] = [
     department: "Sales & Marketing",
     designation: "Head of Sales & Marketing",
     bio: "Shailesh leads business development for the DVS culture range, covering brand development, market analysis and commercial growth. Decades of experience in the category, and a working knowledge of both the traditional dairy trade and the newer end of the market.",
+    image: "/assets/team/shailesh-deshpande.webp",
   },
   {
     slug: "archana-aitwade",
@@ -83,6 +94,7 @@ export const team: readonly TeamMember[] = [
     department: "Human Resources",
     designation: "Senior HR Executive",
     bio: "Archana holds the people function: recruitment, employee relations, performance review, and compliance with labour law and internal standards. She also coordinates training and development, and supports the management team on workforce planning.",
+    image: "/assets/team/archana-aitwade.webp",
   },
   {
     slug: "rushant-shinde",
@@ -90,5 +102,6 @@ export const team: readonly TeamMember[] = [
     department: "Accounts",
     designation: "Assistant Manager",
     bio: "Rushant supports financial operations and client account management — budgeting, financial reporting, account reconciliation and record keeping. He coordinates with clients, vendors and internal departments to keep transactions, statements and compliance current.",
+    image: "/assets/team/rushant-shinde.webp",
   },
 ];
