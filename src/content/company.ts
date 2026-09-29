@@ -329,7 +329,7 @@ export const milestones = [
   {
     year: "2014",
     title: "ABsource Biologics founded",
-    body: "Established in Pune by Dr. Mukesh Vinze and Mr. Jagannath Sonavane as a group company of BioResource Biotech.",
+    body: "Established in Pune by Dr. Mukesh Vinze and Mr. Jagannath Sonavane.",
   },
   {
     year: "2016",
