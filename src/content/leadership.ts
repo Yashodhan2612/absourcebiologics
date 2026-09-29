@@ -56,7 +56,7 @@ export const leadership: readonly Leader[] = [
       "B.Sc. Zoology",
       "M.Sc. Biotechnology / Life Science",
     ],
-    bio: "A biotechnologist who has built companies across the life sciences, Mr. Sonavane is a founder-director of BioResource Biotech, BioSphere Life-Sci and Avanira Biotech. ABsource is a group company of BioResource Biotech.",
+    bio: "A biotechnologist who has built companies across the life sciences, Mr. Sonavane is a founder-director of BioResource Biotech, BioSphere Life-Sci and Avanira Biotech.",
     previously: [
       "Invitrogen Corporation, USA",
       "BioResource Biotech — founder-director",
