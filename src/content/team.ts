@@ -50,10 +50,10 @@ export const teamIntro = {
 export const team: readonly TeamMember[] = [
   {
     slug: "manisha-bhadekar",
-    name: "Ms. Manisha Bhadekar",
+    name: "Dr. Manisha Bhadekar",
     department: "Research & Quality Control",
     designation: "Senior Scientist",
-    bio: "Manisha heads research and quality control, covering product development, analytical testing and process optimisation. The R&D and QC teams work together under her — developing new formulations, refining existing processes, and holding every batch to the regulatory and quality benchmarks it is released against.",
+    bio: "Dr. Manisha heads research and quality control, covering product development, analytical testing and process optimisation. The R&D and QC teams work together under her — developing new formulations, refining existing processes, and holding every batch to the regulatory and quality benchmarks it is released against.",
     image: "/assets/team/manisha-bhadekar.webp",
   },
   {
