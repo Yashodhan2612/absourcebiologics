@@ -103,10 +103,34 @@ export type Product = {
   /** Two sentences, "what it is". */
   readonly description: string;
   readonly image: string;
+  /**
+   * What `image` is. Defaults to "pack" — a photograph of the sachet, which is
+   * illustrative of the range rather than of what is delivered.
+   *
+   * "label" is a flat printed label (FERMENTA's). It must NOT be mapped onto
+   * the 3D sachet model, which expects a sachet photograph, and it must NOT
+   * carry the "colour-coded, delivered in the standard blue and white sachet"
+   * note: that caption is about illustrative pack artwork, and a label is the
+   * thing itself.
+   */
+  readonly imageKind?: "pack" | "label";
+  /** Reverse of a label, where the back carries storage and certification. */
+  readonly imageBack?: string;
+  /**
+   * "available" is the default. "pilot" marks a product that exists but is not
+   * yet orderable — currently in testing with select customers. Every page
+   * that would otherwise offer a sample, a data sheet or a spec table keys off
+   * this one field rather than special-casing a slug, so the next product to
+   * go through a pilot needs no code.
+   */
+  readonly availability?: "available" | "pilot";
   readonly specs: readonly SpecRow[];
-  /** Why this over an imported equivalent — exactly three, no national-pride
-   *  language (Section 13 bans it on product pages). */
-  readonly versusImported: readonly [string, string, string];
+  /** Why this over an imported equivalent. Three for a supplied product, no
+   *  national-pride language (Section 13 bans it on product pages). Empty for
+   *  a pilot product that is not yet supplied — the section then does not
+   *  render, rather than making comparative claims about a product nobody can
+   *  order. */
+  readonly versusImported: readonly string[];
   readonly selectorProfile: SelectorProfile | null;
 };
 

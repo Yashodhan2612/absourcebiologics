@@ -1,6 +1,7 @@
 import { solutions } from "./solutions";
 import { services } from "./services";
-import { cultures, ingredients, tasteMakers } from "./products";
+import { ingredients, tasteMakers, CATEGORY_COPY } from "./products";
+import { Spell, spell, productLineCount, skuCount, ingredientCount, tasteMakerCount } from "./counts";
 
 /**
  * Buyer-shaped information architecture (Section 8).
@@ -43,13 +44,15 @@ export const primaryNav: readonly NavItem[] = [
   {
     label: "Products",
     href: "/products",
-    panelIntro:
-      "Twenty-two SKUs across cultures, ingredients and taste makers.",
+    panelIntro: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines, ${spell(ingredientCount)} ingredients and ${spell(tasteMakerCount)} taste ${tasteMakerCount === 1 ? "maker" : "makers"}.`,
     children: [
       {
         href: "/products?category=cultures",
-        label: `DVS starter cultures (${cultures.length})`,
-        description: "Freeze-dried, phage-resistant, ready for the vat",
+        // The client's wording: the range is 200+ cultures, so the label says
+        // so and the count of lines moves to the description, where it does
+        // not compete with the size of the portfolio.
+        label: CATEGORY_COPY.cultures!.filter,
+        description: `${productLineCount} product lines. Freeze-dried, phage-resistant, ready for the vat`,
       },
       {
         href: "/products?category=ingredients",
@@ -109,7 +112,7 @@ export const footerNav: readonly { title: string; links: readonly NavLink[] }[] 
   {
     title: "Products",
     links: [
-      { href: "/products?category=cultures", label: "DVS starter cultures" },
+      { href: "/products?category=cultures", label: CATEGORY_COPY.cultures!.filter },
       { href: "/products?category=ingredients", label: "Dairy ingredients" },
       { href: "/products?category=taste-makers", label: "Taste makers" },
       { href: "/culture-selector", label: "Culture Selector" },

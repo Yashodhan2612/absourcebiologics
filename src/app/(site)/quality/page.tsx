@@ -44,7 +44,8 @@ export default function QualityPage() {
           />
           <div className="mt-14 flex flex-wrap gap-16">
             <Stat entry={stats.qualityChecks} label="Quality checks per batch" />
-            <Stat entry={stats.cultureLines} label="culture lines" />
+            <Stat entry={stats.culturesOffered} label="Cultures, DVS starter" />
+            <Stat entry={stats.productLines} label="Product lines" />
             <Stat entry={stats.customersServed} label="Customers served" />
           </div>
         </div>

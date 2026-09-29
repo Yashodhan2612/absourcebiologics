@@ -11,6 +11,8 @@ import {
   milestones,
   company,
 } from "@/content/company";
+import { CULTURES_OFFERED_LABEL } from "@/content/products";
+import { spell, productLineCount, ingredientCount } from "@/content/counts";
 
 export const metadata = pageMetadata({
   title: "About the company — founded in Pune, 2014",
@@ -69,7 +71,7 @@ export default function AboutPage() {
                 <p>
                   ABsource Biologics was founded in Pune in {company.foundedYear} by
                   Dr. Mukesh Vinze and Mr. Jagannath Sonavane &mdash; a scientist and a
-                  biotechnologist &mdash; as a group company of {company.group}.
+                  biotechnologist.
                 </p>
                 <p>
                   In {company.firstCommercialYear} the first commercial Direct Vat Set
@@ -80,9 +82,11 @@ export default function AboutPage() {
                   shrikhand.
                 </p>
                 <p>
-                  The range now runs to fourteen culture lines, seven dairy ingredients
-                  and a taste maker, supplied to 300+ customers from a clean-room
-                  facility with an in-process QC lab.
+                  The range now runs to {spell(productLineCount)} product lines
+                  (DVS starter cultures, {CULTURES_OFFERED_LABEL} cultures),{" "}
+                  {spell(ingredientCount)} dairy ingredients and a taste maker,
+                  supplied to 300+ customers from a clean-room facility with an
+                  in-process QC lab.
                 </p>
               </div>
               <Link

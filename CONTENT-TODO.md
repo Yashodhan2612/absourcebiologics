@@ -131,6 +131,90 @@ so there was no existing copy to work from and nothing has been inferred.
 
 ---
 
+## 0b-i. FERMENTA's label says it is an idli dosa batter culture
+
+The client supplied FERMENTA's printed label (80 x 110 mm, two faces), and it
+is now on the product page and the catalogue card. Reading it changes what we
+know, and one thing about it does not sit comfortably with the site:
+
+- **The front reads "Idli Dosa Batter Culture"**, under the banner "Food
+  Biologicals · India's Own Dairy Science", with the claims "Controlled
+  fermentation, consistent taste and aroma, season-proof performance" and the
+  tagline "Biologicals for Better Batter".
+- **The reverse states** storage at **2–8°C**, shelf life **12 months at
+  2–8°C** in original undamaged packaging, packed in protected atmosphere, for
+  single use only, and the manufacturing address and FSSAI licence number.
+
+What this settles from §0b: it answers *what is it* (a batter culture) and
+supplies two spec rows (storage, shelf life) that were marked outstanding.
+
+What it unsettles: **the site now files FERMENTA under "Product lines (DVS
+starter cultures · 200+)", and the label calls it a food biological, not a
+Direct Vat Set dairy starter.** The label does not say DVS anywhere. The
+category label was applied at the client's instruction, so it is left as
+instructed, but the product page's own copy still says "Trial FERMENTA on your
+own milk", which is plainly wrong for a batter culture.
+
+Deliberately NOT changed in this pass, because it was outside the request and
+each is a decision rather than an edit: the spec rows, the summary, the
+description, and the "on your own milk" call to action. Everything printed on
+the label is the client's own statement, so all of it can be published — say the
+word and the spec table fills in from it.
+
+---
+
+## 0b-ii. ABVEGAN — new, in pilot
+
+Added as the fifteenth product line, at the client's instruction, with
+`availability: "pilot"`. It has a name, a status and nothing else: no
+specification, no applications, no artwork, no selector profile.
+
+That is deliberate, and every page that would otherwise offer a sample, a data
+sheet or a comparison to imported cultures keys off the one `availability`
+field instead: sample and data-sheet buttons become "Register your interest",
+the spec table becomes an availability note, and the "why this over an imported
+equivalent" claims are not rendered. The quote form's product list marks it "in
+pilot, launching soon".
+
+When it launches: set `availability` to `"available"` (or delete the field),
+add its specification, applications, artwork and a selector profile, and give
+`featured.ts` its `in-range` status. No page needs touching.
+
+---
+
+## 0b-iii. "200+ cultures" is the client's figure
+
+`stats.culturesOffered`, shown as "200+" in the navigation, the homepage
+subhead, `/products`, `/quality`, `/about` and the selector page. It comes from
+the client's instruction and is **not derivable from the catalogue**:
+`cultures.ts` transcribes roughly forty coded cultures because only the curd
+and yoghurt families were supplied (§0c). Shown as "200+" and never as a precise
+figure, and never typed as a literal — change it in one place if a firmer
+number arrives.
+
+The count of *product lines* (fifteen) is separate and is derived from the
+catalogue, so it cannot go stale.
+
+---
+
+## 0b-iv. Left as written on purpose
+
+**"India's first indigenous DVS starter culture manufacturer"** (the
+positioning claim, the OG image, metadata, /why-absource's title) still says
+"DVS starter culture". That is the approved claim about what the company *is*,
+not the label of a product category, and rewording an approved dated claim was
+not part of this change. The category label, navigation, filters, cards,
+headings, counts and stats all moved to "Product lines (DVS starter cultures)".
+
+**Mr. Sonavane's bio still lists BioResource Biotech and BioSphere Life-Sci as
+companies he is a founder-director of.** That is a statement about him, not
+about ABsource's ownership, so it was kept when the "group company of
+BioResource Biotech" claim came out of the About story, the footer, the
+structured data and the code. If the affiliation should go too, it is one line
+in `src/content/leadership.ts`.
+
+---
+
 ## 0c. Product codes — two transcription calls to confirm
 
 The real codes are now on the site, from "Curd variants as per the Taste

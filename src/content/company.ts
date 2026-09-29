@@ -1,3 +1,6 @@
+import { CULTURES_OFFERED_LABEL } from "./products";
+import { spell, productLineCount } from "./counts";
+
 /**
  * The approved brand narrative, held as typed structures so the homepage and
  * /why-absource render from one source and cannot drift apart.
@@ -24,7 +27,6 @@ export const company = {
   shortName: "ABsource Biologics",
   foundedYear: 2014,
   firstCommercialYear: 2016,
-  group: "BioResource Biotech",
   address: {
     line1: "Kinetic Innovation Park, D-1 Block",
     line2: "Plot No. 18/1 Part, MIDC Chinchwad",
@@ -54,8 +56,11 @@ export const positioning = {
   claimLong:
     "India's first indigenous DVS starter culture manufacturer. In commercial production since 2016 — nine years before the national Ready-to-Use Culture plant opened at Anand.",
   thesis: "India's dairy shouldn't have to import its bacteria.",
-  subhead:
-    "Direct Vat Set starter cultures, developed and manufactured in Pune. Supplied across India and to export markets. Delivered in three to five days in India.",
+  // The size of the portfolio leads: it is the first thing a buyer should learn
+  // about the range, and it is stated as a portfolio ("200+ cultures") and a
+  // structure ("fifteen product lines") so neither reads as a claim about the
+  // other. Both figures come from counts.ts / stats.ts rather than being typed.
+  subhead: `${CULTURES_OFFERED_LABEL} Direct Vat Set starter cultures across ${spell(productLineCount)} product lines, developed and manufactured in Pune. Supplied across India and to export markets. Delivered in three to five days in India.`,
 } as const;
 
 /**
@@ -208,7 +213,7 @@ export const differentiators = [
   {
     id: "breadth",
     title: "Portfolio breadth and customisation",
-    body: "Fourteen distinct culture lines spanning dahi, lassi, a wide cheese range and probiotic foods — plus in-house R&D that builds entirely new cultures from scratch, which an importer structurally cannot do.",
+    body: `${CULTURES_OFFERED_LABEL} cultures across ${spell(productLineCount)} product lines, spanning dahi, lassi, a wide cheese range and probiotic foods — plus in-house R&D that builds entirely new cultures from scratch, which an importer structurally cannot do.`,
   },
   {
     id: "end-to-end",

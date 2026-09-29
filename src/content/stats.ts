@@ -46,19 +46,39 @@ export const stats = {
   /**
    * Derived, not typed in. A hardcoded count silently disagrees with the
    * catalogue the moment a SKU is added — which is exactly what happened when
-   * FERMENTA arrived and this said 13 while /products listed 14.
+   * FERMENTA arrived and this said 13 while /products listed 14, and would
+   * have happened again with ABVEGAN.
    *
-   * Labelled "culture lines", not "DVS culture lines". Thirteen of the
-   * fourteen declare Direct Vat Set on their own page; FERMENTA's format is
-   * still to be confirmed (CONTENT-TODO §0b), and a count is the one place a
-   * qualifier gets silently applied to a member that has not earned it. Put
-   * "DVS" back once the client confirms.
+   * Counts PRODUCT LINES, the client's term for the culture range. The count
+   * includes ABVEGAN, which is in pilot and not yet orderable: the client
+   * specified fifteen lines and that the new one is announced as coming soon,
+   * so the number is honest and the card says what state it is in.
    *
-   * This counts PRODUCT LINES. The coded cultures within them (around forty,
-   * in src/content/cultures.ts) are a different number and are never conflated
-   * with this one.
+   * The coded cultures within the lines (around forty, in
+   * src/content/cultures.ts) are a different number and are never conflated
+   * with this one — see culturesOffered.
    */
-  cultureLines: { value: cultures.length, verified: true },
+  productLines: { value: cultures.length, verified: true },
+  /**
+   * "200+ cultures". CLIENT-STATED, not derivable.
+   *
+   * Source: the client's instruction of 2026-09-29 to emphasise that ABsource
+   * has "200+ cultures", added on their word. The catalogue cannot confirm it:
+   * src/content/cultures.ts lists roughly forty coded cultures because only
+   * the curd and yoghurt families have been supplied (CONTENT-TODO §0c). The
+   * gap is a gap in what has been transcribed, not evidence against the claim,
+   * but it is the reason this is shown as "200+" and never as a precise figure.
+   *
+   * Never print "200+" as a literal anywhere else. Import this, or
+   * CULTURES_OFFERED_LABEL from counts.ts, so there is one place to change it
+   * when the client sends a firmer number.
+   */
+  culturesOffered: {
+    value: 200,
+    verified: true,
+    display: "200+",
+    note: "Client-stated portfolio size; not derivable from the transcribed catalogue.",
+  },
   qualityChecks: { value: 24, verified: true },
   flavourPortfolio: {
     value: 8000,

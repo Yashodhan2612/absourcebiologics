@@ -63,7 +63,7 @@ export const downloads: readonly DownloadDoc[] = [
   {
     slug: "abdahi-tds",
     release: "on-approval",
-    title: "ABDAHI (CU01) — technical data sheet",
+    title: "ABDAHI — technical data sheet",
     kind: "tds",
     file: "abdahi-cu01-tds.pdf",
     productSlug: "abdahi",
@@ -72,7 +72,7 @@ export const downloads: readonly DownloadDoc[] = [
   {
     slug: "abyogurt-tds",
     release: "on-approval",
-    title: "ABYOGURT (YC01) — technical data sheet",
+    title: "ABYOGURT — technical data sheet",
     kind: "tds",
     file: "abyogurt-yc01-tds.pdf",
     productSlug: "abyogurt",
@@ -81,7 +81,7 @@ export const downloads: readonly DownloadDoc[] = [
   {
     slug: "abcheese-tds",
     release: "on-approval",
-    title: "ABCHEESE (CH01) — technical data sheet",
+    title: "ABCHEESE — technical data sheet",
     kind: "tds",
     file: "abcheese-ch01-tds.pdf",
     productSlug: "abcheese",

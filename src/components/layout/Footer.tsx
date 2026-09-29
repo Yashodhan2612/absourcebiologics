@@ -79,7 +79,7 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col gap-4 border-t border-ab-milk/15 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="mono-ab text-ab-tank-300">
-            &copy; {year} {company.legalName} &middot; A {company.group} group company
+            &copy; {year} {company.legalName}
           </p>
           <ul className="flex gap-6">
             {legalNav.map((link) => (

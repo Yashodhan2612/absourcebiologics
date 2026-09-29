@@ -63,7 +63,6 @@ export function OrganizationJsonLd() {
         url: SITE_URL,
         description: positioning.claim,
         foundingDate: String(company.foundedYear),
-        parentOrganization: { "@type": "Organization", name: company.group },
         address: {
           "@type": "PostalAddress",
           streetAddress: `${company.address.line1}, ${company.address.line2}`,

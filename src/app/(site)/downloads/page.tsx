@@ -6,7 +6,7 @@ import { DownloadLibrary } from "@/components/forms/DownloadLibrary";
 export const metadata = pageMetadata({
   title: "Data sheets & documentation",
   description:
-    "Technical data sheets for the DVS culture range and the current certification pack, for QA and vendor-approval files.",
+    "Technical data sheets for our product lines (DVS starter cultures) and the current certification pack, for QA and vendor-approval files.",
   path: "/downloads",
 });
 

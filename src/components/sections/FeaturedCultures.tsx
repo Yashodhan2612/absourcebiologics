@@ -16,6 +16,19 @@ export function FeaturedCultures() {
 
   const single = featuredCultures.length === 1;
 
+  /**
+   * Columns follow the card count. A fixed three-column grid with two cards
+   * leaves an empty cell, and in a hairline grid the container background
+   * paints it — a large grey panel that reads as a loading failure. The team
+   * page had the same defect with seven people in three columns.
+   */
+  const columns =
+    featuredCultures.length === 2
+      ? "md:grid-cols-2"
+      : featuredCultures.length === 3
+        ? "md:grid-cols-3"
+        : "md:grid-cols-2 lg:grid-cols-3";
+
   return (
     <section className="section-ab-tight border-t border-ab-chill">
       <div className="container-ab">
@@ -30,7 +43,7 @@ export function FeaturedCultures() {
           className={
             single
               ? "grid gap-px border border-ab-chill bg-ab-chill"
-              : "grid gap-px border border-ab-chill bg-ab-chill md:grid-cols-2 lg:grid-cols-3"
+              : `grid gap-px border border-ab-chill bg-ab-chill ${columns}`
           }
         >
           {featuredCultures.map((item) => (
@@ -58,9 +71,11 @@ export function FeaturedCultures() {
                     {item.body}
                   </p>
                   <span className="link-wipe mono-ab mt-6 inline-block w-fit text-ab-tank">
-                    {item.status === "spec-on-request"
-                      ? "Request the specification →"
-                      : "See the specification →"}
+                    {item.status === "pilot"
+                      ? "Register your interest →"
+                      : item.status === "spec-on-request"
+                        ? "Request the specification →"
+                        : "See the specification →"}
                   </span>
                 </div>
               </Link>

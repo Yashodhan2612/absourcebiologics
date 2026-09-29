@@ -85,7 +85,7 @@ export const team: readonly TeamMember[] = [
     name: "Mr. Shailesh Deshpande",
     department: "Sales & Marketing",
     designation: "Head of Sales & Marketing",
-    bio: "Shailesh leads business development for the DVS culture range, covering brand development, market analysis and commercial growth. Decades of experience in the category, and a working knowledge of both the traditional dairy trade and the newer end of the market.",
+    bio: "Shailesh leads business development for the product lines (DVS starter cultures), covering brand development, market analysis and commercial growth. Decades of experience in the category, and a working knowledge of both the traditional dairy trade and the newer end of the market.",
     image: "/assets/team/shailesh-deshpande.webp",
   },
   {
