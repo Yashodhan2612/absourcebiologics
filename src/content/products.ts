@@ -1,8 +1,10 @@
 import type { Product, SpecRow } from "./types";
 
 /**
- * The 23 SKUs: 15 product lines, 7 dairy ingredients, 1 taste maker.
- * (Counts printed on the site come from src/content/counts.ts, not from here.)
+ * The catalogue: product lines (DVS starter cultures), Gir Cow Ghee, dairy
+ * ingredients and taste makers.
+ * (Counts printed on the site come from src/content/counts.ts, not from here.
+ * The coded variants WITHIN each product line live in variants.ts.)
  *
  * SOURCING NOTE — important, read before editing.
  * Phase 2 of the brief asks for the live site's own product descriptions as
@@ -49,25 +51,13 @@ const DVS_COMMON_SPECS: readonly SpecRow[] = [
 ];
 
 /**
- * For a SKU that is in the range but whose specification has not reached us.
- *
- * Deliberately NOT DVS_COMMON_SPECS. That array asserts four things — Direct
- * Vat Set, freeze-dried, phage-resistant, 24 quality checks — which are true of
- * the DVS range as a whole and so are safe on a SKU we have data for. Asserting
- * them on a product whose category we are still confirming would be inventing
- * product data, which this file does not do. Every row here is a `todo`, so the
- * spec table shows them as available on the data sheet and claims nothing.
+ * DVS specs for a culture that ships in its OWN printed sachet rather than the
+ * colour-coded catalogue artwork. Same technical rows; the note about the
+ * standard blue and white sachet is dropped because it would be false.
  */
-const UNSPECIFIED_COMMON_SPECS: readonly SpecRow[] = [
-  { label: "Format", todo: "Confirm whether supplied as Direct Vat Set" },
-  { label: "Form", todo: "Confirm physical form (freeze-dried powder, granule, liquid)" },
-  { label: "Composition", todo: "Confirm declared composition — organisms and/or ingredients" },
-  { label: "Recommended dosage", todo: "Confirm dosage and basis" },
-  { label: "Application notes", todo: "Confirm process stage and method of addition" },
-  { label: "Packaging sizes", todo: "Confirm pack sizes offered" },
-  { label: "Storage conditions", todo: "Confirm storage temperature" },
-  { label: "Shelf life", todo: "Confirm shelf life at stated storage temperature" },
-];
+const DVS_SPECS_OWN_PACK: readonly SpecRow[] = DVS_COMMON_SPECS.filter(
+  (row) => row.label !== "Pack artwork"
+);
 
 const INGREDIENT_COMMON_SPECS: readonly SpecRow[] = [
   { label: "Composition", todo: "Confirm declared composition and E-numbers where applicable" },
@@ -77,6 +67,27 @@ const INGREDIENT_COMMON_SPECS: readonly SpecRow[] = [
   { label: "Storage conditions", todo: "Confirm storage temperature" },
   { label: "Shelf life", todo: "Confirm shelf life at stated storage temperature" },
 ];
+
+/**
+ * Ingredient rows where the client's own pack states the answer.
+ *
+ * `declared` comes straight off the printed label in the product photograph —
+ * the declaration the buyer can read in the image beside it — and replaces the
+ * matching "to confirm" row. Anything the label does not state stays a todo.
+ */
+function ingredientSpecs(
+  packSize: string | null,
+  declared: readonly { label: string; value: string }[] = []
+): readonly SpecRow[] {
+  const stated = new Set(declared.map((row) => row.label));
+  return [
+    ...(packSize ? [{ label: "Pack size", value: packSize }] : []),
+    ...declared,
+    ...INGREDIENT_COMMON_SPECS.filter(
+      (row) => !stated.has(row.label) && !(packSize && row.label === "Packaging sizes")
+    ),
+  ];
+}
 
 /** Applies to every culture SKU. No self-reliance language — Section 13 bans
  *  it on product detail pages outright. */
@@ -140,18 +151,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abdahi.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["curd-dahi"],
-      packFormats: ["cup", "pouch", "bucket", "bulk"],
-      milkFat: ["full-fat", "toned"],
-      acidity: ["mild", "medium"],
-      texture: ["firm-set"],
-      flavour: ["clean", "sweet-mild"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Thermophilic starter intended for firm-set curd in cup and bucket packs.",
-      caveats: ["Confirm your incubation capacity before trialling a thermophilic blend."],
-    },
   },
   {
     slug: "abdahi-low-fat",
@@ -166,18 +165,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abdahi-low-fat.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["curd-dahi"],
-      packFormats: ["cup", "pouch", "bucket", "bulk"],
-      milkFat: ["toned", "double-toned", "low-fat"],
-      acidity: ["mild", "medium"],
-      texture: ["firm-set", "thick"],
-      flavour: ["clean"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Built for reduced-fat curd, where body is the usual failure mode.",
-      caveats: ["Confirm your incubation capacity before trialling a thermophilic blend."],
-    },
   },
   {
     slug: "abyogurt",
@@ -194,18 +181,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abyogurt.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["yoghurt"],
-      packFormats: ["cup", "pouch", "bucket", "bulk"],
-      milkFat: ["full-fat", "toned", "double-toned", "low-fat"],
-      acidity: ["medium", "sharp"],
-      texture: ["firm-set", "creamy", "stirred", "thick"],
-      flavour: ["clean", "sharp-tangy"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Covers the full yoghurt range — set, Greek, fruit and low-fat.",
-      caveats: ["Confirm your incubation capacity before trialling a thermophilic blend."],
-    },
   },
   {
     slug: "abchach",
@@ -220,18 +195,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abchach.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["buttermilk-chach"],
-      packFormats: ["pouch", "bulk"],
-      milkFat: ["toned", "double-toned", "low-fat"],
-      acidity: ["medium", "sharp"],
-      texture: ["stirred"],
-      flavour: ["buttery", "sharp-tangy"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Mesophilic culture for pourable cultured buttermilk and chach.",
-      caveats: [],
-    },
   },
   {
     slug: "ablaban",
@@ -246,18 +209,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/ablaban.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["buttermilk-chach", "other-fermented"],
-      packFormats: ["pouch", "bulk"],
-      milkFat: ["full-fat", "toned"],
-      acidity: ["medium", "sharp"],
-      texture: ["stirred", "thick"],
-      flavour: ["sharp-tangy", "clean"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000"],
-      rationale: "Intended for laban-style salted fermented milk drinks.",
-      caveats: [],
-    },
   },
   {
     slug: "abcheese",
@@ -272,18 +223,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abcheese.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["cheese"],
-      packFormats: ["bulk"],
-      milkFat: ["full-fat", "toned"],
-      acidity: ["medium", "sharp"],
-      texture: ["firm-set"],
-      flavour: ["clean", "sharp-tangy", "buttery"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Cheese starter for vat addition without bulk-starter preparation.",
-      caveats: ["Confirm the target cheese variety with a technologist — the range spans several styles."],
-    },
   },
   {
     slug: "ablassi",
@@ -298,18 +237,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/ablassi.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["lassi"],
-      packFormats: ["cup", "pouch", "bulk"],
-      milkFat: ["full-fat", "toned"],
-      acidity: ["mild", "medium"],
-      texture: ["stirred", "thick", "creamy"],
-      flavour: ["sweet-mild", "clean"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Tuned for lassi, where a mild acid profile keeps the drink sweet.",
-      caveats: [],
-    },
   },
   {
     slug: "abmishti",
@@ -324,18 +251,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abmishti.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["mishti-doi"],
-      packFormats: ["cup", "bucket"],
-      milkFat: ["full-fat"],
-      acidity: ["mild"],
-      texture: ["firm-set", "creamy"],
-      flavour: ["sweet-mild"],
-      probiotic: false,
-      batchSizes: ["under-500", "500-5000", "5000-50000"],
-      rationale: "Built for mishti doi specifically — a mild acid profile that suits a sweetened set.",
-      caveats: ["Confirm your incubation capacity before trialling a thermophilic blend."],
-    },
   },
   {
     slug: "abshri",
@@ -350,18 +265,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abshri.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["shrikhand"],
-      packFormats: ["cup", "bucket", "bulk"],
-      milkFat: ["full-fat"],
-      acidity: ["mild", "medium"],
-      texture: ["thick", "creamy"],
-      flavour: ["sweet-mild", "clean"],
-      probiotic: false,
-      batchSizes: ["under-500", "500-5000", "5000-50000"],
-      rationale: "Intended for the chakka base that shrikhand is built on.",
-      caveats: ["Confirm your incubation capacity before trialling a thermophilic blend."],
-    },
   },
   {
     slug: "abcream",
@@ -376,50 +279,27 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abcream.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["cultured-ghee"],
-      packFormats: ["bulk"],
-      milkFat: ["full-fat"],
-      acidity: ["mild", "medium"],
-      texture: ["creamy"],
-      flavour: ["buttery"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Mesophilic cream culture for a buttery, diacetyl-forward profile.",
-      caveats: [],
-    },
   },
   {
-    slug: "abprobio",
-    name: "ABPROBIO",
+    // Formerly ABPROBIO. Renamed by the client, who asked for it to carry
+    // ABDAHI's pack: it is presented as the probiotic variant of the dahi line.
+    // /products/cultures/abprobio redirects here (next.config.ts).
+    slug: "abdahi-probiotic",
+    name: "ABDAHI (Probiotic)",
     strainCode: null,
     category: "cultures",
     cultureType: "probiotic",
-    // curd-dahi and yoghurt are declared because selectorProfile.making already
-    // recommends this SKU for both. Without them the selector suggested a
-    // culture that then did not appear under "What we would trial" on either
-    // solution page, and carried no application chip on its own detail page.
-    applications: ["probiotics-functional", "curd-dahi", "yoghurt"],
+    // Probiotics & functional ONLY, at the client's instruction. It used to be
+    // tagged for curd and yoghurt as well, and so appeared on both of those
+    // application pages.
+    applications: ["probiotics-functional"],
     summary: "Probiotic cultures for functional dairy",
     description:
       "A Direct Vat Set probiotic culture for functional dairy and fermented products. Supplied freeze-dried for direct addition to the vat.",
-    image: "/assets/products/cultures/abprobio.webp",
+    image: "/assets/products/cultures/abdahi.webp",
+    packOf: "abdahi",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["probiotic-functional", "curd-dahi", "yoghurt"],
-      packFormats: ["cup", "pouch", "bulk"],
-      milkFat: ["full-fat", "toned", "double-toned", "low-fat"],
-      acidity: ["mild", "medium"],
-      texture: ["creamy", "stirred", "firm-set"],
-      flavour: ["clean", "sweet-mild"],
-      probiotic: true,
-      batchSizes: ["under-500", "500-5000", "5000-50000"],
-      rationale: "The line to trial when the product carries a probiotic claim.",
-      caveats: [
-        "A probiotic claim has labelling and viable-count implications — confirm the claim wording and end-of-shelf-life counts with a technologist before launch.",
-      ],
-    },
   },
   {
     slug: "abkefir",
@@ -434,97 +314,58 @@ export const products: readonly Product[] = [
     image: "/assets/products/cultures/abkefir.webp",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["kefir", "other-fermented"],
-      packFormats: ["pouch", "bulk"],
-      milkFat: ["full-fat", "toned", "low-fat"],
-      acidity: ["medium", "sharp"],
-      texture: ["stirred"],
-      flavour: ["sharp-tangy", "clean"],
-      probiotic: true,
-      batchSizes: ["under-500", "500-5000", "5000-50000"],
-      rationale: "For kefir and cultured drinks rather than a set product.",
-      caveats: ["Kefir fermentations behave differently from a standard set culture — plan a trial batch."],
-    },
   },
   {
-    slug: "abbio-shield",
-    name: "ABBIO-SHIELD",
+    // Formerly ABBIO-SHIELD. Renamed by the client and given ABSHRI's green
+    // pack: it is the shrikhand line with the bioprotective strains built in.
+    // /products/cultures/abbio-shield redirects here (next.config.ts).
+    slug: "abshri-bio-shield",
+    name: "ABSHRI (with ABBIO-Shield)",
     strainCode: null,
     category: "cultures",
     cultureType: "blended",
-    // As ABPROBIO: making already recommends it for curd and yoghurt.
-    applications: [
-      "probiotics-functional",
-      "fermented-foods-beverages",
-      "curd-dahi",
-      "yoghurt",
-    ],
-    summary: "Bioprotective culture for fermented dairy",
+    // Probiotics & functional ONLY, at the client's instruction.
+    applications: ["probiotics-functional"],
+    summary: "Shrikhand culture with bioprotective strains",
+    // "Extends the shelf life of chakka by three weeks" is the client's own
+    // stated figure (feedback of 2026-10-11), published on their word. It is a
+    // performance claim with no test data in the repo — CONTENT-TODO.md §0i.
     description:
-      "A Direct Vat Set bioprotective culture used alongside a primary starter, providing protection to the final dairy product against spoilage bacteria and moulds. Supplied freeze-dried for direct addition to the vat.",
-    image: "/assets/products/cultures/abbio-shield.webp",
+      "A Direct Vat Set culture for shrikhand and its chakka base, with ABBIO-Shield bioprotective strains that protect the product against spoilage bacteria and moulds. It extends the shelf life of chakka by three weeks. Supplied freeze-dried for direct addition to the vat.",
+    image: "/assets/products/cultures/abshri.webp",
+    packOf: "abshri",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: {
-      making: ["other-fermented", "curd-dahi", "yoghurt"],
-      packFormats: ["cup", "pouch", "bucket", "bulk"],
-      milkFat: ["full-fat", "toned", "double-toned", "low-fat"],
-      acidity: ["mild", "medium", "sharp"],
-      texture: ["firm-set", "creamy", "stirred", "thick"],
-      flavour: ["clean"],
-      probiotic: false,
-      batchSizes: ["500-5000", "5000-50000", "over-50000"],
-      rationale: "Runs alongside a primary starter rather than replacing it.",
-      caveats: ["This is an adjunct culture — pair it with a primary starter, do not substitute."],
-    },
   },
 
   {
     /**
-     * Added at the client's request ("Fermenta needs to be added to the
-     * product list"). Everything except the name is unconfirmed, and the repo
-     * had no trace of this SKU — it is not on the live site either, so there
-     * was no existing copy to work from.
+     * An idli and dosa batter culture. The description is the client's own
+     * wording, and they have stated its technical specification is the same as
+     * ABDAHI's, so it takes the DVS rows.
      *
-     * Placed LAST in the cultures block on purpose: productsByApplication()[0]
-     * feeds SolutionMedia, so a SKU with no pack artwork must not sit earlier
-     * and become the lead image on a solution card.
-     *
-     * strainCode is null rather than invented. The other thirteen codes are
-     * real identifiers printed on the sachet — they are literally the live
-     * site's own pack-image filenames — so one cannot be minted here.
-     * applications and selectorProfile are empty for the same reason: an
-     * application tag is a technical recommendation and the selector would
-     * otherwise offer a product nobody can specify.
-     *
-     * See CONTENT-TODO.md for the full list of what the client needs to
-     * confirm before this page can say anything more.
+     * Kept late in the cultures block on purpose: productsByApplication()[0]
+     * feeds SolutionMedia, and ABKEFIR should stay the lead image for
+     * fermented foods and beverages.
      */
     slug: "fermenta",
     name: "FERMENTA",
     strainCode: null,
     category: "cultures",
     cultureType: null,
-    applications: [],
-    summary: "Specification available on request",
+    applications: ["fermented-foods-beverages"],
+    summary: "Idli and dosa batter culture",
     description:
-      "FERMENTA is part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
-    // The client's own printed label, not a sachet photograph — see imageKind.
-    image: "/assets/products/cultures/fermenta-label-front.webp",
-    imageKind: "label",
+      "A Direct Vat Set starter culture for idli and dosa batter. Supplied freeze-dried for addition straight to the vessel, with no in-house propagation step.",
+    // A photograph of FERMENTA's own printed sachet — not the colour-coded
+    // catalogue artwork the other lines use. See imageKind.
+    image: "/assets/products/cultures/fermenta.webp",
+    imageKind: "photo",
     imageBack: "/assets/products/cultures/fermenta-label-back.webp",
-    specs: UNSPECIFIED_COMMON_SPECS,
-    // NOT VERSUS_IMPORTED_DEFAULT. That asserts manufacture in Pune, rupee
-    // invoicing and that the strain blend can be adjusted — three claims about
-    // a product whose category is still being confirmed. These two say only
-    // what is true of ABsource as a supplier.
-    versusImported: [
-      "Supplied and supported from Pune, by the team you would be dealing with directly.",
-      "We confirm the specification against your product before we send a sample.",
-      "If the specification does not fit, our R&D develops to your requirement.",
-    ],
-    selectorProfile: null,
+    // It ferments batter, so "trial it on your own milk" would be wrong.
+    substrate: "batter",
+    specs: DVS_SPECS_OWN_PACK,
+    versusImported: VERSUS_IMPORTED_DEFAULT,
   },
   {
     slug: "abvegan",
@@ -532,10 +373,10 @@ export const products: readonly Product[] = [
     strainCode: null,
     category: "cultures",
     cultureType: null,
-    // Empty on purpose. An application tag is a technical recommendation, and
-    // nothing has been published about what ABVEGAN is recommended for. It
-    // therefore appears under no solution page.
-    applications: [],
+    // "vegan" is a catalogue filter, not one of the eight solution families:
+    // the client asked for a Vegan application filter showing this product.
+    // It still appears under no solution page.
+    applications: ["vegan"],
     summary: "New — in pilot, launching soon",
     description:
       "ABVEGAN is a new product offering from ABsource. It is in the early stages of testing and in pilot with a small number of select customers, and will launch and be available soon.",
@@ -548,15 +389,42 @@ export const products: readonly Product[] = [
     // set of comparative claims about a product buyers can obtain; ABVEGAN is
     // not obtainable yet, and no comparison has been made.
     versusImported: [],
-    // Not selectable. The Culture Selector recommends what can be sampled and
-    // trialled today, and a profile for ABVEGAN would be invented.
-    selectorProfile: null,
   },
 
-  /* ======================= DAIRY INGREDIENTS (7) ======================= */
+  /* ============================ GIR COW GHEE ============================ */
   {
-    slug: "abbind",
-    name: "ABBIND",
+    /**
+     * AB704, the cream culture for granular ghee, sold in its own right under
+     * the category the client asked for. Same photograph and description as
+     * ABCREAM, at their instruction — it is a variant of that line, and it is
+     * also listed there as one (variants.ts).
+     *
+     * No application tags: the client asked for it to appear in this category
+     * alone, so it is not surfaced on the cultured ghee solution page.
+     */
+    slug: "ab704",
+    name: "AB704",
+    strainCode: null,
+    category: "gir-cow-ghee",
+    cultureType: "mesophilic",
+    applications: [],
+    summary: "Cultured cream for butter and cultured ghee",
+    description:
+      "A Direct Vat Set mesophilic culture for cream, used ahead of butter and cultured ghee production. Supplied freeze-dried for direct addition.",
+    image: "/assets/products/cultures/abcream.webp",
+    packOf: "abcream",
+    specs: DVS_COMMON_SPECS,
+    versusImported: VERSUS_IMPORTED_DEFAULT,
+  },
+
+  /* ========================= DAIRY INGREDIENTS ========================= */
+  {
+    // Formerly ABBIND. Renamed by the client, with new packaging. The new pack
+    // photograph has not been supplied, and the old one prints the old name, so
+    // no image is shown rather than a pack that contradicts the heading.
+    // CONTENT-TODO.md §0i. /products/ingredients/abbind redirects here.
+    slug: "abmax",
+    name: "ABMAX",
     strainCode: null,
     category: "ingredients",
     cultureType: null,
@@ -564,14 +432,17 @@ export const products: readonly Product[] = [
     summary: "Stabiliser system for fermented dairy",
     description:
       "A stabiliser system for fermented dairy products. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abbind.webp",
+    image: "",
     specs: INGREDIENT_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
   {
-    slug: "abbindmax",
-    name: "ABBINDMAX",
+    // Formerly ABBINDMAX. Renamed by the client; no change of packaging was
+    // mentioned, so the existing photograph stays — it still prints the old
+    // name on the pouches. CONTENT-TODO.md §0i.
+    // /products/ingredients/abbindmax redirects here.
+    slug: "abmerge-plus",
+    name: "ABMERGE+",
     strainCode: null,
     category: "ingredients",
     cultureType: null,
@@ -579,10 +450,9 @@ export const products: readonly Product[] = [
     summary: "Higher-strength stabiliser system",
     description:
       "A higher-strength stabiliser system for fermented dairy where additional body is required. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abbindmax.webp",
+    image: "/assets/products/ingredients/abmerge-plus.webp",
     specs: INGREDIENT_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
   {
     slug: "abpro",
@@ -597,22 +467,6 @@ export const products: readonly Product[] = [
     image: "/assets/products/ingredients/abpro.webp",
     specs: INGREDIENT_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
-  },
-  {
-    slug: "abhipro",
-    name: "ABHIPRO",
-    strainCode: null,
-    category: "ingredients",
-    cultureType: null,
-    applications: ["yoghurt", "probiotics-functional"],
-    summary: "High-protein dairy ingredient",
-    description:
-      "A high-protein dairy ingredient for high-protein yoghurt and functional formats. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abhipro.webp",
-    specs: INGREDIENT_COMMON_SPECS,
-    versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
   {
     slug: "abrenno",
@@ -621,60 +475,101 @@ export const products: readonly Product[] = [
     category: "ingredients",
     cultureType: null,
     applications: ["cheese-paneer"],
-    summary: "Microbial rennet for cheese and paneer",
+    // Cheese only. The client asked for the paneer reference to come out
+    // everywhere this product is described.
+    summary: "Microbial rennet for cheese",
     description:
-      "A microbial rennet coagulant for cheese and paneer manufacture. Strength and dosage are supplied on the technical data sheet.",
+      "A microbial rennet coagulant for cheese manufacture. Supplied as a powder.",
     image: "/assets/products/ingredients/abrenno.webp",
-    specs: INGREDIENT_COMMON_SPECS,
+    // Activity, composition and dosage are read off the printed bottle label.
+    specs: ingredientSpecs(null, [
+      { label: "Product type", value: "Coagulant — powdered microbial rennet" },
+      { label: "Composition", value: "Microbial rennet" },
+      { label: "Activity", value: "6000 U/kg" },
+      { label: "Recommended dosage", value: "0.02 g per kg of milk" },
+    ]),
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
   {
-    slug: "abmerge",
-    name: "ABMERGE",
-    strainCode: null,
+    // ABMERGE is sold in two pack sizes, listed as two SKUs at the client's
+    // request. Same product and the same specification; only the pack differs.
+    // The product code, declaration and what it is for are read off the printed
+    // 25 kg bag, which states a single ingredient — so the old "functional
+    // blend" wording was dropped. The yield claim on the bag is NOT repeated.
+    // /products/ingredients/abmerge redirects to this one.
+    slug: "abmerge-1kg",
+    name: "ABMERGE (1 kg pouch)",
+    strainCode: "AB/ACR/001",
     category: "ingredients",
     cultureType: null,
     applications: ["cheese-paneer", "curd-dahi"],
-    summary: "Functional blend for dairy processing",
+    summary: "Acidity regulator for paneer",
     description:
-      "A functional ingredient blend for dairy processing. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abmerge.webp",
-    specs: INGREDIENT_COMMON_SPECS,
+      "A glucono-delta-lactone acidity regulator for dairy processing, used in paneer making. Dosage and method of addition are supplied on the technical data sheet.",
+    image: "/assets/products/ingredients/abmerge-1kg.webp",
+    specs: ingredientSpecs("1 kg pouch", [
+      { label: "Product type", value: "Acidity regulator, sequestrant, leavening agent" },
+      { label: "Composition", value: "Glucono-delta-lactone (INS 575)" },
+    ]),
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
   {
-    slug: "abblend",
-    name: "ABBLEND",
-    strainCode: null,
+    // The 25 kg bag of the same product. See the 1 kg entry above.
+    slug: "abmerge-25kg",
+    name: "ABMERGE (25 kg bag)",
+    strainCode: "AB/ACR/001",
     category: "ingredients",
     cultureType: null,
-    applications: ["curd-dahi", "yoghurt", "buttermilk-lassi"],
-    summary: "Compound blend for fermented dairy",
+    applications: ["cheese-paneer", "curd-dahi"],
+    summary: "Acidity regulator for paneer",
     description:
-      "A compound ingredient blend for fermented dairy products. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abblend.webp",
-    specs: INGREDIENT_COMMON_SPECS,
+      "A glucono-delta-lactone acidity regulator for dairy processing, used in paneer making. Dosage and method of addition are supplied on the technical data sheet.",
+    image: "/assets/products/ingredients/abmerge-25kg.webp",
+    specs: ingredientSpecs("25 kg bag", [
+      { label: "Product type", value: "Acidity regulator, sequestrant, leavening agent" },
+      { label: "Composition", value: "Glucono-delta-lactone (INS 575)" },
+    ]),
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
   },
 
-  /* ========================= TASTE MAKERS (1) ========================= */
+  /* =========================== TASTE MAKERS =========================== */
   {
-    slug: "abspice",
-    name: "ABSPICE",
-    strainCode: null,
+    // ABSPICE is sold in two pack sizes, listed as two SKUs at the client's
+    // request. Same product and the same specification; only the pack differs.
+    // /products/taste-makers/abspice redirects to this one.
+    slug: "abspice-1kg",
+    name: "ABSPICE (1 kg pouch)",
+    strainCode: "AB/SPC/001",
     category: "taste-makers",
     cultureType: null,
     applications: ["buttermilk-lassi", "fermented-foods-beverages"],
     summary: "Savoury seasoning system for dairy",
     description:
       "A savoury seasoning system for dairy applications such as spiced chach and savoury fermented drinks. Full composition is supplied on the technical data sheet.",
-    image: "/assets/products/taste-makers/abspice.webp",
-    specs: INGREDIENT_COMMON_SPECS,
+    image: "/assets/products/taste-makers/abspice-1kg.webp",
+    specs: ingredientSpecs("1 kg pouch", [
+      { label: "Product type", value: "Chach masala" },
+      { label: "Composition", value: "Mixture of spices and table salt" },
+    ]),
     versusImported: VERSUS_IMPORTED_DEFAULT,
-    selectorProfile: null,
+  },
+  {
+    // The 25 kg bag of the same product. See the 1 kg entry above.
+    slug: "abspice-25kg",
+    name: "ABSPICE (25 kg bag)",
+    strainCode: "AB/SPC/001",
+    category: "taste-makers",
+    cultureType: null,
+    applications: ["buttermilk-lassi", "fermented-foods-beverages"],
+    summary: "Savoury seasoning system for dairy",
+    description:
+      "A savoury seasoning system for dairy applications such as spiced chach and savoury fermented drinks. Full composition is supplied on the technical data sheet.",
+    image: "/assets/products/taste-makers/abspice-25kg.webp",
+    specs: ingredientSpecs("25 kg bag", [
+      { label: "Product type", value: "Chach masala" },
+      { label: "Composition", value: "Mixture of spices and table salt" },
+    ]),
+    versusImported: VERSUS_IMPORTED_DEFAULT,
   },
 ];
 
@@ -683,18 +578,20 @@ export const products: readonly Product[] = [
 export const cultures = products.filter((p) => p.category === "cultures");
 export const ingredients = products.filter((p) => p.category === "ingredients");
 export const tasteMakers = products.filter((p) => p.category === "taste-makers");
+export const girCowGhee = products.filter((p) => p.category === "gir-cow-ghee");
 
 /**
  * Product codes are no longer carried on the product.
  *
- * A code (AB436NX) identifies a taste profile WITHIN a product line, not the
+ * A code (AB436NX) identifies a variant WITHIN a product line, not the
  * line itself — several codes are all ways of buying ABDAHI. They live in
- * src/content/cultures.ts, keyed to the product they are ordered against, and
+ * src/content/variants.ts, keyed to the product they are ordered against, and
  * the rail reads them from there.
  *
- * `strainCode` survives on the Product type as `string | null` and is null on
- * every SKU today. It is kept because the client may yet publish one code per
- * line alongside the profile codes; every consumer already guards on null.
+ * `strainCode` is a code for the WHOLE product, where the client's pack prints
+ * one. That is true of the ingredients and the taste maker (AB/ACR/001,
+ * AB/SPC/001) and of no culture line, whose codes are per variant and live in
+ * variants.ts. Every consumer guards on null.
  */
 
 export function productBySlug(
@@ -742,6 +639,11 @@ export const CATEGORY_COPY: Record<
     name: "Product lines",
     filter: `Product lines (DVS starter cultures · ${CULTURES_OFFERED_LABEL})`,
     item: "Product line (DVS starter culture)",
+  },
+  "gir-cow-ghee": {
+    name: "Gir Cow Ghee",
+    filter: "Gir Cow Ghee",
+    item: "Gir Cow Ghee",
   },
   ingredients: {
     name: "Dairy ingredients",

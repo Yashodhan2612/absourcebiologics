@@ -64,12 +64,12 @@ fetch_list <<EOF
 $BASE/2020/12/Artboard-1-1-300x300.png  brand/mark.png
 EOF
 
-# Facility photography is NO LONGER fetched from the live site.
+# Facility photography is NOT fetched from the live site.
 #
-# The client supplied ten new plant photographs ("Facility Photographs.docx"),
-# which are higher resolution, show people working, and cover rooms the scraped
-# set did not — the lyophiliser, the packing hall, the laminar benches. Those
-# live in public/assets/_source/facility/ and are committed.
+# The client supplied the plant photography directly (October 2026). The
+# originals go in public/assets/_source/facility/2026/ and are cropped and
+# encoded by scripts/prepare-media.mjs, which also builds the certificate scans
+# and the product photographs that were sent the same way.
 #
 # The four scraped images this block used to download (qc-lab, fermentation,
 # plant-01, plant-02) have been deleted. Re-enabling these lines would
@@ -85,7 +85,7 @@ EOF
 #
 # Fetching them here as well would overwrite the crops with full frames.
 
-# The thirteen DVS sachets. Filenames on the live site are the strain codes.
+# The DVS sachets. Filenames on the live site are the legacy line codes.
 echo "DVS culture sachets"
 fetch_list <<EOF
 $BASE/2022/06/CU01-768x1024.jpg products/cultures/abdahi.jpg
@@ -98,34 +98,29 @@ $BASE/2022/06/LA01-768x1024.jpg products/cultures/ablassi.jpg
 $BASE/2022/06/MD01-768x1024.jpg products/cultures/abmishti.jpg
 $BASE/2022/06/SH01-768x1024.jpg products/cultures/abshri.jpg
 $BASE/2022/06/CR01-768x1024.jpg products/cultures/abcream.jpg
-$BASE/2022/06/PB01-768x1024.jpg products/cultures/abprobio.jpg
 $BASE/2022/06/KF01-768x1024.jpg products/cultures/abkefir.jpg
-$BASE/2022/06/BS01-768x1024.jpg products/cultures/abbio-shield.jpg
 EOF
 
+# Ingredients and taste makers. Only the packs the live site still matches are
+# fetched. Not fetched, because the client supplied them directly or withdrew
+# them (see scripts/prepare-media.mjs and CONTENT-TODO.md §00):
+#   abrenno, abmerge-25kg, abspice-25kg  — supplied October 2026
+#   abmax (was abbind)                   — new pack not yet supplied; no image
+#   abhipro, abblend                     — withdrawn from the range
 echo "Dairy ingredients"
 fetch_list <<EOF
-$BASE/2024/11/bind-589x1024.png    products/ingredients/abbind.png
 $BASE/2024/11/pro-1-589x1024.png   products/ingredients/abpro.png
-$BASE/2024/11/renno-589x1024.png   products/ingredients/abrenno.png
-$BASE/2024/11/merge-1-589x1024.png products/ingredients/abmerge.png
-$BASE/2021/08/bindmax-Copy.png     products/ingredients/abbindmax.png
-$BASE/2021/08/blend-Copy.png       products/ingredients/abblend.png
-$BASE/2021/06/hipro1.png           products/ingredients/abhipro.png
+$BASE/2024/11/merge-1-589x1024.png products/ingredients/abmerge-1kg.png
+$BASE/2021/08/bindmax-Copy.png     products/ingredients/abmerge-plus.png
 EOF
 
-echo "Taste maker"
+echo "Taste makers"
 fetch_list <<EOF
-$BASE/2024/11/spice-1-589x1024.png products/taste-makers/abspice.png
+$BASE/2024/11/spice-1-589x1024.png products/taste-makers/abspice-1kg.png
 EOF
 
-echo "Certifications"
-fetch_list <<EOF
-$BASE/2020/12/cer-1.png certs/iso-9001.png
-$BASE/2020/12/cer-4.png certs/iso-22000.png
-$BASE/2020/12/cer-3.png certs/haccp.png
-$BASE/2020/12/cer-2.png certs/halal.png
-EOF
+# Certificates are NOT fetched. The scans on the live site expired in 2023; the
+# current ones were supplied directly and are built by scripts/prepare-media.mjs.
 
 # Client logos. The numbering is not contiguous on the live site; 404s here are
 # expected. Only logos that already appear on the Clientele page may be used.

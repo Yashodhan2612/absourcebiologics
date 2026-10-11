@@ -54,9 +54,9 @@ export const stats = {
    * specified fifteen lines and that the new one is announced as coming soon,
    * so the number is honest and the card says what state it is in.
    *
-   * The coded cultures within the lines (around forty, in
-   * src/content/cultures.ts) are a different number and are never conflated
-   * with this one — see culturesOffered.
+   * The coded variants within the lines (src/content/variants.ts) are a
+   * different number and are never conflated with this one — see
+   * culturesOffered.
    */
   productLines: { value: cultures.length, verified: true },
   /**
@@ -64,10 +64,10 @@ export const stats = {
    *
    * Source: the client's instruction of 2026-09-29 to emphasise that ABsource
    * has "200+ cultures", added on their word. The catalogue cannot confirm it:
-   * src/content/cultures.ts lists roughly forty coded cultures because only
-   * the curd and yoghurt families have been supplied (CONTENT-TODO §0c). The
-   * gap is a gap in what has been transcribed, not evidence against the claim,
-   * but it is the reason this is shown as "200+" and never as a precise figure.
+   * src/content/variants.ts transcribes the client's master sheet, which lists
+   * a little over a hundred coded cultures (CONTENT-TODO §0c). The gap is not
+   * evidence against the claim, but it is the reason this is shown as "200+"
+   * and never as a precise figure.
    *
    * Never print "200+" as a literal anywhere else. Import this, or
    * CULTURES_OFFERED_LABEL from counts.ts, so there is one place to change it

@@ -1,7 +1,7 @@
 import { solutions } from "./solutions";
 import { services } from "./services";
 import { ingredients, tasteMakers, CATEGORY_COPY } from "./products";
-import { Spell, spell, productLineCount, skuCount, ingredientCount, tasteMakerCount } from "./counts";
+import { Spell, spell, productLineCount, skuCount } from "./counts";
 
 /**
  * Buyer-shaped information architecture (Section 8).
@@ -44,7 +44,7 @@ export const primaryNav: readonly NavItem[] = [
   {
     label: "Products",
     href: "/products",
-    panelIntro: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines, ${spell(ingredientCount)} ingredients and ${spell(tasteMakerCount)} taste ${tasteMakerCount === 1 ? "maker" : "makers"}.`,
+    panelIntro: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines, ${CATEGORY_COPY["gir-cow-ghee"]!.name}, dairy ingredients and taste makers.`,
     children: [
       {
         href: "/products?category=cultures",
@@ -53,6 +53,11 @@ export const primaryNav: readonly NavItem[] = [
         // not compete with the size of the portfolio.
         label: CATEGORY_COPY.cultures!.filter,
         description: `${productLineCount} product lines. Freeze-dried, phage-resistant, ready for the vat`,
+      },
+      {
+        href: "/products?category=gir-cow-ghee",
+        label: CATEGORY_COPY["gir-cow-ghee"]!.name,
+        description: "AB704, the cream culture for granular ghee",
       },
       {
         href: "/products?category=ingredients",
@@ -67,7 +72,7 @@ export const primaryNav: readonly NavItem[] = [
       {
         href: "/culture-selector",
         label: "Culture Selector",
-        description: "Narrow the range to three in under a minute",
+        description: "Name the cultures to trial for what you make",
         highlighted: true,
       },
     ],
@@ -113,6 +118,7 @@ export const footerNav: readonly { title: string; links: readonly NavLink[] }[] 
     title: "Products",
     links: [
       { href: "/products?category=cultures", label: CATEGORY_COPY.cultures!.filter },
+      { href: "/products?category=gir-cow-ghee", label: CATEGORY_COPY["gir-cow-ghee"]!.name },
       { href: "/products?category=ingredients", label: "Dairy ingredients" },
       { href: "/products?category=taste-makers", label: "Taste makers" },
       { href: "/culture-selector", label: "Culture Selector" },

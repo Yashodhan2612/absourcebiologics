@@ -110,8 +110,8 @@ export default function QualityPage() {
               </div>
               <div className="relative mt-10 aspect-[16/9] overflow-hidden">
                 <Photo
-                  src="/assets/facility/qc-bench.webp"
-                  alt="Technologists at the in-process QC bench, with microscope and laminar flow cabinets"
+                  src="/assets/facility/microscopy-check.webp"
+                  alt="A technologist checking a culture sample under the microscope in the QC lab"
                   sizes="(min-width: 768px) 66vw, 100vw"
                   parallax
                   depth={0.5}

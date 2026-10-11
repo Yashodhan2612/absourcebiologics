@@ -16,6 +16,7 @@
     "gen-posters": "node scripts/generate-posters.mjs",
     "prepare-portraits": "node scripts/prepare-portraits.mjs",
     "prepare-team-portraits": "node scripts/prepare-team-portraits.mjs",
+    "prepare-media": "node scripts/prepare-media.mjs",
     "prepare-brand": "node scripts/prepare-brand.mjs",
     "verify:email": "node scripts/verify-email.mjs",
     "verify:email-routing": "node scripts/verify-email-routing.mjs"

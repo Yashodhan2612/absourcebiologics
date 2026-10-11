@@ -9,6 +9,11 @@ export type Certification = {
    *
    * Recorded so staleness is a fact in the codebase rather than something
    * nobody notices. See `scanIsStale` / `staleScans` below.
+   *
+   * Where a certificate prints two dates the EARLIER is used. The HACCP and
+   * HALAL certificates are numbered valid to 25 July 2029 but carry a
+   * "Certificate Expiry Date" of 24 July 2027, subject to yearly re-approval;
+   * the scan needs replacing when the nearer date passes.
    */
   readonly scanExpires: string;
 };
@@ -23,14 +28,12 @@ export type Certification = {
  * licence is the exception and is treated separately below, because its number
  * is a public register key a buyer can verify independently.
  *
- * THE SCANS WE HOLD ALL EXPIRED IN 2023. The client asserts current
- * certification and the four names are published on that basis, unchanged —
- * but the image files are old, and they are shown at a size where a reader can
- * see that. Flagged in CONTENT-TODO.md §0d. Dropping in renewed scans and
- * updating one date per row is the whole job.
- *
- * Two of these files were also mislabelled — iso-22000.* held the HALAL
- * certificate and halal.* held ISO 22000. Corrected.
+ * THE SCANS ARE CURRENT. They are the certificates issued in July 2026,
+ * supplied by the client in October 2026, and replace a set that had expired
+ * in 2023. Each file was opened and read before it was named: the standard and
+ * the expiry below are what is printed on that scan. When they are renewed,
+ * dropping in the new scans (scripts/prepare-media.mjs) and updating one date
+ * per row is the whole job. `staleScans()` lists any whose date has passed.
  */
 export const certifications: readonly Certification[] = [
   {
@@ -39,7 +42,7 @@ export const certifications: readonly Certification[] = [
     standard: "Quality management systems",
     what: "The manufacturing quality system is documented, audited and repeatable — the basis on which batch-to-batch consistency is claimed.",
     image: "/assets/certs/iso-9001.webp",
-    scanExpires: "2023-05-07",
+    scanExpires: "2029-07-09",
   },
   {
     slug: "iso-22000",
@@ -47,7 +50,7 @@ export const certifications: readonly Certification[] = [
     standard: "Food safety management systems",
     what: "Food safety management across the process, which is the standard a dairy customer's own audit will look for.",
     image: "/assets/certs/iso-22000.webp",
-    scanExpires: "2023-05-24",
+    scanExpires: "2029-07-09",
   },
   {
     slug: "haccp",
@@ -55,7 +58,7 @@ export const certifications: readonly Certification[] = [
     standard: "Hazard analysis and critical control points",
     what: "Hazards are identified and controlled at defined points in the process rather than inspected for at the end.",
     image: "/assets/certs/haccp.webp",
-    scanExpires: "2023-06-30",
+    scanExpires: "2027-07-24",
   },
   {
     slug: "halal",
@@ -63,7 +66,7 @@ export const certifications: readonly Certification[] = [
     standard: "Halal certification",
     what: "Required by most Middle Eastern and several South-East Asian importers, and increasingly requested by domestic customers exporting onward.",
     image: "/assets/certs/halal.webp",
-    scanExpires: "2023-05-28",
+    scanExpires: "2027-07-24",
   },
 ];
 

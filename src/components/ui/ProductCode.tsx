@@ -9,10 +9,8 @@ import { cn } from "@/lib/cn";
  * a "strain code" in one place and a "strain index" in another; this is the
  * client's own term and the only one now used.
  *
- * The codes themselves live in src/content/cultures.ts and are the client's
- * own, from their taste-profile catalogue. They replaced a set of placeholder
- * codes (CU01, YC01, LF01 …) written during the build, which a buyer had no
- * way of telling apart from real ones.
+ * The variant codes live in src/content/variants.ts and are the client's own,
+ * transcribed from their master catalogue.
  */
 export function ProductCode({
   code,

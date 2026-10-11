@@ -65,7 +65,7 @@ export const solutions: readonly Solution[] = [
     slug: "cheese-paneer",
     name: "Cheese & paneer",
     headline: "Vat-ready cheese starter, without the bulk starter room.",
-    summary: "Cheese starters and microbial rennet for the cheese and paneer line.",
+    summary: "Cheese starters and microbial rennet for cheese, with ABMERGE for the paneer line.",
     challenge: [
       "Running a bulk starter for cheese means running a second microbiological process alongside the first, with its own contamination risk and its own failure modes. Phage attack on a propagated starter can cost a full vat.",
       "A Direct Vat Set starter and a consistent coagulant remove that step. ABCHEESE covers the starter side and ABRENNO supplies the microbial rennet.",
@@ -79,7 +79,7 @@ export const solutions: readonly Solution[] = [
       },
       {
         q: "Do you supply the coagulant as well as the starter?",
-        a: "Yes — ABRENNO is a microbial rennet supplied alongside the starter.",
+        a: "Yes — ABRENNO is a microbial rennet for cheese, supplied alongside the starter.",
       },
     ],
   },
@@ -144,7 +144,7 @@ export const solutions: readonly Solution[] = [
     summary: "Probiotic cultures for functional dairy and fermented foods.",
     challenge: [
       "A probiotic claim is a labelling commitment, not a marketing line. It has to hold at the end of shelf life, not on the day of manufacture, and that is a question about viable counts through distribution rather than about the culture alone.",
-      "ABPROBIO is the line to trial when the product carries a claim. We would rather talk through the claim wording and the count you need to hold than ship against an assumption.",
+      "ABDAHI (Probiotic) is the line to trial when the product carries a claim. We would rather talk through the claim wording and the count you need to hold than ship against an assumption.",
     ],
     image: "/assets/solutions/probiotics-functional.webp",
     processParameters: PROCESS_TODO,

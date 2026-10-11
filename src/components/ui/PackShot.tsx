@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { ColonyPlate } from "@/components/ui/ColonyPlate";
-import { products, productsByApplication } from "@/content/products";
+import { products } from "@/content/products";
 
 /**
  * A product's real pack photography.
@@ -70,42 +70,6 @@ export function ProductPackShot({
       className={className}
       sizes={sizes}
       priority={priority}
-    />
-  );
-}
-
-/**
- * Application imagery for the eight solution families.
- *
- * There is deliberately no stock food photography here. The brief asks for
- * application photography in Indian dairy contexts and explicitly rejects
- * anything that reads as Western supermarket yoghurt; the freely-licensed
- * libraries return curries and pizza for "paneer", which would cheapen the
- * page in front of exactly the technical buyer it is written for.
- *
- * So a solution shows the real pack of the lead culture recommended for that
- * application instead. It is genuine ABsource photography, it is specific to
- * the application, and it is the thing a plant's QA manager is actually trying
- * to identify. If the client supplies real application photography later, add
- * `image` to solutions.ts and prefer it here.
- */
-export function SolutionMedia({
-  slug,
-  className,
-  sizes = "(min-width: 1024px) 33vw, 100vw",
-}: {
-  slug: string;
-  className?: string;
-  sizes?: string;
-}) {
-  const lead = productsByApplication(slug)[0];
-  return (
-    <PackShot
-      src={lead?.image}
-      alt={lead ? `${lead.name} pack` : ""}
-      seed={slug}
-      className={className}
-      sizes={sizes}
     />
   );
 }

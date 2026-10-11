@@ -9,6 +9,89 @@ Ordered by what blocks launch.
 
 ---
 
+## 00. October 2026 catalogue and photography round — open items
+
+Everything the client asked for in this round is done. These are the points
+where the instruction ran out, an asset did not arrive, or a judgement call was
+made that the client may want to overrule. Most urgent first.
+
+1. **ABMAX has no photograph.** ABBIND was renamed ABMAX "with different
+   packaging", and the new pack was not in the files supplied. The old
+   photograph prints the old name, so the page and the catalogue card show the
+   abstract placeholder rather than a pack that contradicts the heading. Send
+   the new pack shot: save it under `public/assets/_source/products/2026/`, add
+   a line to `scripts/prepare-media.mjs`, and set `image` on `abmax` in
+   `products.ts`.
+
+2. **ABMERGE+ still shows packs printed "ABBINDMAX".** The rename came with no
+   mention of new packaging, so the existing photograph was kept. If the pack
+   has changed too, send it.
+
+3. **ABVEGAN: image and description still to come** (from Mukesh Kaka, per the
+   brief). It is now under a new **Vegan** application filter on `/products`
+   and remains in pilot. Its four codes in the master sheet (AB1201, AB1202,
+   AB1211, AB1212) are transcribed but **not shown anywhere** while it is in
+   pilot: the page says the specification is published at launch.
+
+4. **"Extends the shelf life of chakka by three weeks"** is published on ABSHRI
+   (with ABBIO-Shield) on the client's instruction. It is the only quantified
+   performance claim on any product page and there is no test data behind it in
+   this repository. Keep the supporting data on file.
+
+5. **FERMENTA's photograph has garbled small print — in the source.** The
+   sachet image supplied reads "India's Own Dairy Seienee" and "Biologieals for
+   Better Batter". It was cleaned up as far as a resample honestly can (cropped
+   to the sachet, enlarged 1.7x with a sharpening pass), but the lettering is
+   wrong in the file itself and no processing fixes that; a generative upscaler
+   would only rewrite it into different nonsense. **The print-ready artwork or
+   a photograph of a real sachet is needed.** The reverse of the label, which
+   is rendered from the client's own PDF and is correct, is still shown beside
+   it.
+
+6. **FERMENTA: two statements that do not obviously agree.** Its specification
+   was set to "the exact same as ABDAHI" as instructed. Its own label reverse
+   states storage at 2–8°C and a 12-month shelf life; ABDAHI's pack artwork
+   prints -18°C and 24 months. Neither figure is typed into a spec table (both
+   rows still say "on the data sheet"), so nothing false is published — but
+   the two will collide the moment those rows are filled in. Confirm which
+   applies to FERMENTA.
+
+7. **ABRENNO sits under the "Cheese & paneer" application.** Every description
+   of it now says "Microbial rennet for cheese" and the paneer wording is gone
+   from the product, the solution page copy and its FAQ. The application family
+   itself is still named "Cheese & paneer", so that chip still appears on the
+   ABRENNO page. Splitting the family in two is a navigation change, not a
+   wording one; say if it is wanted.
+
+8. **ABMERGE's description was corrected from its own bag.** The 25 kg bag
+   declares a single ingredient, glucono-delta-lactone (INS 575), as an acidity
+   regulator for paneer. The site used to call it "a functional ingredient
+   blend", which the pack contradicts, so it now says what the bag says. The
+   bag's line about "softer, creamier and whiter paneer with increased yield"
+   is **not** repeated on the site: it is a performance claim with no data
+   here.
+
+9. **Certificates now appear once, on /quality.** They used to be repeated in
+   the fifth block of /why-absource. Under the rule that no image repeats
+   anywhere, that block now shows a photograph of bench testing and links to
+   the certificates instead.
+
+10. **Three plant photographs were not used**: the water-treatment shed
+    (_MG_0203), the outdoor cold room (_MG_0209) and the open control cabinet
+    (_MG_0239). They show exposed wiring, a tin-roofed utility area and
+    newspaper-lined walls, which undercut the clean-room claim the rest of the
+    set makes. Two more (_MG_0212, _MG_0227) are good but had no slot left;
+    each slot uses a different photograph, and there are ten slots.
+
+11. **Pack photographs shared by instruction.** ABDAHI (Probiotic) is shown in
+    ABDAHI's pack, ABSHRI (with ABBIO-Shield) in ABSHRI's, and AB704 in
+    ABCREAM's, each as asked. The "no photograph repeats" rule is enforced for
+    the plant, certificate and portrait photographs; these three are the
+    declared exceptions (`packOf` in `products.ts`), and the homepage solution
+    tiles are arranged so that no two tiles show the same pack.
+
+---
+
 ## 0. Assets — fetched, wired, and what is still missing
 
 `scripts/fetch-assets.sh` has now been run successfully. 91 of 93 files
@@ -57,15 +140,9 @@ fetch script if you need them back.
   it is off-key against the clean-room photography. Left unused; consider it
   for `/careers` if the client wants it there.
 
-- **Dr Vinze's portrait is a phone photograph.** At the client's request the
-  seated studio portrait (DSC00586) was replaced with the standing shot from
-  AgriTech / DairyTech India 2022, which is the only solo standing photograph
-  of him in the site's media library. It is noticeably softer than the studio
-  shot it replaced, and the two founders' portraits no longer match in style —
-  one is a studio desk portrait, the other a trade-show snapshot. **Worth
-  asking whether a standing studio portrait exists**, or commissioning one;
-  matching portraits would lift the page. Crops are defined in
-  `scripts/prepare-portraits.mjs`.
+- **Dr Vinze's portrait** was replaced in October 2026 with the photograph the
+  client supplied, which closes the old note about the trade-show snapshot.
+  Crops are defined in `scripts/prepare-portraits.mjs`.
 
 - **Palette reconciliation.** Section 5 asks for the logo's hex values to be
   sampled and the tokens adjusted. `brand/logo.webp` is now available — sample
@@ -81,104 +158,46 @@ fetch script if you need them back.
 
 ---
 
-## 0b. FERMENTA — added on request, almost nothing known
+## 0b. FERMENTA — now described by the client
 
-The client asked for "Fermenta" to be added to the product list. It is now in
-`src/content/products.ts` as **FERMENTA** (renamed from ABFERMENTA at the
-client's instruction — the product is Fermenta, not ABFermenta), and it is the only SKU on the site
-about which we can state essentially nothing.
+FERMENTA was added to the range with nothing known about it. The client has
+since supplied the description, the application and the specification basis,
+and all of it is on the site:
 
-It does not exist on the live site either — a search of absourcebiologics.com
-and its media library returns only the words "fermentation" and "fermented" —
-so there was no existing copy to work from and nothing has been inferred.
+- **Description** (the client's wording): "A Direct Vat Set starter culture for
+  idli and dosa batter. Supplied freeze-dried for addition straight to the
+  vessel, with no in-house propagation step."
+- **Application**: Fermented foods & beverages, and nowhere else.
+- **Specification**: the same rows as ABDAHI, as instructed, less the note about
+  colour-coded catalogue artwork, which is not true of a product shown in its
+  own printed sachet.
+- **Variants**: AB1301 and AB1302, from the master sheet.
+- Its call to action now reads "Trial FERMENTA on your own batter".
 
-**Blocking, in priority order:**
-
-1. **Is it a DVS starter culture, a dairy ingredient, or a taste maker?** It is
-   currently filed under cultures, because the client wrote "product/strain"
-   and because the naming convention is consistent (cultures are AB + an
-   end-product or organism word — ABDAHI, ABYOGURT, ABKEFIR; ingredients are
-   AB + a function word — ABBIND, ABRENNO, ABMERGE). That choice is published:
-   it sets the "DVS starter cultures" label on the card and the detail page.
-
-   Because of this, every *count* on the site now reads **"fourteen culture
-   lines"**, not "fourteen DVS culture lines" — on `/products`, `/quality`,
-   `/why-absource` and in `stats.cultureLines`. Thirteen of the fourteen
-   declare Direct Vat Set on their own page, where it is true; a count is the
-   one place a qualifier gets silently applied to a member that has not earned
-   it. Put "DVS" back into those four strings once this is confirmed.
-2. **What is its strain code?** The other thirteen codes are real identifiers
-   printed on the sachet — they are literally the live site's own pack-image
-   filenames — so one could not be invented here. Until it arrives FERMENTA
-   does not appear in the strain rail or the hero chain motif, both of which
-   now track *published codes* rather than culture lines.
-3. **Is there pack artwork?** There is none in `public/assets/products/`, so
-   the page falls back to the abstract colony plate. The pack-artwork note is
-   suppressed on this SKU — it would otherwise describe a colony plate as
-   colour-coded packaging.
-4. **Which application families does it serve?** `applications` is empty, so it
-   appears under no solution page's "What we would trial". An application tag
-   is a technical recommendation and was not guessed.
-5. **cultureType** — thermophilic, mesophilic, blended or probiotic?
-6. **The eight specification rows** — every one ships as a `todo`, so the spec
-   table lists them as available on the data sheet and asserts nothing. It uses
-   `UNSPECIFIED_COMMON_SPECS`, not `DVS_COMMON_SPECS`, so it does not even
-   claim Direct Vat Set, freeze-dried or phage-resistant.
-7. **Selector characteristics** — none, so the Culture Selector will never
-   recommend it. That is correct until someone can say what it suits.
-8. **The summary and description.** They currently say only that it is part of
-   the range, which is the only fact the client's message established.
-
----
-
-## 0b-i. FERMENTA's label says it is an idli dosa batter culture
-
-The client supplied FERMENTA's printed label (80 x 110 mm, two faces), and it
-is now on the product page and the catalogue card. Reading it changes what we
-know, and one thing about it does not sit comfortably with the site:
-
-- **The front reads "Idli Dosa Batter Culture"**, under the banner "Food
-  Biologicals · India's Own Dairy Science", with the claims "Controlled
-  fermentation, consistent taste and aroma, season-proof performance" and the
-  tagline "Biologicals for Better Batter".
-- **The reverse states** storage at **2–8°C**, shelf life **12 months at
-  2–8°C** in original undamaged packaging, packed in protected atmosphere, for
-  single use only, and the manufacturing address and FSSAI licence number.
-
-What this settles from §0b: it answers *what is it* (a batter culture) and
-supplies two spec rows (storage, shelf life) that were marked outstanding.
-
-What it unsettles: **the site now files FERMENTA under "Product lines (DVS
-starter cultures · 200+)", and the label calls it a food biological, not a
-Direct Vat Set dairy starter.** The label does not say DVS anywhere. The
-category label was applied at the client's instruction, so it is left as
-instructed, but the product page's own copy still says "Trial FERMENTA on your
-own milk", which is plainly wrong for a batter culture.
-
-Deliberately NOT changed in this pass, because it was outside the request and
-each is a decision rather than an edit: the spec rows, the summary, the
-description, and the "on your own milk" call to action. Everything printed on
-the label is the client's own statement, so all of it can be published — say the
-word and the spec table fills in from it.
+Still open: the quality of the photograph, and a storage-temperature
+discrepancy. Both are in §00, items 5 and 6.
 
 ---
 
 ## 0b-ii. ABVEGAN — new, in pilot
 
 Added as the fifteenth product line, at the client's instruction, with
-`availability: "pilot"`. It has a name, a status and nothing else: no
-specification, no applications, no artwork, no selector profile.
+`availability: "pilot"`. It has a name, a status and a place under the **Vegan**
+application filter; no specification, no artwork, and its variant codes are
+withheld (§00, item 3).
 
-That is deliberate, and every page that would otherwise offer a sample, a data
-sheet or a comparison to imported cultures keys off the one `availability`
-field instead: sample and data-sheet buttons become "Register your interest",
-the spec table becomes an availability note, and the "why this over an imported
-equivalent" claims are not rendered. The quote form's product list marks it "in
-pilot, launching soon".
+Every page that would otherwise offer a sample, a data sheet or a comparison to
+imported cultures keys off the one `availability` field instead: sample and
+data-sheet buttons become "Register your interest", the spec table becomes an
+availability note, and the "why this over an imported equivalent" claims are
+not rendered. The quote form's product list marks it "in pilot, launching soon".
+The Culture Selector cannot suggest it.
 
 When it launches: set `availability` to `"available"` (or delete the field),
-add its specification, applications, artwork and a selector profile, and give
-`featured.ts` its `in-range` status. No page needs touching.
+add its specification, description and artwork, and give `featured.ts` its
+`in-range` status. Its four variants in `variants.ts` become public by
+themselves, and adding a "Vegan" entry to `selectorEntries` in
+`src/lib/selector.ts` puts it in the selector.
 
 ---
 
@@ -186,11 +205,11 @@ add its specification, applications, artwork and a selector profile, and give
 
 `stats.culturesOffered`, shown as "200+" in the navigation, the homepage
 subhead, `/products`, `/quality`, `/about` and the selector page. It comes from
-the client's instruction and is **not derivable from the catalogue**:
-`cultures.ts` transcribes roughly forty coded cultures because only the curd
-and yoghurt families were supplied (§0c). Shown as "200+" and never as a precise
-figure, and never typed as a literal — change it in one place if a firmer
-number arrives.
+the client's instruction and is **not derivable from the catalogue**: the
+master sheet transcribed in `variants.ts` lists 103 coded cultures. That is a
+gap in what has been catalogued, not evidence against the claim, but it is why
+the figure is shown as "200+" and never as a precise number, and never typed as
+a literal — change it in one place if a firmer number arrives.
 
 The count of *product lines* (fifteen) is separate and is derived from the
 catalogue, so it cannot go stale.
@@ -215,88 +234,124 @@ in `src/content/leadership.ts`.
 
 ---
 
-## 0c. Product codes — two transcription calls to confirm
+## 0c. The variant catalogue — transcription calls to confirm
 
-The real codes are now on the site, from "Curd variants as per the Taste
-profile.xlsx", and the placeholder codes written during the build (CU01, LF01,
-YC01, BU01, LB01, CH01, LA01, MD01, SH01, CR01, PB01, KF01, BS01) have been
-deleted. A buyer could not tell the two apart, which made them worse than no
-code at all.
+`src/content/variants.ts` is a transcription of "Master copy of all
+variants-updated.xlsx": every coded culture, the client's own description of
+it, and the product line it is ordered against. It drives the Culture Selector,
+the tabs under it, the "Variants in this line" block on each product page and
+the product-code rail. It supersedes the earlier taste-profile sheet, which
+covered curd and yoghurt only.
 
-Two cells needed a judgement call. Both are one-line fixes if wrong:
+**Cells that needed a judgement call.** Each is a one-line fix if wrong.
 
-1. **"AB452Nx"** is published as **AB452NX**. Casing only.
-2. **"AB755"** (Mild & thick set) is published as **AB755NX**, because AB755NX
-   appears in two other cells and a bare AB755 appears in exactly one. If these
-   are genuinely two different codes, say so and the entry splits back in two.
+1. **"AB77NX"** is published as **AB777NX**. Every other curd code has three
+   digits and the earlier sheet lists AB777NX.
+2. **AB509** is given in the sheet for both white brine cheese and Camembert.
+   It is published as one culture listed for both. One of the two is probably
+   a typing slip for a different code.
+3. **Three probiotic strains are withheld**: AB1405 (rhamnosus), AB1406
+   (reuteri) and AB1407 (bifidum). The sheet's own status column says "Not
+   confirmed" against them, where AB1401, AB1402 and AB1404 say "Genomic
+   confirm". A species name on a probiotic is a regulatory statement, so they
+   stay off the site until the sheet says otherwise. Remove `published: false`
+   from each to show them.
+4. **Species names were corrected to current spelling** (casei, bifidum,
+   paracasei, delbrueckii subsp. bulgaricus, Lacticaseibacillus). The strain
+   designations (ABS01 …) are as written.
+5. **The strain-level probiotic and bioprotective cultures** (AB1401–AB1409,
+   AB1501–AB1504) are attached to ABDAHI (Probiotic) and ABSHRI (with
+   ABBIO-Shield), the renamed successors of ABPROBIO and ABBIO-SHIELD. If they
+   should be ordered against something else, change `productSlug` on the two
+   families.
+6. **Codes in the earlier sheet that are not in the master** were dropped with
+   it: AB163NX, AB177NX, AB401NX, AB756NX, AB741SQII, AB757SQII and
+   AB779SQII. If any is still sold, it needs adding to the master.
+7. **The "which milk leads to which code" table was removed** from the selector
+   page. It came from the earlier sheet and disagreed with the master in places
+   (it listed AB975NX for full-fat curd; the master makes AB975NX a lassi
+   culture). The master states the milk per variant, and that is now the only
+   statement of it.
 
-Also outstanding: cell B19 of the spreadsheet reads **"CAN GO AT RT"** under the
-Creamy & Rich column. It has not been published anywhere — it reads like a note
-about room-temperature stability, but a storage claim is not something to infer
-from three words in a spreadsheet. Confirm what it means and where it applies.
+**How the free-text descriptions were read into selector answers.** The sheet
+describes each curd variant in a phrase; the selector needs structured values.
+The mapping, also in the header of `variants.ts`:
 
-**No codes at all were supplied for:** cheese, paneer, buttermilk/chach, lassi,
-shrikhand, mishti doi, cultured ghee, kefir, probiotic-functional (beyond the
-three curd probiotic codes) or the fermented-beverage lines. Those product
-pages therefore show no codes, and the Culture Selector returns the product
-line without one. Send the catalogue for those families and they populate with
-no code change.
+| The sheet says | Read as |
+| --- | --- |
+| "sharp cut", "clean cut", "firm set" | Texture: firm set, clean cut |
+| "highly viscous", "thick" | Texture: thick, high viscosity |
+| "spoonable", "creamy" | Texture: creamy, spoonable |
+| "diacetyl", "buttery" | Flavour: buttery / diacetyl |
+| "tangy" | Flavour: sharp and tangy |
+| "mild set", "mild" | Acidity: mild |
+| "medium sour" | Acidity: medium |
+| "acidic" (buttermilk, lassi, shrikhand) | Acidity: sharp / sour |
+
+Where the sheet says nothing about an attribute the variant is left silent on
+it, and the selector gives it no credit there. If a variant is being suggested
+too rarely, the fix is to say more about it in the sheet.
+
+**Which questions each product is asked** is set in `selectorEntries` in
+`src/lib/selector.ts`. The six curd questions are the client's own. The shorter
+lists for the other products were chosen from what their descriptions actually
+distinguish on, and the client should confirm them: yoghurt (style, probiotic,
+acidity), buttermilk (probiotic, acidity, flavour), lassi (probiotic, acidity),
+shrikhand (bioprotective, acidity), cheese and cream (which type). Mishti doi,
+kefir, laban, idli/dosa batter and the strain-level probiotic and bioprotective
+cultures ask nothing and list their variants.
 
 ---
 
-## 0d. The four certificate scans expired in 2023
+## 0d. Certificates — current, with one date to watch
 
-All four are now displayed on /quality and on /why-absource, at a size where a
-reader can see the dates. The expiry printed on each scan we hold:
+The four scans were replaced in October 2026 with the certificates issued in
+July 2026, which closes the earlier finding that the scans on the site had
+expired in 2023. They are shown once, on /quality, and each opens full size.
 
-| Certificate | Expiry on the scan |
-| --- | --- |
-| ISO 9001:2015 | 07 May 2023 |
-| ISO 22000:2018 | 24 May 2023 |
-| HACCP | 30 June 2023 |
-| HALAL | 28 May 2023 |
+| Certificate | Issued by | Expiry on the scan |
+| --- | --- | --- |
+| ISO 9001:2015 | ROHS Certification | 9 July 2029 |
+| ISO 22000:2018 | ROHS Certification | 9 July 2029 |
+| HACCP | BIMC | 24 July 2027 |
+| HALAL | BIMC | 24 July 2027 |
 
-The site continues to claim all four in the present tense, on the client's own
-assertion that certification is current. **That claim and these images now
-disagree in public.** Send the renewed scans; each one is a file swap plus one
-date in `src/content/certifications.ts` (`scanExpires`). `staleScans()` in that
-file returns everything still outstanding.
-
-Two of the files were also mislabelled — `iso-22000.*` contained the HALAL
-certificate and `halal.*` contained ISO 22000. Corrected.
+**The HACCP and HALAL certificates need a new scan in July 2027.** They are
+numbered valid to 25 July 2029 but print a "Certificate Expiry Date" of
+24 July 2027, subject to yearly re-approval, and the earlier date is the one
+recorded. `staleScans()` in `src/content/certifications.ts` lists whatever has
+passed its date.
 
 The **FSSAI licence is current** (Central Licence 10020022011369, valid to
 17 March 2029) and is published in full as a PDF at `/docs/fssai-licence.pdf`.
 
 ---
 
-## 0e. The curd footage is illustrative, not the client's product
+## 0e. The curd photograph is illustrative, not the client's product
 
-The "Set curd that holds a clean cut" section plays a six-second loop built
-from a generated macro image of set curd taking a spoon cut
-(`public/assets/video/curd-scoop.mp4`, poster at
-`public/assets/editorial/curd-scoop.*`).
+The "Set curd that holds a clean cut" section on the homepage shows a single
+still: a generated macro image of set curd taking a spoon cut
+(`public/assets/editorial/curd-scoop.*`).
 
 **It is not a photograph of ABsource product and must never be captioned as
-one.** It is there because the client asked for scooping footage behind that
-statement and no real footage exists. Shoot five seconds of actual product at
-the plant and drop it in at the same paths — the markup needs no change.
+one.** It is there because the client asked for curd imagery behind that
+statement and no real photograph exists. Photograph actual product at the plant
+and drop it in at the same path — the markup needs no change.
 
-This replaced a WebGL milk-to-curd simulation, which is why nothing on the site
-pins to the scroll any more.
+It is deliberately static. The section was a WebGL simulation, then a
+six-second video loop built from this same image; the loop read as the picture
+vibrating behind the headline, and the client asked for a still. The video file
+has been deleted.
 
 ---
 
-## 0f. AB704 and the vegan cultures — featured, but not supplied
+## 0f. Featured cultures
 
 The brief asked for AB704, the vegan cultures and FERMENTA to be featured
-together. Only FERMENTA shipped: no specification arrived for the other two,
-and a featured slot is the worst place to put a name with nothing behind it.
-
-`src/content/featured.ts` has both stubbed out in comments with exactly the
-fields they need. Send for each: what it is, which product family, the taste or
-functional profile, and the codes. The section heading counts itself, so adding
-them needs no other change.
+together, and all three now are (`src/content/featured.ts`). AB704 is a product
+in its own right under the new **Gir Cow Ghee** category, with ABCREAM's
+photograph and description as instructed, and it is also listed as a variant of
+ABCREAM. ABVEGAN is featured as "in pilot".
 
 ---
 
@@ -304,12 +359,12 @@ them needs no other change.
 
 No handshake photograph exists in the asset set, and stock imagery of strangers
 shaking hands is exactly the padding this site refuses. Block 4 ("End-to-end
-partnership") shows two operators working one vessel together instead — real
-people from the client's own plant, actually collaborating.
+partnership") shows the team around a table in a working meeting instead — real
+people at ABsource, from the photographs supplied in October 2026.
 
 If a handshake is wanted, it needs to be a real photograph of real people at
-ABsource. Every one of the five blocks now uses a distinct image used nowhere
-else on the site.
+ABsource. Every one of the five blocks uses a distinct image used nowhere else
+on the site.
 
 ---
 

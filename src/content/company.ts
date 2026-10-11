@@ -99,8 +99,8 @@ export const vision = {
  * the certification list or the discipline roll-call.
  *
  * "the cultures we sell", not "every culture we sell": the categorical form
- * would assert that ABsource manufactures the seven dairy ingredients and the
- * taste maker too, which nothing in products.ts supports.
+ * would assert that ABsource manufactures the dairy ingredients and the taste
+ * makers too, which nothing in products.ts supports.
  */
 export const proposition = {
   headline: "We are not traders; we are manufacturers and innovators.",

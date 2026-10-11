@@ -6,23 +6,17 @@
  * Sources live in public/assets/_source/team/ (gitignored); the AVIF and WebP
  * outputs in public/assets/team/ are what the repo carries.
  *
- * WHY 688x917, AND WHY ONE PORTRAIT IS INTERPOLATED.
+ * WHY 688x917.
  *
  * The brief requires every portrait to be the same size, which forces a single
- * output dimension, which forces a choice: downscale the good originals to
- * match the weakest, or interpolate the weakest up to match the rest.
+ * output dimension. The cards render the portrait at roughly 404 CSS px on a
+ * desktop grid, so 688px is 1.7x and holds up on a retina screen.
  *
- * Six originals are 688px wide or more with height to spare. The seventh — the
- * Sales & Marketing portrait — is a 640x640 square, and the tallest 3:4 crop a
- * square yields is 480x640.
- *
- * The cards render the portrait at roughly 404 CSS px on a desktop grid, so
- * 480px is 1.19x and visibly soft on any retina screen, while 688px is 1.7x
- * and holds up. Capping everything at 480 would have made all seven soft to
- * protect one; going to 688 makes six genuinely sharp and interpolates one by
- * 1.43x. That one is the weakest source either way, so it is the right way
- * round. A higher-resolution original for that person removes the upscale with
- * no other change.
+ * NO PORTRAIT IS INTERPOLATED ANY MORE. The Sales & Marketing portrait used to
+ * be a 640x640 square that had to be enlarged 1.43x to match the rest. The
+ * client replaced it, along with two others, in October 2026 (the files under
+ * 2026/), and every source now yields a 3:4 crop at least 688px wide. The
+ * script still warns loudly if a future photograph is too small.
  *
  * `prepare-portraits.mjs` never upscales, and that rule still holds there: the
  * leadership page shows two portraits at their own native sizes because it has
@@ -40,6 +34,13 @@
  * standard portrait composition — head high, shoulders filling the base. These
  * were set by eye against the rendered output; re-check visually after
  * changing one, there is no face detection here.
+ *
+ * Two optional per-person adjustments, for photographs that are not framed
+ * like the rest:
+ *   `frame`  — use only this fraction of the height (from the focus outward),
+ *              to bring a full-length photograph in to the chest-up framing
+ *              the others have.
+ *   `shiftX` — move the crop sideways by this many source pixels.
  */
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
@@ -58,12 +59,17 @@ const BLACK = 24;
 
 const PEOPLE = [
   { slug: "monika-satkar", file: "1.jpg", focusY: 0.25 },
-  { slug: "shailesh-deshpande", file: "2.jpg", focusY: 0.46 },
+  // Shifted left: the source carries a small watermark in its bottom-right
+  // corner, and a centred crop would keep the edge of it.
+  { slug: "shailesh-deshpande", file: "2026/shailesh-deshpande.jpg", focusY: 0.36, shiftX: -28 },
   { slug: "archana-aitwade", file: "3.jpg", focusY: 0.33 },
-  { slug: "rushant-shinde", file: "4.jpg", focusY: 0.35 },
+  { slug: "rushant-shinde", file: "2026/rushant-shinde.jpg", focusY: 0.36 },
   { slug: "prajkata-joshi", file: "5.jpg", focusY: 0.32 },
   { slug: "manisha-bhadekar", file: "6.jpg", focusY: 0.3 },
-  { slug: "suraj-gurav", file: "7.jpg", focusY: 0.385 },
+  // A full-length standing photograph. Framed to 85% of its height so he is
+  // not shown visibly further from the camera than everyone else; that is the
+  // tightest crop that still needs no enlargement.
+  { slug: "suraj-gurav", file: "2026/suraj-gurav.jpg", focusY: 0.17, frame: 0.855 },
 ];
 
 /** First and last rows that are not letterbox. */
@@ -91,12 +97,13 @@ for (const person of PEOPLE) {
   const file = `${SRC}/${person.file}`;
   const { top, bottom, width } = await contentRows(file);
   const contentHeight = bottom - top + 1;
+  const usableHeight = Math.round(contentHeight * (person.frame ?? 1));
 
   // The largest 3:4 box that fits inside the trimmed frame.
-  let cropWidth = Math.min(width, Math.round(contentHeight * ratio));
+  let cropWidth = Math.min(width, Math.round(usableHeight * ratio));
   let cropHeight = Math.round(cropWidth / ratio);
-  if (cropHeight > contentHeight) {
-    cropHeight = contentHeight;
+  if (cropHeight > usableHeight) {
+    cropHeight = usableHeight;
     cropWidth = Math.round(cropHeight * ratio);
   }
 
@@ -104,7 +111,10 @@ for (const person of PEOPLE) {
   const focusAbsolute = top + person.focusY * contentHeight;
   let cropTop = Math.round(focusAbsolute - FACE_LINE * cropHeight);
   cropTop = Math.max(top, Math.min(cropTop, bottom - cropHeight + 1));
-  const cropLeft = Math.round((width - cropWidth) / 2);
+  const cropLeft = Math.max(
+    0,
+    Math.min(Math.round((width - cropWidth) / 2) + (person.shiftX ?? 0), width - cropWidth)
+  );
 
   const base = sharp(file).extract({
     left: cropLeft,
@@ -115,8 +125,8 @@ for (const person of PEOPLE) {
 
   const scale = TARGET.width / cropWidth;
   if (scale > 1) {
-    // Expected for exactly one portrait; see the note at the top. Loud so a
-    // new photograph that is too small does not slip in unnoticed.
+    // Not expected for any current portrait; see the note at the top. Loud so
+    // a new photograph that is too small does not slip in unnoticed.
     console.warn(`  ! ${person.slug}: interpolated ${scale.toFixed(2)}x from ${cropWidth}px wide`);
     upscaled++;
   }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CardLink, CardMedia, CardBody } from "@/components/ui/Card";
-import { SolutionMedia } from "@/components/ui/PackShot";
+import { SolutionMedia } from "@/components/ui/SolutionMedia";
 import { SolutionIcon } from "@/components/ui/SolutionIcon";
 import { Reveal } from "@/components/ui/Reveal";
 import { solutions } from "@/content/solutions";

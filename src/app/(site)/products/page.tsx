@@ -12,19 +12,31 @@ import {
   CULTURE_TYPE_LABELS,
   CULTURES_OFFERED_LABEL,
 } from "@/content/products";
-import {
-  Spell,
-  spell,
-  productLineCount,
-  ingredientCount,
-  tasteMakerCount,
-  skuCount,
-} from "@/content/counts";
+import { Spell, spell, productLineCount, skuCount } from "@/content/counts";
 import { solutions } from "@/content/solutions";
+
+/**
+ * The Application filter: the eight solution families, then the tags that
+ * exist only as a filter. "Vegan" is one — the client asked for it, and there
+ * is no vegan solution page for it to be derived from.
+ */
+const APPLICATION_FILTERS: readonly { value: string; label: string }[] = [
+  ...solutions.map((s) => ({ value: s.slug as string, label: s.name })),
+  { value: "vegan", label: "Vegan" },
+];
+
+/** Catalogue artwork: a culture sachet, or a product shown in one. */
+function isCatalogueArtwork(p: (typeof products)[number]): boolean {
+  return (
+    Boolean(p.image) &&
+    p.imageKind !== "photo" &&
+    (p.category === "cultures" || Boolean(p.packOf))
+  );
+}
 
 export const metadata = pageMetadata({
   title: "Product lines (DVS starter cultures), ingredients & taste makers",
-  description: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines (DVS starter cultures, ${CULTURES_OFFERED_LABEL} cultures), dairy ingredients and taste makers. Filter by application, culture type and category.`,
+  description: `${Spell(skuCount)} SKUs: ${spell(productLineCount)} product lines (DVS starter cultures, ${CULTURES_OFFERED_LABEL} cultures), Gir Cow Ghee, dairy ingredients and taste makers. Filter by application, culture type and category.`,
   path: "/products",
 });
 
@@ -82,7 +94,7 @@ export default async function ProductsPage({
             as="h1"
             eyebrow={`${products.length} SKUs`}
             title="The catalogue."
-            lede={`${CULTURES_OFFERED_LABEL} DVS starter cultures across ${spell(productLineCount)} product lines, alongside ${spell(ingredientCount)} dairy ingredients and ${tasteMakerCount === 1 ? "a taste maker" : `${spell(tasteMakerCount)} taste makers`}.`}
+            lede={`${CULTURES_OFFERED_LABEL} DVS starter cultures across ${spell(productLineCount)} product lines, alongside the Gir Cow Ghee culture, dairy ingredients and taste makers.`}
           />
         </div>
       </section>
@@ -111,9 +123,9 @@ export default async function ProductsPage({
               <ChipLink href={qs({ app: undefined })} active={!app}>
                 All
               </ChipLink>
-              {solutions.map((s) => (
-                <ChipLink key={s.slug} href={qs({ app: s.slug })} active={app === s.slug}>
-                  {s.name}
+              {APPLICATION_FILTERS.map((f) => (
+                <ChipLink key={f.value} href={qs({ app: f.value })} active={app === f.value}>
+                  {f.label}
                 </ChipLink>
               ))}
             </FilterRow>
@@ -157,9 +169,7 @@ export default async function ProductsPage({
             {/* Shown only while a culture is on screen. Filtering to
                 ingredients or taste makers shows real stand-up delivery packs,
                 where this note would be wrong. */}
-            {filtered.some(
-              (p) => p.category === "cultures" && p.image && p.imageKind !== "label"
-            ) ? (
+            {filtered.some(isCatalogueArtwork) ? (
               <p className="measure-ab mt-6 border-t border-ab-chill pt-4 text-[0.875rem] leading-[1.55] text-ab-ink-60">
                 {packArtworkNote.catalogue}
               </p>
@@ -175,7 +185,7 @@ export default async function ProductsPage({
                       <div className="absolute inset-0 transition-transform duration-150 ease-ab group-hover:scale-[1.02] motion-reduce:group-hover:scale-100">
                         <PackShot
                           src={product.image}
-                          alt={`${product.name} ${product.imageKind === "label" ? "label" : "pack"}`}
+                          alt={`${product.name} pack`}
                           seed={product.strainCode ?? product.slug}
                           sizes="(min-width: 1024px) 33vw, 50vw"
                         />
@@ -215,7 +225,7 @@ export default async function ProductsPage({
 
       <CTABand
         title="Not sure which SKU to trial?"
-        body="Answer a few questions and we will narrow the range to three, with the reasoning shown."
+        body="Tell us what you make and we will name the cultures to trial, with the reasoning shown."
         href="/culture-selector"
         cta="Find your culture"
         secondaryHref="/request-a-quote"

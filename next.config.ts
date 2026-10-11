@@ -24,6 +24,29 @@ const LEGACY_REDIRECTS: ReadonlyArray<{ source: string; destination: string }> =
   { source: "/services/microbiology-testing", destination: "/services" },
 ];
 
+/**
+ * Products that were renamed, split or withdrawn after this site launched.
+ *
+ * Their old URLs are indexed and have been sent to customers, so each one goes
+ * to its successor. The two withdrawn products have no successor and go to the
+ * category they were in. catalogue.test.ts asserts that every destination here
+ * is a page that exists and that no source is still a live product.
+ */
+export const PRODUCT_REDIRECTS: ReadonlyArray<{ source: string; destination: string }> = [
+  // Renamed.
+  { source: "/products/cultures/abprobio", destination: "/products/cultures/abdahi-probiotic" },
+  { source: "/products/cultures/abbio-shield", destination: "/products/cultures/abshri-bio-shield" },
+  { source: "/products/ingredients/abbind", destination: "/products/ingredients/abmax" },
+  { source: "/products/ingredients/abbindmax", destination: "/products/ingredients/abmerge-plus" },
+  // Split into a 1 kg pouch and a 25 kg bag; the old URL goes to the pouch,
+  // which is the pack the old page showed.
+  { source: "/products/ingredients/abmerge", destination: "/products/ingredients/abmerge-1kg" },
+  { source: "/products/taste-makers/abspice", destination: "/products/taste-makers/abspice-1kg" },
+  // Withdrawn. No longer offered.
+  { source: "/products/ingredients/abhipro", destination: "/products?category=ingredients" },
+  { source: "/products/ingredients/abblend", destination: "/products?category=ingredients" },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
@@ -42,7 +65,10 @@ const nextConfig: NextConfig = {
     // and older crawlers still expect a literal 301 on a WordPress migration.
     // These URLs are indexed, so match the spec exactly rather than rely on
     // equivalence.
-    return LEGACY_REDIRECTS.map((r) => ({ ...r, statusCode: 301 as const }));
+    return [...LEGACY_REDIRECTS, ...PRODUCT_REDIRECTS].map((r) => ({
+      ...r,
+      statusCode: 301 as const,
+    }));
   },
 
   async headers() {
