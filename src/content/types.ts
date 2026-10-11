@@ -3,13 +3,17 @@
  * malformed product or solution is a build error rather than a broken page.
  */
 
-export type Category = "cultures" | "ingredients" | "taste-makers";
+/**
+ * "gir-cow-ghee" holds a single product (AB704) at the client's request. It is
+ * a category in its own right on /products, not a sub-division of cultures.
+ */
+export type Category = "cultures" | "gir-cow-ghee" | "ingredients" | "taste-makers";
 
 export type CultureType = "thermophilic" | "mesophilic" | "blended" | "probiotic";
 
 /** The eight application families. These drive the nav, the mega menu and the
  *  solution pages, so the union is the single source of truth for all three. */
-export type ApplicationTag =
+export type SolutionTag =
   | "curd-dahi"
   | "yoghurt"
   | "cheese-paneer"
@@ -19,49 +23,17 @@ export type ApplicationTag =
   | "probiotics-functional"
   | "fermented-foods-beverages";
 
-/* --- Culture Selector vocabulary ---------------------------------------- */
-
-export type MakingAnswer =
-  | "curd-dahi"
-  | "yoghurt"
-  | "cheese"
-  | "paneer"
-  | "buttermilk-chach"
-  | "lassi"
-  | "shrikhand"
-  | "mishti-doi"
-  | "cultured-ghee"
-  | "kefir"
-  | "probiotic-functional"
-  | "other-fermented";
-
-export type PackFormat = "cup" | "pouch" | "bucket" | "bulk";
-export type MilkFat = "full-fat" | "toned" | "double-toned" | "low-fat";
-export type Acidity = "mild" | "medium" | "sharp" | "unsure";
-export type Texture = "firm-set" | "creamy" | "stirred" | "thick";
-export type Flavour = "clean" | "buttery" | "sweet-mild" | "sharp-tangy";
-export type ProbioticNeed = "yes" | "no" | "maybe";
-export type BatchSize = "under-500" | "500-5000" | "5000-50000" | "over-50000";
-
 /**
- * Weighted attributes the selector engine scores against. A product only
- * matches on axes it actually declares — an empty array means "not applicable",
- * never "matches everything", so the engine cannot manufacture a false match.
+ * What a product can be tagged with.
+ *
+ * The eight solution families, plus tags that exist ONLY as a catalogue filter
+ * on /products. "vegan" is one of those: the client asked for a Vegan
+ * application filter, but there is no vegan solution page, no nav entry and no
+ * published process guidance to put on one. Keeping the two unions apart is
+ * what stops a filter-only tag from needing a Solution, an icon and a route.
  */
-export type SelectorProfile = {
-  readonly making: readonly MakingAnswer[];
-  readonly packFormats: readonly PackFormat[];
-  readonly milkFat: readonly MilkFat[];
-  readonly acidity: readonly Acidity[];
-  readonly texture: readonly Texture[];
-  readonly flavour: readonly Flavour[];
-  readonly probiotic: boolean;
-  readonly batchSizes: readonly BatchSize[];
-  /** Shown to the buyer verbatim when this product is recommended. */
-  readonly rationale: string;
-  /** Honest caveats surfaced with the match, e.g. incubation capacity. */
-  readonly caveats: readonly string[];
-};
+export type FilterOnlyTag = "vegan";
+export type ApplicationTag = SolutionTag | FilterOnlyTag;
 
 /* --- Specifications ------------------------------------------------------ */
 
@@ -91,8 +63,9 @@ export type Product = {
   readonly name: string;
   /**
    * A single code for the whole line, if the client ever publishes one.
-   * Null on every SKU today — codes identify a taste profile within a line
-   * (see src/content/cultures.ts), not the line itself.
+   * A code for the whole product, where its pack prints one (the ingredients
+   * and the taste maker). Null on every culture line: their codes identify a
+   * variant within the line and live in src/content/variants.ts.
    */
   readonly strainCode: string | null;
   readonly category: Category;
@@ -102,20 +75,40 @@ export type Product = {
   readonly summary: string;
   /** Two sentences, "what it is". */
   readonly description: string;
+  /**
+   * Path under /public, or "" when there is no photograph to show yet. Every
+   * consumer treats "" as "no image" and renders its placeholder — never a
+   * broken <img>, and never a photograph of something else.
+   */
   readonly image: string;
   /**
-   * What `image` is. Defaults to "pack" — a photograph of the sachet, which is
-   * illustrative of the range rather than of what is delivered.
+   * What `image` is. Defaults to "pack" — the colour-coded catalogue artwork,
+   * which is illustrative of the range rather than of what is delivered.
    *
-   * "label" is a flat printed label (FERMENTA's). It must NOT be mapped onto
-   * the 3D sachet model, which expects a sachet photograph, and it must NOT
-   * carry the "colour-coded, delivered in the standard blue and white sachet"
-   * note: that caption is about illustrative pack artwork, and a label is the
-   * thing itself.
+   * "photo" is a photograph of the product's OWN printed pack (FERMENTA's
+   * sachet). It must NOT be mapped onto the 3D sachet model, which expects the
+   * flat catalogue artwork, and it must NOT carry the "colour-coded, delivered
+   * in the standard blue and white sachet" note: that caption is about
+   * illustrative artwork, and this is the thing itself.
    */
-  readonly imageKind?: "pack" | "label";
-  /** Reverse of a label, where the back carries storage and certification. */
+  readonly imageKind?: "pack" | "photo";
+  /** The printed reverse of the pack, where it carries storage and marks. */
   readonly imageBack?: string;
+  /**
+   * The slug of the product whose pack artwork `image` borrows.
+   *
+   * Three products are shown in another line's pack at the client's
+   * instruction: ABDAHI (Probiotic) in ABDAHI's, ABSHRI (with ABBIO-Shield) in
+   * ABSHRI's, and AB704 in ABCREAM's. Declaring it makes the sharing explicit,
+   * so catalogue.test.ts can assert that no two products share a photograph by
+   * accident.
+   */
+  readonly packOf?: string;
+  /**
+   * What the culture is added to. Defaults to "milk". Only wording keys off
+   * it — "trial it on your own milk" is wrong for a batter culture.
+   */
+  readonly substrate?: "milk" | "batter";
   /**
    * "available" is the default. "pilot" marks a product that exists but is not
    * yet orderable — currently in testing with select customers. Every page
@@ -131,13 +124,12 @@ export type Product = {
    *  render, rather than making comparative claims about a product nobody can
    *  order. */
   readonly versusImported: readonly string[];
-  readonly selectorProfile: SelectorProfile | null;
 };
 
 /* --- Solutions ----------------------------------------------------------- */
 
 export type Solution = {
-  readonly slug: ApplicationTag;
+  readonly slug: SolutionTag;
   readonly name: string;
   /** Headline framed as the buyer's problem, not as a category label. */
   readonly headline: string;

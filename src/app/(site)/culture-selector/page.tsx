@@ -5,11 +5,12 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { CultureLines } from "@/components/selector/CultureLines";
 import { CATEGORY_COPY, CULTURES_OFFERED_LABEL } from "@/content/products";
 import { spell, productLineCount } from "@/content/counts";
+import { publicVariants } from "@/content/variants";
 
 export const metadata = pageMetadata({
   title: "Culture Selector — find your DVS starter",
   description:
-    `Answer a few questions and we narrow our ${CULTURES_OFFERED_LABEL} DVS starter cultures to three product lines, with the reasoning shown. No login, no gate on the result.`,
+    `Tell us what you make and we name the DVS starter cultures to trial, by product code, with the reasoning shown. Only the questions that matter for your product. No login, no gate on the result.`,
   path: "/culture-selector",
 });
 
@@ -39,8 +40,10 @@ export default function CultureSelectorPage() {
               Find your culture.
             </h1>
             <p className="measure-ab mt-6 text-[1.25rem] leading-[1.5] text-ab-ink-60">
-              A few questions, under a minute. We show the reasoning behind every match,
-              and we tell you when we are not confident enough to recommend anything.
+              Tell us what you make and we ask only what matters for that
+              product &mdash; then name the cultures to trial, by code. We show
+              the reasoning behind every match, and we tell you when we are not
+              confident enough to recommend anything.
             </p>
           </div>
 
@@ -65,11 +68,11 @@ export default function CultureSelectorPage() {
             </h2>
             <p className="measure-ab mt-4 text-base leading-[1.65] text-ab-ink-60">
               ABsource offers {CULTURES_OFFERED_LABEL} DVS starter cultures across{" "}
-              {spell(productLineCount)} product lines. Each line covers several
-              coded cultures, separated by how the curd sets and how sour it
-              finishes. Below are the codes for the dahi and yoghurt lines, which
-              are the ones to quote on an order; codes for the other lines are
-              published as they are confirmed.
+              {spell(productLineCount)} product lines. Each line covers one or
+              more coded cultures. Below are {publicVariants.length} of them, by
+              family, with the description each is selected on &mdash; this is the
+              list the selector above works from, and the code is what to quote
+              on an order.
             </p>
           </div>
           <CultureLines />

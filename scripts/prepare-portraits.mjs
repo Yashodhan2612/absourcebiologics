@@ -24,7 +24,8 @@
  * the script prints at the end rather than assuming they still hold.
  */
 import sharp from "sharp";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { Buffer } from "node:buffer";
 
 const OUT = "public/assets/team";
@@ -38,32 +39,20 @@ const PORTRAITS = [
   {
     slug: "mukesh-vinze",
     /**
-     * Dr Vinze standing at AgriTech / DairyTech India 2022.
+     * Dr Vinze's portrait, supplied by the client in October 2026. It replaces
+     * the phone photograph taken at AgriTech / DairyTech India 2022, which was
+     * the only solo picture of him available at the time.
      *
-     * This replaced the seated desk portrait (DSC00586) at the client's
-     * request. It is a phone photograph rather than a studio shot, so it is
-     * softer than the one it replaces — but it is the only solo standing
-     * photograph of him in the site's media library, and the trade-show
-     * backdrop is at least on-message for an export-facing company.
+     * A local file with no URL: it was sent directly rather than uploaded to
+     * the live site, so there is nothing to download.
+     *
+     * The source is a 1316x1195 landscape frame with him right of centre. The
+     * crop is the full height, 3:4, centred on him — the loosest framing the
+     * photograph allows, because Mr Sonavane beside him is photographed from
+     * further back and a tighter crop made the pair look mismatched.
      */
-    url: "https://absourcebiologics.com/wp-content/uploads/2026/06/20220828_175137.jpg",
-    file: "20220828_175137.jpg",
-    /**
-     * Cropped to head-and-torso, not full body.
-     *
-     * He is standing at a distance in this photograph, so a full-body crop put
-     * him visibly further from the camera than Mr Sonavane's waist-up desk
-     * portrait beside him — the two read as different distances and the pair
-     * looked lopsided. This crop puts his head at ~17% of the frame against
-     * Sonavane's ~20%, which is close enough that they read as matched.
-     *
-     * Cropping this tight is only possible because this pulls the UNSCALED
-     * 4032x3024 original rather than WordPress's 2560px `-scaled` derivative.
-     * At 2560 the same framing would have meant upscaling; at 4032 it is a 1:1
-     * native crop with no resampling at all. If you ever point this back at a
-     * `-scaled` URL, the framing and the sharpness both go.
-     */
-    crop: { left: 1707, top: 1143, width: 672, height: 896 },
+    file: "2026/mukesh-vinze.webp",
+    crop: { left: 167, top: 0, width: 896, height: 1195 },
   },
   {
     slug: "jagannath-sonavane",
@@ -86,14 +75,26 @@ await mkdir(OUT, { recursive: true });
 await mkdir(SRC, { recursive: true });
 
 for (const p of PORTRAITS) {
-  const response = await fetch(p.url);
-  if (!response.ok) {
-    console.error(`  FAILED ${p.slug}: HTTP ${response.status} for ${p.url}`);
+  // A source already on disk is used as it is. Only a portrait that has a URL
+  // and no local copy is downloaded, so re-running this needs no network.
+  const local = `${SRC}/${p.file}`;
+  let buffer;
+  if (existsSync(local)) {
+    buffer = await readFile(local);
+  } else if (p.url) {
+    const response = await fetch(p.url);
+    if (!response.ok) {
+      console.error(`  FAILED ${p.slug}: HTTP ${response.status} for ${p.url}`);
+      process.exitCode = 1;
+      continue;
+    }
+    buffer = Buffer.from(await response.arrayBuffer());
+    await writeFile(local, buffer);
+  } else {
+    console.error(`  FAILED ${p.slug}: ${local} is missing and there is no URL to fetch it from`);
     process.exitCode = 1;
     continue;
   }
-  const buffer = Buffer.from(await response.arrayBuffer());
-  await writeFile(`${SRC}/${p.file}`, buffer);
 
   const cropped = sharp(buffer).extract(p.crop);
   // Quality is above the site default deliberately: these are the only faces

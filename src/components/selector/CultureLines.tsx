@@ -4,21 +4,26 @@ import { useId, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { ProductCode } from "@/components/ui/ProductCode";
+import { products } from "@/content/products";
 import {
-  cultureFamilies,
-  cultureProfiles,
+  families,
   milkGuidance,
-  type CultureFamily,
-} from "@/content/cultures";
+  productSlugFor,
+  publicFamilies,
+  publicVariants,
+  styleLabel,
+  type FamilyKey,
+  type Variant,
+} from "@/content/variants";
 
 /**
- * The culture catalogue, as selectable tabs.
+ * The culture catalogue, as selectable tabs — every coded variant the client's
+ * master sheet lists, one tab per family.
  *
- * WHAT THIS REPLACED. This section used to list the fourteen PRODUCT lines and
- * their placeholder codes. That conflated two levels: a product is what you
- * order (ABDAHI), a culture is the coded blend within it (AB436NX). The client
- * asked for the cultures, by their real codes, and asked that they stay off
- * /products — which lists products.
+ * WHAT THIS IS FOR. A product is what you order (ABDAHI); a variant is the
+ * coded culture within it (AB436NX). The client asked for the variants, by
+ * their real codes, and asked that they stay off /products — which lists
+ * products. This is the full list and mapping behind the selector above it.
  *
  * ACCESSIBILITY. A real tablist: roving tabindex, arrow keys move between tabs,
  * Home and End jump to the ends, and each panel is labelled by its tab. Every
@@ -26,13 +31,34 @@ import {
  * unmounted, so all the codes are crawlable and findable with the browser's
  * own find-in-page regardless of which tab is open.
  *
- * Each profile links to the product line it is ordered against. Codes do not
+ * Each variant links to the product line it is ordered against. Codes do not
  * get their own pages — a code is a way of buying a product, not a product.
  */
+
+function productFor(variant: Variant) {
+  const slug = productSlugFor(variant);
+  return products.find((p) => p.slug === slug);
+}
+
+/** Variants of a family, grouped by sub-type where the family has them. */
+function groupsOf(family: FamilyKey): readonly { label: string | null; variants: readonly Variant[] }[] {
+  const own = publicVariants.filter((v) => v.family === family);
+  const styles = families[family].styles;
+  if (!styles) return [{ label: null, variants: own }];
+
+  const groups = styles
+    .map((style) => ({
+      label: style.label,
+      variants: own.filter((v) => v.style?.includes(style.value)),
+    }))
+    .filter((group) => group.variants.length > 0);
+  // A variant the sheet lists without a sub-type still has to appear.
+  const unstyled = own.filter((v) => !v.style?.length);
+  return unstyled.length > 0 ? [...groups, { label: "General", variants: unstyled }] : groups;
+}
+
 export function CultureLines() {
-  const [active, setActive] = useState<CultureFamily>(
-    cultureFamilies[0]?.key ?? "curd-dahi"
-  );
+  const [active, setActive] = useState<FamilyKey>(publicFamilies[0] ?? "curd");
   const baseId = useId();
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -40,19 +66,19 @@ export function CultureLines() {
     if (!keys.includes(e.key)) return;
     e.preventDefault();
 
-    const last = cultureFamilies.length - 1;
+    const last = publicFamilies.length - 1;
     const next =
       e.key === "Home"
         ? 0
         : e.key === "End"
           ? last
           : e.key === "ArrowRight"
-            ? (index + 1) % cultureFamilies.length
-            : (index - 1 + cultureFamilies.length) % cultureFamilies.length;
+            ? (index + 1) % publicFamilies.length
+            : (index - 1 + publicFamilies.length) % publicFamilies.length;
 
-    const target = cultureFamilies[next];
+    const target = publicFamilies[next];
     if (!target) return;
-    setActive(target.key);
+    setActive(target);
     e.currentTarget.parentElement
       ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
       [next]?.focus();
@@ -60,38 +86,38 @@ export function CultureLines() {
 
   return (
     <div>
+      {/* Fourteen tabs do not fit one row, so the strip wraps. `grow` lets
+          each row fill its width, which keeps the hairline ground from
+          showing as an empty cell at the end of a row. */}
       <div
         role="tablist"
-        aria-label="Culture lines by product family"
+        aria-label="Cultures by product family"
         className="flex flex-wrap gap-px border border-ab-chill bg-ab-chill"
       >
-        {cultureFamilies.map((family, i) => {
-          const selected = family.key === active;
-          const count = cultureProfiles.filter((p) => p.family === family.key).length;
+        {publicFamilies.map((family, i) => {
+          const selected = family === active;
+          const count = publicVariants.filter((v) => v.family === family).length;
           return (
             <button
-              key={family.key}
+              key={family}
               type="button"
               role="tab"
-              id={`${baseId}-tab-${family.key}`}
+              id={`${baseId}-tab-${family}`}
               aria-selected={selected}
-              aria-controls={`${baseId}-panel-${family.key}`}
+              aria-controls={`${baseId}-panel-${family}`}
               tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(family.key)}
+              onClick={() => setActive(family)}
               onKeyDown={(e) => onKeyDown(e, i)}
               className={cn(
-                "mono-ab flex-1 px-6 py-4 text-left transition-colors duration-150 ease-ab",
+                "mono-ab grow whitespace-nowrap px-5 py-4 text-left transition-colors duration-150 ease-ab",
                 selected
                   ? "bg-ab-tank text-ab-milk"
                   : "bg-ab-white text-ab-ink-60 hover:bg-ab-chill/50"
               )}
             >
-              {family.label}
+              {families[family].label}
               <span
-                className={cn(
-                  "ml-2",
-                  selected ? "text-ab-tank-300" : "text-ab-ink-60/70"
-                )}
+                className={cn("ml-2", selected ? "text-ab-tank-300" : "text-ab-ink-60/70")}
               >
                 {count}
               </span>
@@ -100,61 +126,79 @@ export function CultureLines() {
         })}
       </div>
 
-      {cultureFamilies.map((family) => {
-        const profiles = cultureProfiles.filter((p) => p.family === family.key);
+      {publicFamilies.map((family) => {
+        const groups = groupsOf(family);
+        const line = products.find((p) => p.slug === families[family].productSlug);
         return (
           <div
-            key={family.key}
+            key={family}
             role="tabpanel"
-            id={`${baseId}-panel-${family.key}`}
-            aria-labelledby={`${baseId}-tab-${family.key}`}
-            hidden={family.key !== active}
+            id={`${baseId}-panel-${family}`}
+            aria-labelledby={`${baseId}-tab-${family}`}
+            hidden={family !== active}
             className="border-x border-b border-ab-chill bg-ab-white"
           >
-            <ul className="divide-y divide-ab-chill">
-              {profiles.map((profile) => (
-                <li key={profile.slug} className="p-6 md:p-8">
-                  <div className="grid gap-5 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
-                    <div>
-                      <h3 className="text-[1.25rem] leading-[1.25] text-ab-ink">
-                        {profile.name}
-                      </h3>
-                      <p className="mt-2 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
-                        {profile.summary}
-                      </p>
-                      <Link
-                        href={`/products/cultures/${profile.productSlug}`}
-                        className="link-wipe mono-ab mt-4 inline-block text-ab-tank no-underline"
-                      >
-                        Ordered as {profile.productSlug.toUpperCase().replace(/-/g, " ")} &rarr;
-                      </Link>
-                    </div>
+            {line ? (
+              <p className="border-b border-ab-chill px-6 py-4 text-[0.9375rem] text-ab-ink-60 md:px-8">
+                Ordered as{" "}
+                <Link
+                  href={`/products/${line.category}/${line.slug}`}
+                  className="link-wipe text-ab-tank no-underline"
+                >
+                  {line.name}
+                </Link>
+                , unless a variant below says otherwise.
+              </p>
+            ) : null}
 
-                    <div>
-                      <p className="mono-ab mb-3 text-[0.8125rem] text-ab-ink-60">
-                        Product codes
-                      </p>
-                      <ul className="flex flex-wrap gap-2">
-                        {profile.codes.map((code) => (
-                          <li key={code.code}>
-                            {/* The per-code descriptor is the client's own,
-                                and only the yoghurt range has them. */}
-                            <span className="flex flex-col gap-1">
-                              <ProductCode code={code.code} />
-                              {code.note ? (
-                                <span className="text-[0.8125rem] leading-[1.4] text-ab-ink-60">
-                                  {code.note}
-                                </span>
-                              ) : null}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {groups.map((group) => (
+              <div key={group.label ?? family} className="border-b border-ab-chill last:border-b-0">
+                {group.label ? (
+                  <h3 className="mono-ab bg-ab-chill/30 px-6 py-3 text-ab-ink md:px-8">
+                    {group.label}
+                  </h3>
+                ) : null}
+                <ul className="divide-y divide-ab-chill">
+                  {group.variants.map((variant) => {
+                    const orderedAs = productFor(variant);
+                    const elsewhere = orderedAs && orderedAs.slug !== families[family].productSlug;
+                    return (
+                      <li
+                        key={variant.code}
+                        className="grid gap-2 px-6 py-4 md:grid-cols-[8rem_1fr] md:gap-6 md:px-8"
+                      >
+                        <ProductCode code={variant.code} />
+                        <div>
+                          <p className="text-[0.9375rem] leading-[1.6] text-ab-ink">
+                            {variant.descriptor}
+                          </p>
+                          {/* Listed under more than one sub-type: say so here
+                              rather than leave it looking like a duplicate. */}
+                          {(variant.style?.length ?? 0) > 1 ? (
+                            <p className="mt-1 text-[0.8125rem] leading-[1.5] text-ab-ink-60">
+                              Listed for{" "}
+                              {variant.style!.map((s) => styleLabel(family, s)).join(" and ")}.
+                            </p>
+                          ) : null}
+                          {elsewhere ? (
+                            <p className="mt-1 text-[0.8125rem] leading-[1.5] text-ab-ink-60">
+                              Ordered as{" "}
+                              <Link
+                                href={`/products/${orderedAs.category}/${orderedAs.slug}`}
+                                className="link-wipe text-ab-tank no-underline"
+                              >
+                                {orderedAs.name}
+                              </Link>
+                              .
+                            </p>
+                          ) : null}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
           </div>
         );
       })}
@@ -176,16 +220,6 @@ export function CultureLines() {
             </li>
           ))}
         </ul>
-        <dl className="mt-6 grid gap-px border border-ab-chill bg-ab-chill sm:grid-cols-3">
-          {milkGuidance.byMilk.map((row) => (
-            <div key={row.milk} className="bg-ab-white p-5">
-              <dt className="mono-ab text-ab-tank">{row.milk}</dt>
-              <dd className="mt-2 text-[0.9375rem] leading-[1.55] text-ab-ink-60">
-                {row.leadsTo}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </div>
     </div>
   );

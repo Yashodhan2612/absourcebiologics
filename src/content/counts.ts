@@ -1,4 +1,4 @@
-import { products, cultures, ingredients, tasteMakers } from "./products";
+import { products, cultures, ingredients, tasteMakers, girCowGhee } from "./products";
 
 /**
  * Every count the site prints, derived from the catalogue.
@@ -14,6 +14,14 @@ import { products, cultures, ingredients, tasteMakers } from "./products";
  * those are a different, larger number, and the two must never be conflated.
  */
 export const productLineCount = cultures.length;
+export const girCowGheeCount = girCowGhee.length;
+/**
+ * These two count SKUs, i.e. catalogue cards. ABMERGE and ABSPICE are each
+ * listed as two SKUs (a 1 kg pouch and a 25 kg bag), so they are right beside
+ * a filter chip — "Dairy ingredients (6)" — and wrong in a sentence, where
+ * "six dairy ingredients" would read as six different products. Prose names
+ * the categories without numbering them.
+ */
 export const ingredientCount = ingredients.length;
 export const tasteMakerCount = tasteMakers.length;
 export const skuCount = products.length;
@@ -24,8 +32,8 @@ export const skuCount = products.length;
  * Defined in products.ts (which counts.ts imports, so it cannot be the other
  * way round) and re-exported here so callers have one place to import from.
  *
- * NOT derivable from the catalogue. src/content/cultures.ts lists roughly forty
- * coded cultures — only the curd and yoghurt families have been supplied — so
+ * NOT derivable from the catalogue. src/content/variants.ts transcribes the
+ * client's master sheet, which lists a little over a hundred coded cultures, so
  * this figure comes from the client, is entered as such in stats.ts, and is
  * shown as "200+" rather than a precise count. See stats.culturesOffered.
  */

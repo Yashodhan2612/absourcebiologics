@@ -7,6 +7,7 @@ import { MilkToCurdSection } from "@/components/sections/MilkToCurdSection";
 import { FeaturedCultures } from "@/components/sections/FeaturedCultures";
 import { SolutionGrid } from "@/components/sections/SolutionGrid";
 import { SelectorTeaser } from "@/components/sections/SelectorTeaser";
+import { MAKING_OPTIONS } from "@/lib/selector";
 import { GlobalReach } from "@/components/sections/GlobalReach";
 import { CTABand } from "@/components/sections/CTABand";
 import { ProductCodeIndex } from "@/components/layout/ProductCodeIndex";
@@ -97,12 +98,12 @@ export default function HomePage() {
 
             {/*
               Three photographs rather than one, because the claim is about
-              three separate rooms and a single picture cannot carry it. These
-              are the client's own recent plant photographs: fermentation
-              control, aseptic transfer at the laminar bench, and the
-              lyophiliser. The tall frame leads; only it is parallaxed, because
-              three parallaxed frames at different rates on one screen reads as
-              a fault (Section 7A.7).
+              three separate stages and a single picture cannot carry it. These
+              are the client's own plant photographs (October 2026), in process
+              order: the fermenter, the freeze dryer, and sachets being sealed.
+              Each is used here and nowhere else on the site. The tall frame
+              leads; only it is parallaxed, because three parallaxed frames at
+              different rates on one screen reads as a fault (Section 7A.7).
 
               Full-bleed to the section edge on desktop.
             */}
@@ -114,8 +115,8 @@ export default function HomePage() {
                   different heights, which read as a broken grid. */}
               <div className="relative row-span-2 overflow-hidden">
                 <Photo
-                  src="/assets/facility/fermenter-control.webp"
-                  alt="Two operators running a fermentation vessel from its control panel in the ABsource clean room"
+                  src="/assets/facility/fermenter.webp"
+                  alt="An operator at the fermentation vessel in the ABsource clean room"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                   parallax
                   depth={0.4}
@@ -123,15 +124,15 @@ export default function HomePage() {
               </div>
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Photo
-                  src="/assets/facility/aseptic-transfer.webp"
-                  alt="A technician working at a laminar flow bench during an aseptic transfer"
+                  src="/assets/facility/freeze-dryer-room.webp"
+                  alt="An operator at the freeze dryer, with a cooling cabinet in the foreground"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                 />
               </div>
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Photo
-                  src="/assets/facility/freeze-dryer.webp"
-                  alt="Loading trays into the freeze dryer at the Chinchwad plant"
+                  src="/assets/facility/sachet-sealing.webp"
+                  alt="An operator sealing filled culture sachets on the band sealer"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                 />
               </div>
@@ -160,12 +161,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4b — Set curd. The product's actual output, behind a short loop of
-              curd taking a clean spoon cut.
+      {/* 4b — Set curd. The product's actual output, over a still photograph
+              of curd taking a clean spoon cut.
 
-              No longer pinned: the pin existed to scrub a WebGL simulation
-              that the client replaced with real footage, and a looping video
-              has no scrub position. Nothing on the site pins now.
+              Static on purpose. It was a pinned WebGL simulation, then a
+              looping video; the client asked for the motion to go, so it is
+              one image with no video, parallax or pinning. Nothing on the site
+              pins now.
 
               Do not edit the copy inside it: verify-webgl.mjs finds this
               section by the literal string "holds a clean cut". */}
@@ -216,7 +218,7 @@ export default function HomePage() {
               obvious next step. */}
       <section className="section-ab border-y border-ab-chill bg-ab-chill/40">
         <div className="container-ab">
-          <SelectorTeaser />
+          <SelectorTeaser options={MAKING_OPTIONS} />
         </div>
       </section>
 
@@ -261,7 +263,7 @@ export default function HomePage() {
               to route sample requests through the product pages. */}
       <CTABand
         title="Pick the culture you want to trial, and we'll send a sample."
-        body="Each culture page carries its specification and a sample request that arrives with the product already attached. If you are not sure which line fits, the selector narrows the range to three."
+        body="Each culture page carries its specification and a sample request that arrives with the product already attached. If you are not sure which line fits, the selector names the cultures to trial."
         href="/products?category=cultures"
         cta="Choose a culture to trial"
         secondaryHref="/culture-selector"

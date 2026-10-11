@@ -26,12 +26,17 @@ const ROUTES = [
   "/solutions/cheese-paneer",
   "/products",
   "/products/cultures/abdahi",
-  // The SKU with no strain code, no artwork and no application tags — it
-  // exercises every null-handling path the catalogue has.
+  "/products/cultures/abdahi-probiotic",
+  "/products/cultures/abshri-bio-shield",
+  // Its own printed sachet rather than catalogue artwork, plus a reverse.
   "/products/cultures/fermenta",
   "/products/cultures/abvegan",
+  "/products/gir-cow-ghee/ab704",
   "/products/ingredients/abpro",
-  "/products/taste-makers/abspice",
+  // No photograph yet — exercises the placeholder path.
+  "/products/ingredients/abmax",
+  "/products/ingredients/abmerge-25kg",
+  "/products/taste-makers/abspice-1kg",
   "/culture-selector",
   "/services",
   "/services/turnkey-plant-setup",
@@ -64,6 +69,15 @@ const REDIRECTS = [
   ["/ab-careers", "/careers"],
   ["/ab-contact-us", "/contact"],
   ["/Curd-Discovery.html", "/culture-selector"],
+  // Products renamed, split or withdrawn in October 2026.
+  ["/products/cultures/abprobio", "/products/cultures/abdahi-probiotic"],
+  ["/products/cultures/abbio-shield", "/products/cultures/abshri-bio-shield"],
+  ["/products/ingredients/abbind", "/products/ingredients/abmax"],
+  ["/products/ingredients/abbindmax", "/products/ingredients/abmerge-plus"],
+  ["/products/ingredients/abmerge", "/products/ingredients/abmerge-1kg"],
+  ["/products/taste-makers/abspice", "/products/taste-makers/abspice-1kg"],
+  ["/products/ingredients/abhipro", "/products"],
+  ["/products/ingredients/abblend", "/products"],
 ];
 
 const browser = await chromium.launch({

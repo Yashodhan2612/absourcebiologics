@@ -12,7 +12,7 @@ import {
   company,
 } from "@/content/company";
 import { CULTURES_OFFERED_LABEL } from "@/content/products";
-import { spell, productLineCount, ingredientCount } from "@/content/counts";
+import { spell, productLineCount } from "@/content/counts";
 
 export const metadata = pageMetadata({
   title: "About the company — founded in Pune, 2014",
@@ -84,8 +84,7 @@ export default function AboutPage() {
                 <p>
                   The range now runs to {spell(productLineCount)} product lines
                   (DVS starter cultures, {CULTURES_OFFERED_LABEL} cultures),{" "}
-                  {spell(ingredientCount)} dairy ingredients and a taste maker,
-                  supplied to 300+ customers from a clean-room facility with an
+                  dairy ingredients and taste makers, supplied to 300+ customers from a clean-room facility with an
                   in-process QC lab.
                 </p>
               </div>
@@ -98,8 +97,8 @@ export default function AboutPage() {
             </div>
             <div className="relative aspect-[4/3] overflow-hidden">
               <Photo
-                src="/assets/facility/process-room.webp"
-                alt="A fermenter and laminar flow bench in the process room at the Chinchwad plant"
+                src="/assets/facility/dispatch-corridor.webp"
+                alt="Packed orders at the ready-for-dispatch point in the clean-room corridor at the Chinchwad plant"
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 parallax
               />

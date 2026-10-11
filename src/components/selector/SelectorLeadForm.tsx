@@ -4,8 +4,7 @@ import { useState } from "react";
 import { TextField } from "@/components/ui/Field";
 import { FormShell, fieldError } from "@/components/forms/FormShell";
 import { useLeadSubmit } from "@/components/forms/useLeadSubmit";
-import type { SelectorAnswers } from "@/lib/selector-engine";
-import type { Match } from "@/lib/selector-engine";
+import type { Recommendation, SelectorAnswers } from "@/lib/selector";
 
 /**
  * "Email me this recommendation" — the selector's lead capture.
@@ -15,14 +14,15 @@ import type { Match } from "@/lib/selector-engine";
  * things that make it worth building (Section 9).
  *
  * The full answer set travels with the submission so sales sees exactly what
- * the buyer specified rather than just an email address.
+ * the buyer specified rather than just an email address. Each match is sent as
+ * "CODE (PRODUCT LINE)", which is what sales needs to pull the right sample.
  */
 export function SelectorLeadForm({
   answers,
-  matches,
+  recommendation,
 }: {
   answers: SelectorAnswers;
-  matches: readonly Match[];
+  recommendation: Recommendation;
 }) {
   const [email, setEmail] = useState("");
   const { state, submit, startedAt } = useLeadSubmit("selector");
@@ -51,7 +51,9 @@ export function SelectorLeadForm({
           void submit({
             email,
             answers: answerRecord,
-            matches: matches.map((m) => m.sku),
+            matches: recommendation.variants.map(
+              (m) => `${m.variant.code} (${m.productName})`
+            ),
           });
         }}
       >

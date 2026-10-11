@@ -88,7 +88,9 @@ const cls = await page.evaluate(
 );
 console.log("  CLS:", cls);
 
-// Scrub the pinned milk-to-curd section and capture it at three points.
+// Capture the set-curd section at three scroll positions. It is a static
+// photograph now (no pin, no video), so the three frames should show the same
+// image simply scrolling past — which is the thing being checked.
 const milkTop = await page.evaluate(() => {
   const nodes = [...document.querySelectorAll("section")];
   const section = nodes.find((s) => s.textContent?.includes("holds a clean cut"));

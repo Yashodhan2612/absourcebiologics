@@ -1,11 +1,14 @@
 /**
- * Render a printed product label from its PDF to web images.
+ * Render the reverse of a printed product label from its PDF to web images.
  *
  *   node scripts/prepare-label.mjs <label.pdf> <slug>
  *   node scripts/prepare-label.mjs "FERMENTA 80 MM X 110 MM CONVRT FILE.pdf" fermenta
  *
- * Writes public/assets/products/cultures/<slug>-label-front.{avif,webp} from
- * page 1 and <slug>-label-back.{avif,webp} from page 2.
+ * Writes public/assets/products/cultures/<slug>-label-back.{avif,webp} from
+ * page 2. The front (page 1) is no longer written: FERMENTA's product image is
+ * now the photograph of its sachet (scripts/prepare-media.mjs), and an unused
+ * front label would be an orphaned asset. The reverse is still shown beside
+ * it, because it carries the storage, shelf life and licence details.
  *
  * NEEDS POPPLER (`brew install poppler`) for pdftoppm. That is a build-time
  * tool for whoever prepares assets, not a runtime dependency: the AVIF and
@@ -51,10 +54,7 @@ if (pages.length < 1) {
   process.exit(1);
 }
 
-const faces = [
-  ["front", pages[0]],
-  ["back", pages[1]],
-];
+const faces = [["back", pages[1]]];
 
 for (const [face, file] of faces) {
   if (!file) {

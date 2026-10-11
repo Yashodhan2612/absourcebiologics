@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { pageMetadata, BreadcrumbJsonLd } from "@/lib/seo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -5,7 +6,6 @@ import { ChallengeResponse } from "@/components/sections/ChallengeResponse";
 import { ValueTable } from "@/components/sections/ValueTable";
 import { CTABand } from "@/components/sections/CTABand";
 import { Photo } from "@/components/ui/Photo";
-import { CertificateWall } from "@/components/sections/CertificateWall";
 import { differentiators, milestones } from "@/content/company";
 
 export const metadata = pageMetadata({
@@ -18,43 +18,44 @@ export const metadata = pageMetadata({
 /**
  * Photography for the five differentiator blocks.
  *
- * One photograph per block, each used NOWHERE ELSE on the site. The set used
- * to be three photographs cycled across five slots, which put the same picture
- * in blocks 1 and 4, repeated the homepage's QC-lab shot in block 3, and gave
- * the customisation block a picture of a corridor. The client's new plant
- * photography made that unnecessary.
+ * One photograph per block, each used NOWHERE ELSE on the site — the client's
+ * rule is that no photograph repeats anywhere. All five are from the plant
+ * photography they supplied in October 2026.
  *
  * Each image is chosen to argue its own block rather than to decorate it:
  *  01 pioneer        — the clean-room corridor: the plant itself.
- *  02 science-led    — two technologists at the microscope.
- *  03 customisation  — the packing hall, where different blends are filled to
+ *  02 science-led    — a technologist at the microscope.
+ *  03 customisation  — the packing line, where different blends are filled to
  *                      different specifications. The closest thing we have to a
  *                      picture of "range".
- *  04 partnership    — two operators working one vessel together.
- *  05 proven quality — no photograph. The certificates and the FSSAI licence
- *                      are the evidence, so the block shows the documents.
+ *  04 partnership    — the team around a table, working something through.
+ *  05 proven quality — a sample being measured at the bench.
  *
- * Block 4 was briefed as a handshake. No such photograph exists in the asset
- * set and stock imagery of strangers shaking hands is exactly the padding this
- * site refuses, so it shows two people actually working together instead.
- * Recorded in CONTENT-TODO.md §0g.
+ * Block 5 used to show the four certificate scans. They now appear once, on
+ * /quality, where they open full size and sit beside the FSSAI licence;
+ * repeating them here would break the no-repeat rule, so this block shows the
+ * testing behind them and links to the documents instead.
  */
 const DIFFERENTIATOR_PHOTOS = [
   {
-    src: "/assets/facility/cleanroom-corridor.webp",
+    src: "/assets/facility/clean-corridor.webp",
     alt: "The clean-room corridor at the ABsource plant in Chinchwad",
   },
   {
-    src: "/assets/facility/microscopy.webp",
-    alt: "Two technologists examining a culture sample under the microscope",
+    src: "/assets/facility/microscope-bench.webp",
+    alt: "A technologist examining a culture sample under the microscope",
   },
   {
-    src: "/assets/facility/packing-hall.webp",
-    alt: "Blended cultures being weighed and filled into sachets in the packing hall",
+    src: "/assets/facility/packing-line.webp",
+    alt: "Two operators running the sachet sealer on the packing line",
   },
   {
-    src: "/assets/facility/inoculation-vessel.webp",
-    alt: "Two operators preparing an inoculation vessel together",
+    src: "/assets/facility/team-meeting.webp",
+    alt: "The ABsource team in a working meeting at the Chinchwad office",
+  },
+  {
+    src: "/assets/facility/sample-bench.webp",
+    alt: "A technologist taking a reading from a sample at the in-process QC bench",
   },
 ] as const;
 
@@ -102,6 +103,16 @@ export default function WhyAbsourcePage() {
                   <p className="measure-ab mt-5 text-base leading-[1.65] text-ab-ink-60">
                     {item.body}
                   </p>
+                  {/* The proof for this block is a set of documents, and they
+                      live on /quality. Keyed on the id, not the position. */}
+                  {item.id === "proven" ? (
+                    <Link
+                      href="/quality"
+                      className="link-wipe mono-ab mt-6 inline-block text-ab-tank no-underline"
+                    >
+                      See the certificates and the FSSAI licence &rarr;
+                    </Link>
+                  ) : null}
                 </div>
                 <div className={i % 2 === 1 ? "lg:order-1" : undefined}>
                   {photo ? (
@@ -114,11 +125,7 @@ export default function WhyAbsourcePage() {
                         depth={0.45}
                       />
                     </div>
-                  ) : (
-                    /* The last block argues proven quality, so it shows the
-                       documents rather than another picture of the plant. */
-                    <CertificateWall variant="compact" />
-                  )}
+                  ) : null}
                 </div>
               </li>
               );

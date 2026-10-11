@@ -68,26 +68,70 @@ await tryStep("selector loads and shows question one", async () => {
   if (opts < 3) throw new Error(`expected option cards, found ${opts}`);
 });
 
-await tryStep("selector answers every question and returns a recommendation", async () => {
-  // The wizard renders its option cards as button[role=radio]. Scope to that
-  // rather than to any button in main — the page also server-renders the
-  // thirteen culture lines below the wizard, and a looser selector walks that
-  // list instead of the wizard and never reaches a result.
-  let answered = 0;
+/**
+ * Walk the wizard by clicking the named option at each step, then keep taking
+ * the first option until a result is reached. Returns the questions that were
+ * asked and the result text.
+ *
+ * The wizard renders its option cards as button[role=radio]. Scope to that
+ * rather than to any button in main — the page also server-renders the culture
+ * tabs below the wizard, and a looser selector walks those instead.
+ */
+async function walkSelector(picks) {
+  await page.goto(`${BASE}/culture-selector`, { waitUntil: "load" });
+  await page.waitForTimeout(600);
+  const asked = [];
   for (let step = 0; step < 12; step++) {
     const options = page.locator('main button[role="radio"]');
-    const count = await options.count();
-    if (count === 0) break;
-    await options.first().click({ timeout: 5000 });
-    answered++;
+    if ((await options.count()) === 0) break;
+    asked.push((await page.locator("main h2").first().innerText()).trim());
+    const pick = picks[step];
+    const target = pick ? options.filter({ hasText: pick }).first() : options.first();
+    await target.click({ timeout: 5000 });
     await page.waitForTimeout(400);
   }
-  if (answered < 6) throw new Error(`only answered ${answered} questions`);
+  return { asked, body: await page.locator("main").first().innerText() };
+}
 
-  const body = await page.locator("main").innerText();
-  if (!/your match|% fit|send us your spec|we.d rather look at this/i.test(body)) {
-    throw new Error("no result state reached after " + answered + " answers");
+await tryStep("cheese is asked which cheese and nothing else, then given codes", async () => {
+  const { asked, body } = await walkSelector(["Cheese", "Mozzarella"]);
+  if (asked.length !== 2) throw new Error(`asked ${asked.length} questions: ${asked.join(" | ")}`);
+  if (asked.some((q) => /acidity|texture|viscos|milk|pack/i.test(q))) {
+    throw new Error(`asked an irrelevant question: ${asked.join(" | ")}`);
   }
+  if (!/your match/i.test(body) || !/AB516/.test(body) || !/AB512/.test(body)) {
+    throw new Error("mozzarella did not return AB516 and AB512");
+  }
+});
+
+await tryStep("a line with nothing to choose on goes straight to its variants", async () => {
+  const { asked, body } = await walkSelector(["Kefir"]);
+  if (asked.length !== 1) throw new Error(`asked ${asked.length} questions`);
+  if (!/your match/i.test(body) || !/AB351/.test(body)) throw new Error("kefir variants not shown");
+});
+
+await tryStep("an unlisted product is declined rather than approximated", async () => {
+  const { body } = await walkSelector(["Something else"]);
+  if (!/we.d rather look at this/i.test(body)) throw new Error("no decline state");
+});
+
+await tryStep("a probiotic curd is routed to ABDAHI (Probiotic)", async () => {
+  const { asked, body } = await walkSelector(["Curd", "Yes"]);
+  if (asked.length !== 2) throw new Error(`asked ${asked.length} questions`);
+  if (!/ABDAHI \(Probiotic\)/.test(body) || !/AB921NX/.test(body)) {
+    throw new Error("probiotic curd did not return AB921NX under ABDAHI (Probiotic)");
+  }
+});
+
+await tryStep("curd answers all six curd questions and gets ranked variant codes", async () => {
+  const { asked, body } = await walkSelector([
+    "Curd", "No", "Cup", "Toned", "Medium", "Firm set", "Not sure",
+  ]);
+  if (asked.length !== 7) throw new Error(`asked ${asked.length} questions: ${asked.join(" | ")}`);
+  if (!/your match/i.test(body)) throw new Error("no result state reached");
+  if (!/AB201NX/.test(body)) throw new Error("expected AB201NX as a suggested variant");
+  if (!/matches 4 of your 4 answers/i.test(body)) throw new Error("reasoning not shown");
+  if (/% fit/i.test(body)) throw new Error("a percentage fit is shown");
 });
 
 await tryStep("selector state survives a reload (URL-encoded answers)", async () => {

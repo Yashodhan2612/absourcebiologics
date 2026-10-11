@@ -24,9 +24,10 @@ pnpm dev                   # http://localhost:3000
 | `pnpm build` | Production build |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm lint` | ESLint |
-| `pnpm test` | Vitest — selector engine unit tests |
+| `pnpm test` | Vitest — selector, catalogue, photography and email-routing tests |
 | `pnpm fetch-assets` | Download real imagery from the live site (needs network access) |
 | `pnpm optimise-assets` | Convert fetched images to AVIF + WebP at 1x/2x |
+| `pnpm prepare-media` | Crop and encode the client-supplied plant photographs, certificate scans and product photographs |
 | `node scripts/check-contrast.mjs` | Verify every palette pair against WCAG 2.2 AA |
 | `node scripts/shoot.mjs <label> <path>` | Screenshot a route at 390/768/1440 |
 
@@ -155,19 +156,42 @@ error rather than something to catch in review:
 ### Adding a product
 
 1. Add an entry to the `products` array in `src/content/products.ts`.
-2. Give it a `category` (`cultures` | `ingredients` | `taste-makers`), a `slug`,
-   and — for cultures — a `strainCode`.
-3. Tag it with `applications` from the eight `ApplicationTag` values. This alone
-   makes it appear on the matching solution pages and in the catalogue filters.
-4. For a culture, add a `selectorProfile`. **An empty array on an axis means
-   "not applicable", never "matches everything"** — that is what stops the
-   engine manufacturing a false match.
-5. Put the pack image at `public/assets/products/<category>/<slug>.jpg` and
-   point `image` at it.
+2. Give it a `category` (`cultures` | `gir-cow-ghee` | `ingredients` |
+   `taste-makers`) and a `slug`. `strainCode` is only for a product whose pack
+   prints one code for the whole product (the ingredients); leave it `null` on
+   a culture line.
+3. Tag it with `applications`. A `SolutionTag` puts it on that solution page and
+   in the catalogue filter; a `FilterOnlyTag` (`vegan`) is a filter and nothing
+   else.
+4. Put the pack image under `public/assets/products/<category>/` and point
+   `image` at it. If it borrows another product's pack, say so with `packOf`.
+   If it is a photograph of the product's own pack rather than the flat
+   catalogue sachet artwork, set `imageKind: "photo"`.
 
-The detail page, sitemap entry, `StrainIndex` rail and JSON-LD all follow
-automatically. **Run `pnpm test`** — the engine tests assert every culture with
-a profile is still reachable as a top match, so a bad profile fails the build.
+The detail page, sitemap entry and JSON-LD follow automatically. **Run
+`pnpm test`** — the catalogue and media tests fail on a shared photograph, a
+missing file or an orphaned asset.
+
+### Adding or changing a culture variant
+
+The coded cultures (AB201NX, AB516 …) are not products. They live in
+`src/content/variants.ts`, a transcription of the client's master sheet, and
+each belongs to a *family* that names the product line it is ordered against.
+
+1. Add a row to `variants`, with the client's description as `descriptor`.
+2. Fill in `pack`, `milkFat`, `acidity`, `texture`, `flavour` **only where the
+   description says so**. A missing field means the sheet is silent, and the
+   selector gives the variant no credit on that axis.
+3. `published: false` keeps a row off the site entirely.
+
+That one edit updates the Culture Selector, the tabs under it, the "Variants in
+this line" block on the product page and the product-code rail.
+
+### Renaming or withdrawing a product
+
+Change the slug in `products.ts`, then add the old URL to `PRODUCT_REDIRECTS`
+in `next.config.ts`. `catalogue.test.ts` fails if a redirect points at a page
+that does not exist or if an old slug is still live.
 
 ### Adding a solution page
 
@@ -206,8 +230,9 @@ layout. With JavaScript unavailable the page renders fully visible. The whole
 rule sits inside `@media (prefers-reduced-motion: no-preference)`, so reduced
 motion means there is nothing for JavaScript to disable.
 
-**The `StrainIndex` ticker animation is pure CSS**, also inside a
-no-preference block. Same reasoning.
+**The `ProductCodeIndex` ticker animation is pure CSS**, also inside a
+no-preference block. Same reasoning. Its duration is set per code, so the
+reading pace stays constant as the catalogue grows.
 
 **The mega menu distinguishes pointer from keyboard.** Hover opens after 120ms;
 Enter/Space opens *and* traps focus. Trapping a hover-opened panel would fight
@@ -217,15 +242,26 @@ focus to the trigger.
 **Catalogue filters are links, not state.** Filter state lives in the URL, so a
 filtered view is shareable and indexable and the page stays a server component.
 
-**The selector engine is pure** (`src/lib/selector-engine.ts`) — no side
-effects, fully unit tested. `making` is a **gate, not a weight**: a product that
-does not serve what the buyer is making is disqualified outright. Without that,
-a product can fail the axis that matters most and still clear the confidence
-threshold on minor axes — which is how a curd culture got recommended for
-paneer. That case is a permanent regression test; do not weaken it.
+**The Culture Selector is pure** (`src/lib/selector.ts`) — no side effects,
+fully unit tested, and driven entirely by `src/content/variants.ts`.
 
-An empty result is a **designed outcome**, not an error. Below `MIN_CONFIDENCE`
-the wizard says so and routes to a human rather than returning a near-miss.
+- **It asks only relevant questions.** Each product lists the questions that
+  can apply to it (`selectorEntries`), and `questionsFor()` drops any that
+  cannot separate the variants still standing after the answers so far. Cheese
+  is asked which cheese and nothing else; kefir is asked nothing. A test walks
+  every possible path and fails if a question is ever asked with fewer than two
+  real choices, or if a configured question is never asked.
+- **It answers with variant codes**, and the product line each is ordered
+  against.
+- **Gates, then scores.** Cheese variety and the probiotic and bioprotective
+  claims rule variants in or out. Pack, milk, acidity, texture and flavour rank
+  what is left. A variant gets no credit on an attribute its description is
+  silent about.
+- **No "% fit".** The result says "matches 3 of your 4 answers" and names them.
+
+An empty result is a **designed outcome**, not an error. Below the confidence
+floor the wizard says so and routes to a human rather than returning a
+near-miss.
 
 ---
 
@@ -297,9 +333,10 @@ phone in a plant office. Do not strip it.
   in-focus chains climb out of frame, leaving only blurred ones visible), and
   the frame-delta clamp in `CultureField.tsx` (set it near a plausible frame
   time and the animation runs in slow motion on slow devices).
-- **Milk to curd** (`sections/MilkToCurdSection.tsx`) — the site's only pinned
-  section, and the pinning budget is two. It pins for exactly 100vh, never
-  below 768px, never at tier 1.
+- **Set curd** (`sections/MilkToCurdSection.tsx`) — no longer a motion moment.
+  It was a pinned WebGL simulation, then a looping video, and is now a single
+  still photograph at the client's request. No video, no parallax, no pin, and
+  no client JavaScript. Nothing on the site pins.
 - **The sachet** (`webgl/Sachet.tsx`) — one procedural pillow-pouch model with
   a texture swap per SKU. Culture SKUs only: the ingredient and taste maker
   packs are stand-up pouches, and wrapping their artwork onto a sachet would
@@ -393,9 +430,11 @@ dark blue and "BIOLOGICS" is black, so on ab-tank the original disappears.
 
 ## Leadership portraits
 
-The two founder portraits are built by `npm run prepare-portraits`, not by
+The two founder portraits are built by `pnpm prepare-portraits`, not by
 `fetch-assets.sh`. They need cropping, and the crop is the point: both sources
-are 3:2 landscape and the page shows 3:4 portraits.
+are landscape and the page shows 3:4 portraits. Dr. Vinze's is a file the
+client supplied directly (`public/assets/_source/team/2026/`); Mr. Sonavane's
+is downloaded from the live site the first time the script runs.
 
 Rendering a landscape source into a portrait box with `object-cover` makes the
 browser scale the image until its HEIGHT fills the box and discard most of the
@@ -465,7 +504,6 @@ asked to authenticate the dairy before one goes out.
   `CONTENT-TODO.md` §0 — not sourced, and deliberately not faked.
 - **`clients.ts` is empty.** The downloaded logo filenames do not reliably
   identify customers. See `CONTENT-TODO.md` §0.
-- **Tier-2 fallback for the milk-to-curd moment** departs from brief §7A.4,
-  which asks for a 40-frame AVIF sequence. That needs renders of set curd
-  which do not exist in the asset set. Documented in the component.
+- **The set-curd moment is a still**, not the scroll sequence brief §7A.4
+  asks for. The client asked for a static image; documented in the component.
 - **Lighthouse and axe have not been run** against a deployed URL.

@@ -40,10 +40,10 @@ export function SachetMount({
   strainCode?: string | undefined;
   category?: string;
   /**
-   * The image is a flat printed label, not a sachet photograph. The sachet
-   * model maps its texture onto a pillow-shaped pouch and expects the front of
-   * one; a label is a different shape and would be stretched across it. It is
-   * shown flat at every tier instead.
+   * The image is not the flat catalogue sachet artwork — it is a photograph of
+   * a real pack (FERMENTA's sachet, an ingredient pouch). The sachet model maps
+   * its texture onto a pillow-shaped pouch and expects that artwork; anything
+   * else would be stretched across it. It is shown flat at every tier instead.
    */
   flat?: boolean;
 }) {
@@ -57,7 +57,7 @@ export function SachetMount({
   // error event, the loader promise rejects, and it throws through the bare
   // Suspense below. There is no error boundary anywhere under src/app, so that
   // takes the whole route down rather than degrading to the flat pack.
-  // FERMENTA has no artwork yet.
+  // ABMAX has no photograph yet, so this case is live.
   const eligible =
     tier === 3 && category === "cultures" && image.length > 0 && !flat && !failed;
   const idle = useDeferredMount(eligible && near);

@@ -17,7 +17,7 @@ import {
   CATEGORY_LABELS,
   CULTURE_TYPE_LABELS,
 } from "@/content/products";
-import { profilesForProduct } from "@/content/cultures";
+import { families, styleLabel, variantsForProduct } from "@/content/variants";
 import { solutions } from "@/content/solutions";
 import { downloadsForProduct } from "@/content/downloads";
 
@@ -60,8 +60,8 @@ export default async function ProductPage({
   const product = productBySlug(category, slug);
   if (!product) notFound();
 
-  /** The coded taste profiles ordered against this line. Often empty. */
-  const lineProfiles = profilesForProduct(product.slug);
+  /** The coded variants ordered against this product. Empty for ingredients. */
+  const lineVariants = variantsForProduct(product.slug);
 
   const relatedApps = solutions.filter((s) =>
     (product.applications as readonly string[]).includes(s.slug)
@@ -85,7 +85,19 @@ export default async function ProductPage({
    * the page never invites a request nobody can fulfil.
    */
   const isPilot = product.availability === "pilot";
-  const isLabel = product.imageKind === "label";
+  /** A photograph of the product's own pack, not the catalogue artwork. */
+  const isOwnPack = product.imageKind === "photo";
+  /**
+   * The 3D sachet and the colour-coding note both belong to the flat catalogue
+   * artwork that culture sachets are shown in. AB704 sits in its own category
+   * but is shown in ABCREAM's sachet, so it qualifies too — hence `packOf`
+   * rather than a category test.
+   */
+  const isCatalogueArtwork =
+    Boolean(product.image) &&
+    !isOwnPack &&
+    (product.category === "cultures" || Boolean(product.packOf));
+  const substrate = product.substrate ?? "milk";
 
   return (
     <>
@@ -112,8 +124,8 @@ export default async function ProductPage({
                   name={product.name}
                   slug={product.slug}
                   strainCode={product.strainCode ?? undefined}
-                  category={product.category}
-                  flat={isLabel}
+                  category={isCatalogueArtwork ? "cultures" : product.category}
+                  flat={!isCatalogueArtwork}
                 />
               </div>
 
@@ -124,22 +136,22 @@ export default async function ProductPage({
                   ingredient packs ARE the delivery pack — and only where pack
                   artwork actually exists, or it captions the abstract colony
                   plate that stands in for a missing image. */}
-              {product.category === "cultures" && product.image && !isLabel ? (
+              {isCatalogueArtwork ? (
                 <p className="measure-ab mt-3 border-t border-ab-chill pt-3 text-[0.875rem] leading-[1.55] text-ab-ink-60">
                   {packArtworkNote.detail}
                 </p>
               ) : null}
 
               {/*
-                The reverse of a printed label. It carries the storage
+                The printed reverse of the pack. It carries the storage
                 temperature, shelf life, manufacturing address and the FSSAI
                 licence number, which is exactly what a buyer turns a pack over
                 to read — so it is shown, not just the front.
 
                 No pack-artwork note here or above: that caption says the
                 colour is illustrative and the delivered pack is the standard
-                blue and white sachet, which is true of the sachet photographs
-                and not of a label, which is the thing itself.
+                blue and white sachet, which is true of the catalogue artwork
+                and not of a product photographed in its own pack.
               */}
               {product.imageBack ? (
                 <figure className="mt-6">
@@ -154,7 +166,7 @@ export default async function ProductPage({
                   >
                     <Image
                       src={product.imageBack}
-                      alt={`Reverse of the ${product.name} label, showing storage, shelf life and manufacturer details`}
+                      alt={`Reverse of the ${product.name} pack, showing storage, shelf life and manufacturer details`}
                       fill
                       sizes="16rem"
                       className="object-contain"
@@ -162,7 +174,7 @@ export default async function ProductPage({
                     <span className="sr-only"> — opens full size in a new tab</span>
                   </a>
                   <figcaption className="mono-ab mt-2 text-[0.8125rem] text-ab-ink-60">
-                    Reverse of the label &middot; select to enlarge
+                    Reverse of the pack &middot; select to enlarge
                   </figcaption>
                 </figure>
               ) : null}
@@ -273,48 +285,68 @@ export default async function ProductPage({
       </section>
 
       {/*
-        The coded cultures inside this product line.
-        
-        A culture is a sub-category of a product, so this is the one place the
+        The coded variants of this product.
+
+        A variant is a sub-category of a product, so this is the one place the
         codes belong on a product page: after the specification, where a
-        technologist is deciding which variant to trial. The catalogue grid at
+        technologist is deciding which one to trial. The catalogue grid at
         /products deliberately does NOT show them — that page lists products.
-        Renders nothing for lines with no coded catalogue yet.
+        Renders nothing for ingredients and for a line still in pilot.
       */}
-      {lineProfiles.length > 0 ? (
+      {lineVariants.length > 0 ? (
         <section className="section-ab-tight border-t border-ab-chill bg-ab-white">
           <div className="container-ab">
-            <h2 className="mb-3 text-[2rem]">Cultures in this line</h2>
+            <h2 className="mb-3 text-[2rem]">
+              {lineVariants.length === 1 ? "The variant in this line" : "Variants in this line"}
+            </h2>
             <p className="measure-ab mb-10 text-base leading-[1.65] text-ab-ink-60">
-              {product.name} covers {lineProfiles.length} taste{" "}
-              {lineProfiles.length === 1 ? "profile" : "profiles"}. Which one we
-              supply depends on your milk and the finish you are after — quote
-              the code, or tell us the product and we will confirm it.
+              {lineVariants.length === 1
+                ? `${product.name} is supplied as one coded culture.`
+                : `${product.name} is supplied as ${lineVariants.length} coded cultures.`}{" "}
+              Quote the code with your order, or tell us what you are making and
+              the{" "}
+              <Link href="/culture-selector" className="link-wipe text-ab-tank no-underline">
+                Culture Selector
+              </Link>{" "}
+              will suggest one.
             </p>
 
-            <ul className="grid gap-px border border-ab-chill bg-ab-chill md:grid-cols-2">
-              {lineProfiles.map((profile) => (
-                <li key={profile.slug} className="bg-ab-white p-6 md:p-8">
-                  <h3 className="text-[1.25rem] leading-[1.25] text-ab-ink">
-                    {profile.name}
-                  </h3>
-                  <p className="mt-2 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
-                    {profile.summary}
+            <ul
+              className={
+                // One variant reads as a single full-width row, not as half of
+                // a two-column grid with nothing beside it.
+                lineVariants.length === 1
+                  ? "grid border border-ab-chill"
+                  : "grid gap-px border border-ab-chill bg-ab-chill md:grid-cols-2"
+              }
+            >
+              {lineVariants.map((variant) => (
+                <li key={variant.code} className="bg-ab-white p-6">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <ProductCode code={variant.code} />
+                    {variant.style?.length ? (
+                      <span className="mono-ab text-ab-ink-60">
+                        {variant.style
+                          .map((style) => styleLabel(variant.family, style))
+                          .join(" · ")}
+                      </span>
+                    ) : families[variant.family].productSlug !== product.slug ? (
+                      // Cross-listed from another family: say which.
+                      <span className="mono-ab text-ab-ink-60">
+                        {families[variant.family].label}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-3 text-[0.9375rem] leading-[1.6] text-ab-ink-60">
+                    {variant.descriptor}
                   </p>
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    {profile.codes.map((code) => (
-                      <li key={code.code} className="flex flex-col gap-1">
-                        <ProductCode code={code.code} tone="muted" />
-                        {code.note ? (
-                          <span className="text-[0.8125rem] leading-[1.4] text-ab-ink-60">
-                            {code.note}
-                          </span>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
                 </li>
               ))}
+              {/* Fill an odd last row so the hairline ground does not show as
+                  an empty tinted cell. */}
+              {lineVariants.length > 1 && lineVariants.length % 2 === 1 ? (
+                <li aria-hidden="true" className="hidden bg-ab-white md:block" />
+              ) : null}
             </ul>
           </div>
         </section>
@@ -348,7 +380,7 @@ export default async function ProductPage({
         title={
           isPilot
             ? `${product.name} is coming soon.`
-            : `Trial ${product.name} on your own milk.`
+            : `Trial ${product.name} on your own ${substrate}.`
         }
         body={
           isPilot

@@ -1,11 +1,9 @@
 /**
  * Cultures the client wants pulled out of the catalogue and shown on their own.
  *
- * The brief named three — AB704, the vegan cultures, and FERMENTA. FERMENTA and
- * ABVEGAN are here. AB704 is not: no specification arrived, and a featured slot
- * is the worst place on the site to put a name with nothing behind it. It is
- * stubbed below, commented out, with exactly the fields it needs — fill it in
- * and it appears. Tracked in CONTENT-TODO.md §0f.
+ * The brief named three — AB704, the vegan cultures, and FERMENTA — and all
+ * three are here now. AB704 was held back until it had a page with something
+ * behind it; it is now a product in its own right under Gir Cow Ghee.
  *
  * `status` is what keeps this honest, and each value maps to a product state:
  *   "in-range"        orderable, and its page carries a real specification.
@@ -42,11 +40,20 @@ export const featuredCultures: readonly FeaturedCulture[] = [
   {
     slug: "fermenta",
     name: "FERMENTA",
-    kicker: "Specification confirmed per application",
-    summary: "Specification available on request",
-    body: "Part of the ABsource range. We confirm its specification against your product and your process, so it goes out with the sample rather than being published here.",
-    status: "spec-on-request",
+    kicker: "Idli and dosa batter",
+    summary: "A Direct Vat Set starter culture for idli and dosa batter",
+    body: "Supplied freeze-dried for addition straight to the vessel, with no in-house propagation step.",
+    status: "in-range",
     href: "/products/cultures/fermenta",
+  },
+  {
+    slug: "ab704",
+    name: "AB704",
+    kicker: "Gir Cow Ghee",
+    summary: "The cream culture for cultured ghee",
+    body: "A Direct Vat Set mesophilic culture for cream, used ahead of butter and cultured ghee production. Supplied freeze-dried for direct addition.",
+    status: "in-range",
+    href: "/products/gir-cow-ghee/ab704",
   },
   {
     slug: "abvegan",
@@ -57,15 +64,6 @@ export const featuredCultures: readonly FeaturedCulture[] = [
     status: "pilot",
     href: "/products/cultures/abvegan",
   },
-  // {
-  //   slug: "ab704",
-  //   name: "AB704",
-  //   kicker: "…",
-  //   summary: "…",
-  //   body: "…",
-  //   status: "in-range",
-  //   href: "/products/cultures/ab704",
-  // },
 ];
 
 /**
