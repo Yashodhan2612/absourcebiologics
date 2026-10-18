@@ -357,9 +357,9 @@ export const products: readonly Product[] = [
     summary: "Idli and dosa batter culture",
     description:
       "A Direct Vat Set starter culture for idli and dosa batter. Supplied freeze-dried for addition straight to the vessel, with no in-house propagation step.",
-    // A photograph of FERMENTA's own printed sachet — not the colour-coded
-    // catalogue artwork the other lines use. See imageKind.
-    image: "/assets/products/cultures/fermenta.webp",
+    // FERMENTA's own printed sachet, supplied by the client — not the
+    // colour-coded catalogue artwork the other lines use. See imageKind.
+    image: "/assets/products/cultures/fermenta-sachet.webp",
     imageKind: "photo",
     imageBack: "/assets/products/cultures/fermenta-label-back.webp",
     // It ferments batter, so "trial it on your own milk" would be wrong.
@@ -380,7 +380,10 @@ export const products: readonly Product[] = [
     summary: "New — in pilot, launching soon",
     description:
       "ABVEGAN is a new product offering from ABsource. It is in the early stages of testing and in pilot with a small number of select customers, and will launch and be available soon.",
-    image: "",
+    // The client's colour-coded sachet for it (October 2026), framed like the
+    // other culture sachets. It prints storage and shelf-life lines of its
+    // own, as they all do; that is artwork, not a published specification.
+    image: "/assets/products/cultures/abvegan.webp",
     // A pilot product is not yet orderable, so nothing here can be sampled or
     // specified. Every CTA and spec block on the detail page keys off this.
     availability: "pilot",
@@ -395,9 +398,10 @@ export const products: readonly Product[] = [
   {
     /**
      * AB704, the cream culture for granular ghee, sold in its own right under
-     * the category the client asked for. Same photograph and description as
-     * ABCREAM, at their instruction — it is a variant of that line, and it is
-     * also listed there as one (variants.ts).
+     * the category the client asked for. The description is ABCREAM's, at their
+     * instruction — it is a variant of that line, and it is also listed there
+     * as one (variants.ts). The photograph is its own: the client's Gir Cow
+     * Ghee jars, which replaced ABCREAM's sachet (October 2026).
      *
      * No application tags: the client asked for it to appear in this category
      * alone, so it is not surfaced on the cultured ghee solution page.
@@ -411,18 +415,21 @@ export const products: readonly Product[] = [
     summary: "Cultured cream for butter and cultured ghee",
     description:
       "A Direct Vat Set mesophilic culture for cream, used ahead of butter and cultured ghee production. Supplied freeze-dried for direct addition.",
-    image: "/assets/products/cultures/abcream.webp",
-    packOf: "abcream",
+    // A photograph of the product, not catalogue sachet artwork: it must stay
+    // off the 3D sachet model and must not carry the colour-coding note.
+    image: "/assets/products/ingredients/ab704-ghee.webp",
+    imageKind: "photo",
     specs: DVS_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
   },
 
   /* ========================= DAIRY INGREDIENTS ========================= */
   {
-    // Formerly ABBIND. Renamed by the client, with new packaging. The new pack
-    // photograph has not been supplied, and the old one prints the old name, so
-    // no image is shown rather than a pack that contradicts the heading.
-    // CONTENT-TODO.md §0i. /products/ingredients/abbind redirects here.
+    // Formerly ABBIND. Renamed by the client, with new packaging, which they
+    // supplied in October 2026. The pack prints the name "AB Maxx" (two x's);
+    // the product is named ABMAX at their instruction and that is what the
+    // site says. CONTENT-TODO.md §00.
+    // /products/ingredients/abbind redirects here.
     slug: "abmax",
     name: "ABMAX",
     strainCode: null,
@@ -432,14 +439,13 @@ export const products: readonly Product[] = [
     summary: "Stabiliser system for fermented dairy",
     description:
       "A stabiliser system for fermented dairy products. Full composition and dosage are supplied on the technical data sheet.",
-    image: "",
+    image: "/assets/products/ingredients/abmax-pouch.webp",
     specs: INGREDIENT_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
   },
   {
-    // Formerly ABBINDMAX. Renamed by the client; no change of packaging was
-    // mentioned, so the existing photograph stays — it still prints the old
-    // name on the pouches. CONTENT-TODO.md §0i.
+    // Formerly ABBINDMAX. Renamed by the client, who supplied the new pouch in
+    // October 2026. CONTENT-TODO.md §00.
     // /products/ingredients/abbindmax redirects here.
     slug: "abmerge-plus",
     name: "ABMERGE+",
@@ -450,7 +456,7 @@ export const products: readonly Product[] = [
     summary: "Higher-strength stabiliser system",
     description:
       "A higher-strength stabiliser system for fermented dairy where additional body is required. Full composition and dosage are supplied on the technical data sheet.",
-    image: "/assets/products/ingredients/abmerge-plus.webp",
+    image: "/assets/products/ingredients/abmerge-plus-pouch.webp",
     specs: INGREDIENT_COMMON_SPECS,
     versusImported: VERSUS_IMPORTED_DEFAULT,
   },
