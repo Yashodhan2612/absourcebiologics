@@ -28,7 +28,10 @@ export const metadata = pageMetadata({
  *  03 customisation  — the packing line, where different blends are filled to
  *                      different specifications. The closest thing we have to a
  *                      picture of "range".
- *  04 partnership    — the team around a table, working something through.
+ *  04 partnership    — two operators working one vessel together, as the
+ *                      block's own copy has it: one company from idea to
+ *                      plant. (It was the team in a meeting; the client sent
+ *                      a sharper photograph of this subject in October 2026.)
  *  05 proven quality — a sample being measured at the bench.
  *
  * Block 5 used to show the four certificate scans. They now appear once, on
@@ -50,8 +53,8 @@ const DIFFERENTIATOR_PHOTOS = [
     alt: "Two operators running the sachet sealer on the packing line",
   },
   {
-    src: "/assets/facility/team-meeting.webp",
-    alt: "The ABsource team in a working meeting at the Chinchwad office",
+    src: "/assets/facility/inoculation-vessel.webp",
+    alt: "Two operators preparing an inoculation vessel together next to the autoclave",
   },
   {
     src: "/assets/facility/sample-bench.webp",

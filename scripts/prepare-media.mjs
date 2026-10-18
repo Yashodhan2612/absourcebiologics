@@ -43,17 +43,27 @@ async function write(pipeline, base, formats = FORMATS) {
 
 /* ------------------------------------------------------------ the plant */
 
+/**
+ * `dir` is where the source lives under _source/facility/. Two sets are here:
+ *  - "2026": the camera originals (6000x4000), cropped down to 1600px.
+ *  - "2026-hd": four retouched 1536x1024 photographs the client sent in
+ *    October 2026 to replace the duller originals of the same rooms on the
+ *    homepage and /why-absource. They are smaller than the originals but
+ *    cleaner and brighter, and none is enlarged: `withoutEnlargement` below
+ *    keeps the output at the source's own width.
+ */
 const FACILITY = [
   // Homepage, "we are manufacturers": fermentation, freeze-drying, packing.
-  // The tall frame spans two 4:3 rows, so it is cut as a portrait.
-  { out: "fermenter", file: "fermenter.jpg", aspect: 3 / 4, x: 0.72, y: 0.5, width: 1200 },
-  { out: "freeze-dryer-room", file: "freeze-dryer-room.jpg", aspect: 4 / 3, x: 1, y: 0.5 },
-  { out: "sachet-sealing", file: "sachet-sealing.jpg", aspect: 4 / 3, x: 1, y: 0 },
+  // The tall frame spans two 4:3 rows, so it is cut as a portrait. The 768px
+  // that leaves is still twice the ~360px the frame is shown at.
+  { out: "fermenter-room", dir: "2026-hd", file: "fermenter-room.webp", aspect: 3 / 4, x: 0.8, y: 0.5 },
+  { out: "freeze-dryer", dir: "2026-hd", file: "freeze-dryer.jpg", aspect: 4 / 3, x: 0.5, y: 0.5 },
+  { out: "sachet-sealer", dir: "2026-hd", file: "sachet-sealer.webp", aspect: 4 / 3, x: 0.7, y: 0.3 },
   // /why-absource, one per differentiator.
   { out: "clean-corridor", file: "clean-corridor.jpg", aspect: 16 / 10, x: 0.5, y: 0.5 },
   { out: "microscope-bench", file: "microscope-bench.jpg", aspect: 16 / 10, x: 0.5, y: 0.1 },
   { out: "packing-line", file: "packing-line.jpg", aspect: 16 / 10, x: 0.5, y: 0 },
-  { out: "team-meeting", file: "team-meeting.jpg", aspect: 16 / 10, x: 0.5, y: 0.8 },
+  { out: "inoculation-vessel", dir: "2026-hd", file: "inoculation-vessel.webp", aspect: 16 / 10, x: 0.5, y: 0.5 },
   { out: "sample-bench", file: "sample-bench.jpg", aspect: 16 / 10, x: 0.5, y: 0 },
   // /about.
   { out: "dispatch-corridor", file: "dispatch-corridor.jpg", aspect: 4 / 3, x: 0, y: 0.5 },
@@ -64,7 +74,7 @@ const FACILITY = [
 async function facility() {
   await mkdir(`${OUT}/facility`, { recursive: true });
   for (const photo of FACILITY) {
-    const file = `${SRC}/facility/2026/${photo.file}`;
+    const file = `${SRC}/facility/${photo.dir ?? "2026"}/${photo.file}`;
     // .rotate() with no argument applies the camera's EXIF orientation.
     const upright = sharp(await sharp(file).rotate().toBuffer());
     const { width, height } = await upright.metadata();
@@ -77,7 +87,7 @@ async function facility() {
     }
     const left = Math.round((width - cropWidth) * photo.x);
     const top = Math.round((height - cropHeight) * photo.y);
-    const target = photo.width ?? 1600;
+    const target = Math.min(photo.width ?? 1600, cropWidth);
 
     await write(
       upright
