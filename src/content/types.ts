@@ -85,8 +85,9 @@ export type Product = {
    * What `image` is. Defaults to "pack" — the colour-coded catalogue artwork,
    * which is illustrative of the range rather than of what is delivered.
    *
-   * "photo" is a photograph of the product's OWN printed pack (FERMENTA's
-   * sachet). It must NOT be mapped onto the 3D sachet model, which expects the
+   * "photo" is a picture of the product itself rather than the flat catalogue
+   * artwork: FERMENTA's own printed sachet, and the AB704 ghee jars. It must
+   * NOT be mapped onto the 3D sachet model, which expects the
    * flat catalogue artwork, and it must NOT carry the "colour-coded, delivered
    * in the standard blue and white sachet" note: that caption is about
    * illustrative artwork, and this is the thing itself.
@@ -97,9 +98,9 @@ export type Product = {
   /**
    * The slug of the product whose pack artwork `image` borrows.
    *
-   * Three products are shown in another line's pack at the client's
-   * instruction: ABDAHI (Probiotic) in ABDAHI's, ABSHRI (with ABBIO-Shield) in
-   * ABSHRI's, and AB704 in ABCREAM's. Declaring it makes the sharing explicit,
+   * Two products are shown in another line's pack at the client's
+   * instruction: ABDAHI (Probiotic) in ABDAHI's and ABSHRI (with ABBIO-Shield)
+   * in ABSHRI's. Declaring it makes the sharing explicit,
    * so catalogue.test.ts can assert that no two products share a photograph by
    * accident.
    */

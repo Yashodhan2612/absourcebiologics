@@ -139,14 +139,6 @@ async function certs() {
  */
 const PRODUCTS = [
   {
-    // FERMENTA's printed sachet. Cropped to the sachet, losing most of the
-    // grey table it was photographed on.
-    out: "products/cultures/fermenta",
-    file: "fermenta-sachet.jpg",
-    crop: { left: 24, top: 48, width: 648, height: 1016 },
-    enlarge: 1.7,
-  },
-  {
     // The ABRenno bottle: a wide canvas that is mostly white. Trimmed to the
     // bottle so it fills the pack well instead of sitting small in the middle.
     out: "products/ingredients/abrenno",
@@ -156,12 +148,103 @@ const PRODUCTS = [
     enlarge: 1.5,
   },
   { out: "products/ingredients/abmerge-25kg", file: "abmerge-25kg.jpg", trim: true, pad: 32 },
+  // ------------------------------------------------------------------------
+  // The client's product images of October 2026 (the four PDFs and the ghee
+  // photograph). Each PDF holds one embedded image plus a separate
+  // transparency mask, extracted with `pdfimages -png`; nothing is rendered
+  // from the PDF page, so nothing is resampled. `cutout` rejoins the mask and
+  // keeps the transparency, so the pack sits on the catalogue's own ground
+  // rather than inside a white rectangle.
+  {
+    // FERMENTA's own sachet. Replaces the earlier photograph, whose small
+    // print was misspelt in the source file; this one reads correctly.
+    out: "products/cultures/fermenta-sachet",
+    cutout: { rgb: "fermenta-rgb.png", mask: "fermenta-mask.png" },
+    pad: 32,
+  },
+  {
+    out: "products/ingredients/abmax-pouch",
+    cutout: { rgb: "abmax-rgb.png", mask: "abmax-mask.png" },
+    pad: 32,
+  },
+  {
+    out: "products/ingredients/abmerge-plus-pouch",
+    cutout: { rgb: "abmerge-plus-rgb.png", mask: "abmerge-plus-mask.png" },
+    pad: 32,
+  },
+  {
+    // A culture sachet in the catalogue's own colour-coded artwork, so it is
+    // framed exactly like the others: the sachet fills a 768x1024 frame on the
+    // same light grey, which is also what the 3D sachet model maps. Its bounds
+    // are 945x1264, exactly 3:4, so nothing is cropped or stretched.
+    out: "products/cultures/abvegan",
+    cutout: { rgb: "abvegan-rgb.png", mask: "abvegan-mask.png" },
+    sachet: { width: 768, height: 1024, ground: "#eaeaea" },
+  },
+  {
+    // AB704 in its Gir Cow Ghee jars. The source is a 1600x893 lifestyle
+    // photograph; this is a 4:5 portrait of the two jars and the bowl, the
+    // same shape as every other product image. Not enlarged. The crop stops
+    // short of the generator's sparkle mark in the bottom-right corner.
+    out: "products/ingredients/ab704-ghee",
+    dir: "2026-10",
+    file: "ab704-ghee.jpg",
+    crop: { left: 800, top: 0, width: 714, height: 893 },
+  },
   { out: "products/taste-makers/abspice-25kg", file: "abspice-25kg.jpg", trim: true, pad: 32 },
 ];
 
+/** The box that holds everything the mask says is opaque. */
+async function opaqueBox(maskPath) {
+  const { data, info } = await sharp(maskPath).greyscale().raw().toBuffer({ resolveWithObject: true });
+  let x0 = info.width, y0 = info.height, x1 = 0, y1 = 0;
+  for (let y = 0; y < info.height; y++) {
+    for (let x = 0; x < info.width; x++) {
+      if (data[y * info.width + x] > 128) {
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x);
+        y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      }
+    }
+  }
+  return { left: x0, top: y0, width: x1 - x0 + 1, height: y1 - y0 + 1 };
+}
+
+/** RGB plus its separate mask, cropped to the pack. Returns a sharp pipeline. */
+async function cutout(item) {
+  const dir = `${SRC}/products/2026-10`; // every cutout is from the October set
+  const box = await opaqueBox(`${dir}/${item.cutout.mask}`);
+  // Two steps on purpose. In one pipeline sharp crops BEFORE it joins the
+  // channel, so a full-size mask is laid over an already-cropped image and the
+  // pack comes out offset, with black where the transparency should be.
+  const joined = await sharp(`${dir}/${item.cutout.rgb}`)
+    .removeAlpha()
+    .joinChannel(`${dir}/${item.cutout.mask}`)
+    .png()
+    .toBuffer();
+  const rgba = await sharp(joined).extract(box).png().toBuffer();
+  if (item.sachet) {
+    const { width, height, ground } = item.sachet;
+    return sharp(rgba)
+      .flatten({ background: ground })
+      .resize(width, height, { fit: "fill", kernel: "lanczos3" });
+  }
+  const margin = { top: item.pad, bottom: item.pad, left: item.pad, right: item.pad };
+  return sharp(rgba).extend({ ...margin, background: { r: 0, g: 0, b: 0, alpha: 0 } });
+}
+
 async function products() {
   for (const item of PRODUCTS) {
-    let image = sharp(`${SRC}/products/2026/${item.file}`).rotate();
+    if (item.cutout) {
+      const built = await cutout(item);
+      await write(built, `${OUT}/${item.out}`, [
+        ["avif", { quality: 64 }],
+        ["webp", { quality: 88 }],
+      ]);
+      const meta = await sharp(`${OUT}/${item.out}.webp`).metadata();
+      console.log(`  ${item.out.padEnd(38)} ${meta.width}x${meta.height}  (alpha: ${meta.hasAlpha})`);
+      continue;
+    }
+    let image = sharp(`${SRC}/products/${item.dir ?? "2026"}/${item.file}`).rotate();
     if (item.crop) image = image.extract(item.crop);
     if (item.trim) {
       // Trim the white surround, then put an even margin back.

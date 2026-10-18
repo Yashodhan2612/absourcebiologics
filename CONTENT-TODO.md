@@ -15,40 +15,44 @@ Everything the client asked for in this round is done. These are the points
 where the instruction ran out, an asset did not arrive, or a judgement call was
 made that the client may want to overrule. Most urgent first.
 
-1. **ABMAX has no photograph.** ABBIND was renamed ABMAX "with different
-   packaging", and the new pack was not in the files supplied. The old
-   photograph prints the old name, so the page and the catalogue card show the
-   abstract placeholder rather than a pack that contradicts the heading. Send
-   the new pack shot: save it under `public/assets/_source/products/2026/`, add
-   a line to `scripts/prepare-media.mjs`, and set `image` on `abmax` in
-   `products.ts`.
+1. **ABMAX, ABMERGE+, FERMENTA and ABVEGAN now have the client's product
+   images (October 2026), and the pages around them disagree with two of
+   them.** The packs are on the site; what they print is not what the pages say:
+   - **ABMAX's pouch lists "Edible Lactose, SMP (Milk Protein Concentrate)"**,
+     100 GM, and is spelt **"AB Maxx"**. The site calls it ABMAX (as
+     instructed) and describes it as "a stabiliser system for fermented dairy",
+     which was a guess carried over from ABBIND. The pack says a dairy protein
+     ingredient. The description and the curd/yoghurt applications should be
+     corrected by someone who knows what it is.
+   - **ABMERGE+'s pouch says "Blend of Selected Coagulants for enhanced yield
+     of paneer"**, product code AB/ACR/002. The site describes it as a
+     "higher-strength stabiliser system for fermented dairy" under curd and
+     yoghurt. Same problem, and the code AB/ACR/002 is not shown anywhere yet.
+   - **ABVEGAN's sachet** prints "-18°C" and "24 months" and "Non-Dairy
+     substrates", as every culture sachet does. Its page still says the
+     specification is published at launch, and that stays true: the artwork is
+     not a specification. The **description** is still to come from Mukesh Kaka.
+     Its four codes (AB1201, AB1202, AB1211, AB1212) stay hidden while it is in
+     pilot.
 
-2. **ABMERGE+ still shows packs printed "ABBINDMAX".** The rename came with no
-   mention of new packaging, so the existing photograph was kept. If the pack
-   has changed too, send it.
+2. **FERMENTA's image is now correct.** The sachet supplied in October read
+   "Seienee" and "Biologieals"; the new one reads "Science" and "Biologicals".
+   That closes the old open item about the garbled print.
 
-3. **ABVEGAN: image and description still to come** (from Mukesh Kaka, per the
-   brief). It is now under a new **Vegan** application filter on `/products`
-   and remains in pilot. Its four codes in the master sheet (AB1201, AB1202,
-   AB1211, AB1212) are transcribed but **not shown anywhere** while it is in
-   pilot: the page says the specification is published at launch.
+3. **AB704's photograph is a consumer-style jar shot, with claims on the
+   label.** The jars read "Gir Cow Ghee, easier on gut" and a line about
+   enhanced aroma and smoothness, which is the image generator's own
+   (partly garbled) text rather than anything the site says. "Easier on gut"
+   is a health claim on a page whose own copy makes none, and the page sells a
+   *culture*, not a jar of ghee. It is published as supplied; worth a look
+   before it is promoted.
 
 4. **"Extends the shelf life of chakka by three weeks"** is published on ABSHRI
    (with ABBIO-Shield) on the client's instruction. It is the only quantified
    performance claim on any product page and there is no test data behind it in
    this repository. Keep the supporting data on file.
 
-5. **FERMENTA's photograph has garbled small print — in the source.** The
-   sachet image supplied reads "India's Own Dairy Seienee" and "Biologieals for
-   Better Batter". It was cleaned up as far as a resample honestly can (cropped
-   to the sachet, enlarged 1.7x with a sharpening pass), but the lettering is
-   wrong in the file itself and no processing fixes that; a generative upscaler
-   would only rewrite it into different nonsense. **The print-ready artwork or
-   a photograph of a real sachet is needed.** The reverse of the label, which
-   is rendered from the client's own PDF and is correct, is still shown beside
-   it.
-
-6. **FERMENTA: two statements that do not obviously agree.** Its specification
+5. **FERMENTA: two statements that do not obviously agree.** Its specification
    was set to "the exact same as ABDAHI" as instructed. Its own label reverse
    states storage at 2–8°C and a 12-month shelf life; ABDAHI's pack artwork
    prints -18°C and 24 months. Neither figure is typed into a spec table (both
@@ -56,14 +60,14 @@ made that the client may want to overrule. Most urgent first.
    the two will collide the moment those rows are filled in. Confirm which
    applies to FERMENTA.
 
-7. **ABRENNO sits under the "Cheese & paneer" application.** Every description
+6. **ABRENNO sits under the "Cheese & paneer" application.** Every description
    of it now says "Microbial rennet for cheese" and the paneer wording is gone
    from the product, the solution page copy and its FAQ. The application family
    itself is still named "Cheese & paneer", so that chip still appears on the
    ABRENNO page. Splitting the family in two is a navigation change, not a
    wording one; say if it is wanted.
 
-8. **ABMERGE's description was corrected from its own bag.** The 25 kg bag
+7. **ABMERGE's description was corrected from its own bag.** The 25 kg bag
    declares a single ingredient, glucono-delta-lactone (INS 575), as an acidity
    regulator for paneer. The site used to call it "a functional ingredient
    blend", which the pack contradicts, so it now says what the bag says. The
@@ -71,12 +75,12 @@ made that the client may want to overrule. Most urgent first.
    is **not** repeated on the site: it is a performance claim with no data
    here.
 
-9. **Certificates now appear once, on /quality.** They used to be repeated in
+8. **Certificates now appear once, on /quality.** They used to be repeated in
    the fifth block of /why-absource. Under the rule that no image repeats
    anywhere, that block now shows a photograph of bench testing and links to
    the certificates instead.
 
-10. **Three plant photographs were not used**: the water-treatment shed
+9. **Three plant photographs were not used**: the water-treatment shed
     (_MG_0203), the outdoor cold room (_MG_0209) and the open control cabinet
     (_MG_0239). They show exposed wiring, a tin-roofed utility area and
     newspaper-lined walls, which undercut the clean-room claim the rest of the
@@ -92,11 +96,11 @@ made that the client may want to overrule. Most urgent first.
     meeting. The camera originals of the other three are no longer used
     anywhere.
 
-11. **Pack photographs shared by instruction.** ABDAHI (Probiotic) is shown in
-    ABDAHI's pack, ABSHRI (with ABBIO-Shield) in ABSHRI's, and AB704 in
-    ABCREAM's, each as asked. The "no photograph repeats" rule is enforced for
-    the plant, certificate and portrait photographs; these three are the
-    declared exceptions (`packOf` in `products.ts`), and the homepage solution
+10. **Pack photographs shared by instruction.** ABDAHI (Probiotic) is shown in
+    ABDAHI's pack and ABSHRI (with ABBIO-Shield) in ABSHRI's, each as asked.
+    (AB704 used to share ABCREAM's; it now has its own jar photograph.) The
+    "no photograph repeats" rule is enforced for the plant, certificate and
+    portrait photographs; these two are the declared exceptions (`packOf` in `products.ts`), and the homepage solution
     tiles are arranged so that no two tiles show the same pack.
 
 ---
@@ -183,8 +187,8 @@ and all of it is on the site:
 - **Variants**: AB1301 and AB1302, from the master sheet.
 - Its call to action now reads "Trial FERMENTA on your own batter".
 
-Still open: the quality of the photograph, and a storage-temperature
-discrepancy. Both are in §00, items 5 and 6.
+Its photograph is the client's own sachet (October 2026). Still open: a
+storage-temperature discrepancy, in §00, item 5.
 
 ---
 
@@ -192,8 +196,8 @@ discrepancy. Both are in §00, items 5 and 6.
 
 Added as the fifteenth product line, at the client's instruction, with
 `availability: "pilot"`. It has a name, a status and a place under the **Vegan**
-application filter; no specification, no artwork, and its variant codes are
-withheld (§00, item 3).
+application filter and the client's sachet artwork; no specification or
+description, and its variant codes are withheld (§00, item 1).
 
 Every page that would otherwise offer a sample, a data sheet or a comparison to
 imported cultures keys off the one `availability` field instead: sample and

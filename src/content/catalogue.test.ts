@@ -198,7 +198,11 @@ describe("the catalogue changes of October 2026", () => {
     expect(fermenta.imageKind).toBe("photo");
     expect(fermenta.imageBack).toMatch(/fermenta-label-back/);
     expect(fermenta.substrate).toBe("batter");
-    expect(products.filter((p) => p.imageKind === "photo")).toHaveLength(1);
+    // The only other: AB704's ghee jars, a photograph rather than a sachet.
+    expect(products.filter((p) => p.imageKind === "photo").map((p) => p.slug).sort()).toEqual([
+      "ab704",
+      "fermenta",
+    ]);
   });
 
   it("describes ABRENNO as a rennet for cheese, with no mention of paneer", () => {
@@ -233,11 +237,14 @@ describe("the catalogue changes of October 2026", () => {
     expect(everything).not.toMatch(/ABBIO-SHIELD/);
   });
 
-  it("puts AB704 alone in Gir Cow Ghee, with ABCREAM's photograph and description", () => {
+  it("puts AB704 alone in Gir Cow Ghee, with ABCREAM's description and its own photograph", () => {
     expect(girCowGhee.map((p) => p.slug)).toEqual(["ab704"]);
     const ab704 = bySlug("ab704");
     const cream = bySlug("abcream");
-    expect(ab704.image).toBe(cream.image);
+    // Its own jar photograph now, not ABCREAM's sachet, and so not a "pack".
+    expect(ab704.image).not.toBe(cream.image);
+    expect(ab704.imageKind).toBe("photo");
+    expect(ab704.packOf).toBeUndefined();
     expect(ab704.description).toBe(cream.description);
     expect(ab704.applications).toEqual([]);
     expect(CATEGORY_COPY["gir-cow-ghee"]!.filter).toBe("Gir Cow Ghee");
