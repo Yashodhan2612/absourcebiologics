@@ -78,6 +78,7 @@ them; each missing service degrades rather than breaking.
 | `QA_INBOX` | Vendor audit requests | Falls back to `qa@absourcebiologics.com` |
 | `LEAD_FROM` | From address | Falls back to `noreply@absourcebiologics.com` |
 | `UPSTASH_REDIS_REST_URL` / `..._TOKEN` | Rate limiting (5/hour/IP) | Falls back to an in-process counter — weaker (per-instance, resets on cold start) but better than none |
+| `EMAIL_BASE_URL` | Where the logo and links in the confirmation email point | The live site, `https://absourcebiologics.com`. Set it to the temporary address (for example the `.vercel.app` one) only to test the email before the domain is switched over; remove it afterwards. |
 | `DOWNLOAD_SECRET` | Signing gated-document tokens | A per-boot random secret is used; tokens simply expire on restart. Never fails open. |
 
 Set `DOWNLOAD_SECRET` in production, or every deploy invalidates outstanding
