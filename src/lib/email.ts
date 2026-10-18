@@ -1,5 +1,6 @@
 import type { Lead, LeadType } from "./schema";
 import { downloadBySlug, requesterRoleLabel } from "@/content/downloads";
+import { buildAutoresponse } from "./lead-email";
 
 /**
  * Transactional email, over plain SMTP.
@@ -57,7 +58,18 @@ const SMTP_PASS = process.env.SMTP_PASS;
  * rewrites is worse than one chosen honestly. Override with LEAD_FROM only
  * when the mailbox is allowed to send as that address.
  */
-const FROM = process.env.LEAD_FROM ?? SMTP_USER ?? "noreply@absourcebiologics.com";
+const FROM_ADDRESS = process.env.LEAD_FROM ?? SMTP_USER ?? "noreply@absourcebiologics.com";
+
+/**
+ * The From header, with the company's name in front of the address.
+ *
+ * Without it a visitor sees a bare mailbox ("absourcenotifications@gmail.com")
+ * as the sender, which reads like a throwaway. With it the inbox shows
+ * "ABsource Biologics". Gmail keeps the display name even though it rewrites
+ * the address, so this works with the Gmail relay too. A LEAD_FROM that
+ * already carries a name is left alone.
+ */
+const FROM = FROM_ADDRESS.includes("<") ? FROM_ADDRESS : `ABsource Biologics <${FROM_ADDRESS}>`;
 
 /**
  * Where each kind of enquiry lands.
@@ -202,23 +214,6 @@ function renderHtml(lead: Lead, context?: DownloadContext): string {
   ].join("");
 }
 
-/** Autoresponder. Deliberately plain and specific about what happens next. */
-function renderAutoresponse(lead: Lead): string {
-  const body =
-    lead.leadType === "export"
-      ? "Thank you for your enquiry. Export quotations involve confirming certification, packaging and shipping terms for your market, so these take a little longer than a domestic quote. A member of our export team will be in touch."
-      : lead.leadType === "download"
-        ? // Says WHY there is a wait. The generic line implied the file was on
-          // its way with no verification step and no reason for the delay.
-          "Thank you for requesting the data sheet. Data sheets carry composition, dosage and incubation parameters, so we confirm who is asking before we send one. A technologist will check your details and email it across, and will call you if anything needs clarifying."
-        : lead.leadType === "careers"
-          ? "Thank you for your interest in ABsource Biologics. Your application has reached our HR team and a person will read it. If your background fits something we are hiring for, we will be in touch."
-          : lead.leadType === "audit"
-            ? "Thank you for your request. It has gone to our quality assurance team, who hold the certifications, audit documentation and site-visit scheduling. They will reply with what they can share and what needs a call."
-            : "Thank you for getting in touch. A technologist will read what you have sent and reply — this is not an automated recommendation.";
-  return `<div style="font-family:system-ui,sans-serif;line-height:1.6;color:#0C1413"><p>${body}</p><p style="color:#4A5654">ABsource Biologics Pvt. Ltd.<br>Kinetic Innovation Park, MIDC Chinchwad, Pune 411019</p></div>`;
-}
-
 /**
  * Extra context the download route computes and the notification needs.
  *
@@ -304,6 +299,7 @@ type MailTransport = {
     replyTo?: string;
     subject: string;
     html: string;
+    text?: string;
   }): Promise<unknown>;
   verify(): Promise<true>;
 };
@@ -394,11 +390,17 @@ export async function deliverLead(
     });
 
     try {
+      const confirmation = buildAutoresponse(lead);
       await transport.sendMail({
         from: FROM,
         to: lead.email,
-        subject: "We've got your enquiry — ABsource Biologics",
-        html: renderAutoresponse(lead),
+        // A visitor who replies to the confirmation should reach the team that
+        // owns their enquiry (info@, hr@ or qa@), not the sending mailbox,
+        // which is a relay nobody reads.
+        replyTo: inboxFor(lead),
+        subject: confirmation.subject,
+        html: confirmation.html,
+        text: confirmation.text,
       });
     } catch (error) {
       console.warn("[lead] autoresponse failed; notification was delivered", error);
