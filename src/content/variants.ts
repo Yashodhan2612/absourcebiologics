@@ -3,9 +3,12 @@ import { products } from "./products";
 /**
  * The culture catalogue — every coded variant ABsource offers.
  *
- * SOURCE: the client's "Master copy of all variants-updated.xlsx". This file is
- * a transcription of that sheet and supersedes the earlier taste-profile
- * grouping, which covered curd and yoghurt only. Nothing here is invented.
+ * SOURCE: the client's "Master copy of all variants-updated.xlsx", in its
+ * second revision (18 October 2026), which differs from the first only in
+ * dropping the "Genomic confirm" / "Not confirmed" notes from the probiotic
+ * rows. This file is a transcription of that sheet and supersedes the earlier
+ * taste-profile grouping, which covered curd and yoghurt only. Nothing here is
+ * invented.
  *
  * THE MODEL.
  *
@@ -111,8 +114,9 @@ export type Variant = {
   /** Other product pages that list this variant. */
   readonly alsoListedOn?: readonly string[];
   /**
-   * False keeps a variant out of everything public. Used where the client's own
-   * sheet marks a strain's identity "Not confirmed" — see CONTENT-TODO.md §0c.
+   * False keeps a variant out of everything public, for a row the client's own
+   * sheet marks as unconfirmed. Nothing uses it at the moment: the current
+   * sheet has no such rows. It is kept so the next one needs no code.
    */
   readonly published?: false;
 };
@@ -297,17 +301,18 @@ export const variants: readonly Variant[] = [
   { code: "MD0109", family: "mishti-doi", descriptor: "Sugar-tolerant strains giving a sweet-and-sour mishti doi with the typical fermented taste." },
 
   /* ============================ 9. PROBIOTICS ============================ */
-  // Species names are spelled to current nomenclature; the sheet's own strain
-  // designations (ABS01 …) are kept. Three rows are marked "Not confirmed" in
-  // the client's sheet and are held back — a species name on a probiotic is a
-  // regulatory statement, and theirs is the sheet that says it is unconfirmed.
+  // Species names are spelled to current nomenclature (the sheet reads "casie",
+  // "bifidium", "Lacticasiebacillus"); the sheet's own strain designations
+  // (ABS01 …) are kept. An earlier version of the sheet marked AB1405-AB1407
+  // "Not confirmed" and they were withheld; the current one carries no such
+  // note, so all nine are published.
   { code: "AB1401", family: "probiotics", descriptor: "Streptococcus thermophilus (ABS01)." },
   { code: "AB1402", family: "probiotics", descriptor: "Lactobacillus casei (ABS05)." },
   { code: "AB1403", family: "probiotics", descriptor: "Lactobacillus plantarum." },
   { code: "AB1404", family: "probiotics", descriptor: "Lactobacillus acidophilus (ABS43)." },
-  { code: "AB1405", family: "probiotics", descriptor: "Lacticaseibacillus rhamnosus (ABS42).", published: false },
-  { code: "AB1406", family: "probiotics", descriptor: "Lactobacillus reuteri.", published: false },
-  { code: "AB1407", family: "probiotics", descriptor: "Bifidobacterium bifidum (ABS10).", published: false },
+  { code: "AB1405", family: "probiotics", descriptor: "Lacticaseibacillus rhamnosus (ABS42)." },
+  { code: "AB1406", family: "probiotics", descriptor: "Lactobacillus reuteri." },
+  { code: "AB1407", family: "probiotics", descriptor: "Bifidobacterium bifidum (ABS10)." },
   { code: "AB1408", family: "probiotics", descriptor: "Blend of Lactobacillus acidophilus and Bifidobacterium lactis." },
   { code: "AB1409", family: "probiotics", descriptor: "Lactobacillus delbrueckii subsp. bulgaricus." },
 

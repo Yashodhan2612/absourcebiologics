@@ -99,8 +99,9 @@ export default function HomePage() {
             {/*
               Three photographs rather than one, because the claim is about
               three separate stages and a single picture cannot carry it. These
-              are the client's own plant photographs (October 2026), in process
-              order: the fermenter, the freeze dryer, and sachets being sealed.
+              are the client's own plant photographs, in process order: the
+              fermenter, the freeze dryer, and sachets being sealed. All three
+              are the retouched set they sent in October 2026.
               Each is used here and nowhere else on the site. The tall frame
               leads; only it is parallaxed, because three parallaxed frames at
               different rates on one screen reads as a fault (Section 7A.7).
@@ -115,7 +116,7 @@ export default function HomePage() {
                   different heights, which read as a broken grid. */}
               <div className="relative row-span-2 overflow-hidden">
                 <Photo
-                  src="/assets/facility/fermenter.webp"
+                  src="/assets/facility/fermenter-room.webp"
                   alt="An operator at the fermentation vessel in the ABsource clean room"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                   parallax
@@ -124,15 +125,15 @@ export default function HomePage() {
               </div>
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Photo
-                  src="/assets/facility/freeze-dryer-room.webp"
-                  alt="An operator at the freeze dryer, with a cooling cabinet in the foreground"
+                  src="/assets/facility/freeze-dryer.webp"
+                  alt="An operator loading trays into the freeze dryer"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                 />
               </div>
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Photo
-                  src="/assets/facility/sachet-sealing.webp"
-                  alt="An operator sealing filled culture sachets on the band sealer"
+                  src="/assets/facility/sachet-sealer.webp"
+                  alt="An operator feeding a filled culture sachet into the band sealer"
                   sizes="(min-width: 1024px) 25vw, 50vw"
                 />
               </div>

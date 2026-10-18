@@ -83,6 +83,15 @@ made that the client may want to overrule. Most urgent first.
     set makes. Two more (_MG_0212, _MG_0227) are good but had no slot left;
     each slot uses a different photograph, and there are ten slots.
 
+    In October 2026 the client also sent four retouched plant photographs
+    (sachet sealing, fermenter, freeze dryer, two operators at a vessel), which
+    replaced the duller originals of the same rooms: the three homepage frames
+    and /why-absource block 4. They are 1536px wide, so fewer pixels than the
+    1600px crops of the camera originals, but brighter and cleaner; none was
+    enlarged. The photograph they replaced in block 4 was the team in a
+    meeting. The camera originals of the other three are no longer used
+    anywhere.
+
 11. **Pack photographs shared by instruction.** ABDAHI (Probiotic) is shown in
     ABDAHI's pack, ABSHRI (with ABBIO-Shield) in ABSHRI's, and AB704 in
     ABCREAM's, each as asked. The "no photograph repeats" rule is enforced for
@@ -250,12 +259,14 @@ covered curd and yoghurt only.
 2. **AB509** is given in the sheet for both white brine cheese and Camembert.
    It is published as one culture listed for both. One of the two is probably
    a typing slip for a different code.
-3. **Three probiotic strains are withheld**: AB1405 (rhamnosus), AB1406
-   (reuteri) and AB1407 (bifidum). The sheet's own status column says "Not
-   confirmed" against them, where AB1401, AB1402 and AB1404 say "Genomic
-   confirm". A species name on a probiotic is a regulatory statement, so they
-   stay off the site until the sheet says otherwise. Remove `published: false`
-   from each to show them.
+3. **AB1405, AB1406 and AB1407 are now published.** The first revision of the
+   sheet marked them "Not confirmed" (and AB1401, AB1402 and AB1404 "Genomic
+   confirm"), so they had been held back. The second revision, of 18 October
+   2026, carries no such notes and all nine probiotic strains are live. That
+   is the client's sheet changing, not a confirmation we saw: a species name on
+   a probiotic is a regulatory statement, so it is worth the team checking the
+   strain identities are in fact confirmed before the next customer relies on
+   them.
 4. **Species names were corrected to current spelling** (casei, bifidum,
    paracasei, delbrueckii subsp. bulgaricus, Lacticaseibacillus). The strain
    designations (ABS01 …) are as written.
@@ -359,7 +370,7 @@ ABCREAM. ABVEGAN is featured as "in pilot".
 
 No handshake photograph exists in the asset set, and stock imagery of strangers
 shaking hands is exactly the padding this site refuses. Block 4 ("End-to-end
-partnership") shows the team around a table in a working meeting instead — real
+partnership") shows two operators working one vessel together instead — real
 people at ABsource, from the photographs supplied in October 2026.
 
 If a handshake is wanted, it needs to be a real photograph of real people at

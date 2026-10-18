@@ -265,10 +265,13 @@ describe("the catalogue the selector reads", () => {
     }
   });
 
-  it("withholds the three probiotic strains the client's sheet marks unconfirmed", () => {
+  it("publishes all nine probiotic strains from the current sheet", () => {
     const listed = variantsForProduct("abdahi-probiotic").map((v) => v.code);
-    for (const code of ["AB1405", "AB1406", "AB1407"]) expect(listed).not.toContain(code);
-    expect(listed).toContain("AB1401");
+    for (let n = 1401; n <= 1409; n++) expect(listed, `AB${n}`).toContain(`AB${n}`);
+    // They are the answer for someone asking for probiotic cultures.
+    expect(codes({ making: "probiotic-cultures" })).toEqual(
+      expect.arrayContaining(["AB1405", "AB1406", "AB1407"])
+    );
   });
 
   it("gives every selectable product at least one variant", () => {
